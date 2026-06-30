@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<!-- Natkhat AI Prototype — Deploy to Vercel. Calls /api/leo and /api/sarvam proxies. -->
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>Natkhat AI — Leo Prototype</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:"Nunito",sans-serif;background:#08080F;color:#E2E8F0}
+input,textarea,button{font-family:"Nunito",sans-serif;outline:none}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.15);border-radius:99px}
+
+/* ── SCREENS ── */
+.screen{display:none;height:100vh;flex-direction:column;overflow:hidden}
+.screen.active{display:flex}
+
+/* ── ONBOARDING ── */
+#screen-onboard{align-items:center;justify-content:center;padding:32px 24px;background:#08080F;position:relative}
+.ob-bg-glow{position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse at 30% 20%,rgba(251,146,60,0.08),transparent 60%),
+             radial-gradient(ellipse at 70% 80%,rgba(167,139,250,0.07),transparent 60%)}
+.ob-inner{position:relative;z-index:1;width:100%;max-width:360px;text-align:center}
+.ob-leo{font-size:80px;margin-bottom:8px;display:block;animation:leo-bob 2s ease-in-out infinite}
+@keyframes leo-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.ob-dots{display:flex;gap:8px;justify-content:center;margin-bottom:32px}
+.ob-dot{height:8px;border-radius:99px;background:rgba(255,255,255,0.15);transition:all 0.3s}
+.ob-dot.done{background:#FB923C}
+.ob-dot.active{background:#FB923C;width:24px}
+.ob-dot.idle{width:8px}
+.ob-h{font-family:"Fredoka One",sans-serif;font-size:30px;color:#fff;margin-bottom:6px}
+.ob-sub{font-size:13px;font-weight:700;color:rgba(255,255,255,0.38);margin-bottom:28px;line-height:1.6}
+.ob-input{width:100%;background:rgba(255,255,255,0.07);border:2px solid rgba(251,146,60,0.4);
+  border-radius:16px;padding:16px 20px;color:#fff;font-size:20px;font-weight:800;
+  text-align:center;margin-bottom:16px;transition:border-color 0.2s}
+.ob-input:focus{border-color:#FB923C}
+.ob-input::placeholder{color:rgba(255,255,255,0.2);font-weight:700;font-size:15px}
+.btn-primary{width:100%;background:linear-gradient(135deg,#FB923C,#EC4899);border:none;
+  border-radius:14px;padding:15px 40px;color:#fff;font-size:16px;font-weight:900;
+  cursor:pointer;transition:opacity 0.2s;letter-spacing:0.3px}
+.btn-primary:hover{opacity:0.9}
+.age-grid{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:28px}
+.age-btn{width:56px;height:56px;border-radius:50%;border:2px solid rgba(255,255,255,0.15);
+  background:rgba(255,255,255,0.04);color:#fff;font-size:20px;font-weight:900;
+  cursor:pointer;transition:all 0.2s}
+.age-btn:hover,.age-btn.sel{border-color:#FB923C;background:rgba(251,146,60,0.2);color:#FB923C}
+.bhasha-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:24px}
+.bhasha-btn{background:rgba(255,255,255,0.04);border:2px solid rgba(255,255,255,0.1);
+  border-radius:10px;padding:10px 6px;color:rgba(255,255,255,0.6);font-size:12px;
+  font-weight:800;cursor:pointer;transition:all 0.2s}
+.bhasha-btn:hover,.bhasha-btn.sel{border-color:#FB923C;background:rgba(251,146,60,0.15);color:#FB923C}
+
+/* ── APP LAYOUT ── */
+#screen-app{background:#08080F}
+.app-top{background:rgba(8,8,15,0.97);backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(255,255,255,0.06);padding:12px 16px;flex-shrink:0}
+.app-top-inner{max-width:500px;margin:0 auto}
+
+/* XP BAR */
+.xp-bar-wrap{background:rgba(255,255,255,0.07);border-radius:14px;padding:10px 14px;
+  margin-bottom:12px;border:1px solid rgba(255,255,255,0.1)}
+.xp-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.xp-name{color:#fff;font-weight:800;font-size:13px}
+.xp-streak{color:#FB923C;font-size:13px;font-weight:800}
+.xp-track{background:rgba(255,255,255,0.1);border-radius:99px;height:8px;overflow:hidden}
+.xp-fill{background:linear-gradient(90deg,#FB923C,#EC4899);height:100%;border-radius:99px;
+  transition:width 0.6s ease}
+.xp-nums{color:rgba(255,255,255,0.35);font-size:11px;margin-top:4px;text-align:right;font-weight:700}
+
+/* PORTAL STRIP */
+.portal-strip{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.portal-strip::-webkit-scrollbar{display:none}
+.p-btn{flex-shrink:0;background:rgba(255,255,255,0.04);border:2px solid rgba(255,255,255,0.07);
+  border-radius:14px;padding:10px 8px;cursor:pointer;display:flex;flex-direction:column;
+  align-items:center;gap:5px;min-width:68px;transition:all 0.2s;position:relative}
+.p-btn.active{border-color:var(--pc);background:color-mix(in srgb,var(--pc) 15%,transparent)}
+.p-btn.locked{opacity:0.4;cursor:not-allowed}
+.p-btn .p-icon{font-size:24px;line-height:1}
+.p-btn .p-name{font-size:9px;font-weight:800;color:rgba(255,255,255,0.6);text-align:center;line-height:1.3}
+.p-btn.active .p-name{color:#fff}
+.p-dot{position:absolute;bottom:-3px;left:50%;transform:translateX(-50%);
+  width:6px;height:6px;border-radius:50%;background:var(--pc);display:none}
+.p-btn.active .p-dot{display:block}
+
+/* CHAT AREA */
+.chat-area{flex:1;overflow-y:auto;padding:16px;max-width:500px;margin:0 auto;width:100%}
+
+/* LEO INTRO CARD */
+.leo-card{border-radius:20px;padding:18px;margin-bottom:16px;display:flex;gap:14px;
+  align-items:flex-start;transition:all 0.3s}
+.leo-face-wrap{position:relative;flex-shrink:0}
+.leo-face{border-radius:50%;display:flex;align-items:center;justify-content:center;
+  transition:all 0.4s;border:3px solid rgba(255,255,255,0.3);position:relative;flex-shrink:0}
+.leo-face .face-emoji{display:block;line-height:1}
+.leo-face .face-extra{position:absolute;top:-8px;right:-4px}
+.leo-speaking-dot{position:absolute;bottom:-3px;right:-3px;background:#10B981;
+  border-radius:50%;width:18px;height:18px;display:none;align-items:center;
+  justify-content:center;font-size:9px}
+.leo-speaking-dot.active{display:flex}
+.leo-info{flex:1}
+.leo-title{font-family:"Fredoka One",sans-serif;font-size:17px;color:#fff;margin-bottom:3px}
+.leo-portal-tag{font-size:11px;font-weight:800;margin-bottom:6px}
+.leo-welcome{font-size:13px;color:rgba(255,255,255,0.6);font-weight:700;line-height:1.55}
+
+/* MESSAGES */
+.msg-row{display:flex;gap:8px;margin-bottom:12px;align-items:flex-end}
+.msg-row.user{flex-direction:row-reverse}
+.msg-face{flex-shrink:0}
+.msg-bubble{max-width:78%;border-radius:18px;padding:11px 15px;font-size:13px;
+  font-weight:700;line-height:1.6;word-wrap:break-word}
+.msg-bubble.leo-bubble{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.08);
+  border-radius:18px 18px 18px 4px}
+.msg-bubble.user-bubble{border-radius:18px 18px 4px 18px;color:#fff}
+.mission-btn{display:block;margin-top:10px;background:rgba(16,185,129,0.15);
+  border:1px solid #10B981;border-radius:10px;padding:8px 14px;color:#10B981;
+  font-size:12px;font-weight:900;cursor:pointer;width:100%;font-family:"Nunito",sans-serif;
+  transition:background 0.2s}
+.mission-btn:hover{background:rgba(16,185,129,0.25)}
+.mission-done-tag{margin-top:8px;color:#10B981;font-size:12px;font-weight:800}
+
+/* TYPING INDICATOR */
+.typing-row{display:flex;gap:8px;align-items:flex-end;margin-bottom:12px}
+.typing-bubble{background:rgba(255,255,255,0.07);border-radius:18px 18px 18px 4px;
+  padding:13px 16px;display:flex;gap:4px;align-items:center}
+.typing-dot{width:6px;height:6px;border-radius:50%;animation:bounce 0.6s infinite alternate}
+.typing-dot:nth-child(2){animation-delay:0.15s}
+.typing-dot:nth-child(3){animation-delay:0.3s}
+@keyframes bounce{from{transform:translateY(0)}to{transform:translateY(-5px)}}
+
+/* XP BURST */
+.xp-burst{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  font-family:"Fredoka One",sans-serif;font-size:48px;color:#FB923C;
+  text-shadow:0 0 30px rgba(251,146,60,0.6);pointer-events:none;z-index:999;
+  animation:xp-pop 1.2s ease forwards;display:none}
+@keyframes xp-pop{0%{opacity:0;transform:translate(-50%,-50%) scale(0.5)}
+  30%{opacity:1;transform:translate(-50%,-60%) scale(1.2)}
+  70%{opacity:1;transform:translate(-50%,-70%) scale(1)}
+  100%{opacity:0;transform:translate(-50%,-90%) scale(0.8)}}
+
+/* INPUT AREA */
+.input-area{background:rgba(8,8,15,0.97);backdrop-filter:blur(20px);
+  border-top:1px solid rgba(255,255,255,0.06);padding:14px 16px;flex-shrink:0}
+.input-inner{max-width:500px;margin:0 auto;display:flex;gap:10px;align-items:flex-end}
+.msg-input{flex:1;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);
+  border-radius:14px;padding:12px 15px;color:#fff;font-size:13px;font-weight:700;
+  resize:none;line-height:1.5;transition:border-color 0.2s;max-height:90px}
+.msg-input:focus{border-color:rgba(251,146,60,0.5)}
+.msg-input::placeholder{color:rgba(255,255,255,0.2);font-weight:700}
+.send-btn{width:46px;height:46px;border-radius:13px;border:none;
+  font-size:20px;cursor:pointer;flex-shrink:0;transition:all 0.2s;
+  display:flex;align-items:center;justify-content:center}
+.send-btn:disabled{background:rgba(255,255,255,0.07);cursor:not-allowed}
+.input-hint{text-align:center;margin-top:8px;color:rgba(255,255,255,0.18);font-size:10px;font-weight:700}
+
+/* MIC BUTTON */
+.mic-btn{width:46px;height:46px;border-radius:13px;border:1px solid rgba(255,255,255,0.15);
+  background:rgba(255,255,255,0.06);font-size:18px;cursor:pointer;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+.mic-btn.recording{background:rgba(239,68,68,0.2);border-color:#EF4444;animation:pulse-red 1s infinite}
+@keyframes pulse-red{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,0.4)}50%{box-shadow:0 0 0 8px rgba(239,68,68,0)}}
+
+/* PAYMENT POPUP */
+.popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;
+  display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)}
+.popup-overlay.active{display:flex}
+.popup-sheet{background:#12121F;border-radius:24px 24px 0 0;padding:28px 24px 36px;
+  width:100%;max-width:500px;border-top:1px solid rgba(255,255,255,0.1)}
+.popup-handle{width:40px;height:4px;background:rgba(255,255,255,0.2);border-radius:99px;
+  margin:0 auto 24px}
+.popup-title{font-family:"Fredoka One",sans-serif;font-size:24px;color:#fff;margin-bottom:6px}
+.popup-sub{font-size:13px;font-weight:700;color:rgba(255,255,255,0.4);margin-bottom:24px;line-height:1.6}
+.popup-price-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.popup-price{border-radius:16px;padding:18px;text-align:center;cursor:pointer;border:2px solid;transition:all 0.2s}
+.popup-price:hover{transform:translateY(-2px)}
+.popup-price-val{font-family:"Fredoka One",sans-serif;font-size:26px;margin-bottom:4px}
+.popup-price-label{font-size:10px;font-weight:900;letter-spacing:1px;text-transform:uppercase}
+.popup-close{width:100%;background:rgba(255,255,255,0.07);border:none;border-radius:12px;
+  padding:13px;color:rgba(255,255,255,0.4);font-size:13px;font-weight:800;cursor:pointer;
+  font-family:"Nunito",sans-serif}
+
+/* ── SARVAM KEY BAR ── */
+.sarvam-bar{background:rgba(16,185,129,0.06);border-bottom:1px solid rgba(16,185,129,0.15);
+  padding:8px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.sarvam-bar-label{font-size:10px;font-weight:900;color:#10B981;letter-spacing:1px;
+  text-transform:uppercase;white-space:nowrap}
+.sarvam-key-input{flex:1;background:rgba(255,255,255,0.06);border:1px solid rgba(16,185,129,0.3);
+  border-radius:8px;padding:7px 12px;color:#fff;font-size:12px;font-weight:700;
+  font-family:"Nunito",sans-serif}
+.sarvam-key-input::placeholder{color:rgba(255,255,255,0.2)}
+.sarvam-status{font-size:10px;font-weight:800;white-space:nowrap;color:rgba(255,255,255,0.3)}
+.sarvam-status.live{color:#10B981}
+
+</style>
+</head>
+<body>
+
+<!-- XP BURST -->
+<div class="xp-burst" id="xpBurst">+15 XP ⭐</div>
+
+<!-- ══ ONBOARDING SCREEN ══════════════════════════════════════════════════════ -->
+<div class="screen active" id="screen-onboard">
+  <div class="ob-bg-glow"></div>
+  <div class="ob-inner">
+    <div class="ob-dots">
+      <div class="ob-dot active" id="dot1"></div>
+      <div class="ob-dot idle" id="dot2"></div>
+      <div class="ob-dot idle" id="dot3"></div>
+    </div>
+
+    <!-- STEP 1: NAME -->
+    <div id="ob-step1">
+      <span class="ob-leo">🦁</span>
+      <h1 class="ob-h">Aapka Naam?</h1>
+      <p class="ob-sub">Leo wants to know your name!</p>
+      <input class="ob-input" id="nameInput" type="text" placeholder="Type your name here..." autocomplete="off"/>
+      <button class="btn-primary" onclick="goStep2()">That's my name! →</button>
+    </div>
+
+    <!-- STEP 2: AGE -->
+    <div id="ob-step2" style="display:none">
+      <span class="ob-leo" id="leoGreet">🦁</span>
+      <h1 class="ob-h" id="greetH">Hello!</h1>
+      <p class="ob-sub">Aapki age kya hai?</p>
+      <div class="age-grid" id="ageGrid">
+        <button class="age-btn" onclick="selAge(this,4)">4</button>
+        <button class="age-btn" onclick="selAge(this,5)">5</button>
+        <button class="age-btn" onclick="selAge(this,6)">6</button>
+        <button class="age-btn" onclick="selAge(this,7)">7</button>
+        <button class="age-btn" onclick="selAge(this,8)">8</button>
+        <button class="age-btn" onclick="selAge(this,9)">9</button>
+        <button class="age-btn" onclick="selAge(this,10)">10</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: BHASHA -->
+    <div id="ob-step3" style="display:none">
+      <span style="font-size:56px;display:block;margin-bottom:12px">🏠</span>
+      <h1 class="ob-h">Ghar ki Bhasha?</h1>
+      <p class="ob-sub">Leo will use your home language for endearments!</p>
+      <div class="bhasha-grid" id="bhashaGrid">
+        <button class="bhasha-btn sel" onclick="selBhasha(this,'Hindi')">Hindi</button>
+        <button class="bhasha-btn" onclick="selBhasha(this,'Tamil')">Tamil</button>
+        <button class="bhasha-btn" onclick="selBhasha(this,'Telugu')">Telugu</button>
+        <button class="bhasha-btn" onclick="selBhasha(this,'Malayalam')">Malayalam</button>
+        <button class="bhasha-btn" onclick="selBhasha(this,'Punjabi')">Punjabi</button>
+        <button class="bhasha-btn" onclick="selBhasha(this,'Bengali')">Bengali</button>
+        <button class="bhasha-btn" onclick="selBhasha(this,'Marathi')">Marathi</button>
+        <button class="bhasha-btn" onclick="selBhasha(this,'Kannada')">Kannada</button>
+        <button class="bhasha-btn" onclick="selBhasha(this,'Gujarati')">Gujarati</button>
+        <button class="bhasha-btn" onclick="selBhasha(this,'Odia')">Odia</button>
+        <button class="bhasha-btn" onclick="selBhasha(this,'Assamese')">Assamese</button>
+        <button class="bhasha-btn" onclick="selBhasha(this,'Maithili')">Maithili</button>
+      </div>
+      <button class="btn-primary" onclick="launchApp()">Meet Leo! 🦁</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ APP SCREEN ══════════════════════════════════════════════════════════════ -->
+<div class="screen" id="screen-app">
+
+  <!-- STATUS BAR -->
+  <div class="sarvam-bar">
+    <span class="sarvam-bar-label">🎙️ Sarvam Bulbul v2</span>
+    <span style="flex:1;font-size:11px;color:rgba(255,255,255,0.35);font-weight:700">Leo's Indian voice — live via proxy</span>
+    <span class="sarvam-status live" id="sarvamStatus">✅ Connected</span>
+  </div>
+
+  <!-- TOP BAR -->
+  <div class="app-top">
+    <div class="app-top-inner">
+      <!-- XP BAR -->
+      <div class="xp-bar-wrap">
+        <div class="xp-top">
+          <span class="xp-name" id="xpName">—</span>
+          <span class="xp-streak" id="xpStreak">🔥 1 day streak</span>
+        </div>
+        <div class="xp-track"><div class="xp-fill" id="xpFill" style="width:0%"></div></div>
+        <div class="xp-nums" id="xpNums">0 / 150 XP</div>
+      </div>
+      <!-- PORTAL STRIP -->
+      <div class="portal-strip" id="portalStrip"></div>
+    </div>
+  </div>
+
+  <!-- CHAT -->
+  <div class="chat-area" id="chatArea">
+    <!-- Leo intro card -->
+    <div class="leo-card" id="leoCard">
+      <div class="leo-face-wrap">
+        <div class="leo-face" id="leoFaceBig" style="width:72px;height:72px;font-size:28px">
+          <span class="face-emoji" id="lfbEmoji">😄</span>
+          <span class="face-extra" id="lfbExtra" style="font-size:16px">✨</span>
+        </div>
+        <div class="leo-speaking-dot" id="speakDot">🔊</div>
+      </div>
+      <div class="leo-info">
+        <div class="leo-title">Leo the Caretaker 🦁</div>
+        <div class="leo-portal-tag" id="leoPortalTag">🔍 Question Portal — FREE</div>
+        <div class="leo-welcome" id="leoWelcome">What are you curious about today?!</div>
+      </div>
+    </div>
+    <!-- Messages injected here -->
+    <div id="messages"></div>
+    <!-- Typing indicator (hidden) -->
+    <div class="typing-row" id="typingRow" style="display:none">
+      <div class="msg-face">
+        <div class="leo-face" style="width:36px;height:36px;font-size:14px;border:2px solid rgba(255,255,255,0.2)">
+          <span class="face-emoji">🤔</span>
+        </div>
+      </div>
+      <div class="typing-bubble">
+        <div class="typing-dot" style="background:#A78BFA"></div>
+        <div class="typing-dot" style="background:#A78BFA"></div>
+        <div class="typing-dot" style="background:#A78BFA"></div>
+      </div>
+    </div>
+    <div id="chatBottom"></div>
+  </div>
+
+  <!-- INPUT BAR -->
+  <div class="input-area">
+    <div class="input-inner">
+      <button class="mic-btn" id="micBtn" onclick="toggleMic()" title="Voice input">🎤</button>
+      <textarea class="msg-input" id="msgInput" rows="2"
+        placeholder='Ask Leo anything! e.g. "Why does a fan spin?"'
+        onkeydown="handleKey(event)"></textarea>
+      <button class="send-btn" id="sendBtn" onclick="handleSend()" disabled
+        style="background:rgba(255,255,255,0.07)">🦁</button>
+    </div>
+    <div class="input-hint" id="inputHint">🔊 Leo speaks aloud · ✅ tap after every mission · Bhasha: Hindi</div>
+  </div>
+</div>
+
+<!-- PAYMENT POPUP -->
+<div class="popup-overlay" id="payPopup" onclick="closePopup(event)">
+  <div class="popup-sheet">
+    <div class="popup-handle"></div>
+    <div class="popup-title">🔒 Unlock this Portal</div>
+    <div class="popup-sub" id="popupPortalName">Unlock Pattern Hunter to hunt shapes around your house!</div>
+    <div class="popup-price-row">
+      <div class="popup-price" style="border-color:rgba(251,146,60,0.4);background:rgba(251,146,60,0.06)"
+           onclick="showToast('Portal unlock coming soon!')">
+        <div class="popup-price-val" style="color:#FB923C">₹70</div>
+        <div class="popup-price-label" style="color:rgba(255,255,255,0.4)">This Portal / Month</div>
+      </div>
+      <div class="popup-price" style="border-color:rgba(16,185,129,0.4);background:rgba(16,185,129,0.06)"
+           onclick="showToast('Full access coming soon!')">
+        <div class="popup-price-val" style="color:#10B981">₹399</div>
+        <div class="popup-price-label" style="color:rgba(255,255,255,0.4)">All 10 Portals / Month</div>
+      </div>
+    </div>
+    <button class="popup-close" onclick="document.getElementById('payPopup').classList.remove('active')">
+      Maybe later
+    </button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" style="position:fixed;bottom:100px;left:50%;transform:translateX(-50%);
+  background:#1E1E30;border:1px solid rgba(255,255,255,0.15);border-radius:12px;
+  padding:10px 20px;color:#fff;font-size:13px;font-weight:800;z-index:300;
+  display:none;white-space:nowrap">Toast</div>
+
+<script>
+// ══ STATE ══════════════════════════════════════════════════════════════════════
+var state = {
+  childName:"", childAge:5, bhasha:"Hindi",
+  xp:0, streak:1, missionDone:false, loading:false,
+  activePortal:"question", messages:[], speaking:false,
+  lastMsgIdx:-1, recognition:null, recording:false
+};
+
+var LEVELS = [0,150,350,600,900,1300,1800,2500,3300,4500];
+var TITLES = ["Baby Explorer","Curious Cub","Question Master","Star Adventurer",
+              "Junior Leo","Galaxy Ranger","Wisdom Keeper","Diamond Guardian","Super Natkhat","Leo's Champion"];
+
+var ENDEARMENTS = {
+  Hindi:"beta", Tamil:"kanna", Telugu:"babu", Malayalam:"kutti",
+  Punjabi:"putt", Bengali:"shona", Marathi:"makda", Kannada:"magoo",
+  Gujarati:"dikra", Odia:"pua", Assamese:"mor xon", Maithili:"baua", English:"beta"
+};
+
+var PORTALS = [
+  {id:"question",icon:"🔍",name:"Question Portal",color:"#FB923C",free:true},
+  {id:"toystory",icon:"🧸",name:"Toy Story",color:"#EC4899",free:true},
+  {id:"glitch",  icon:"👾",name:"Story Machine",color:"#8B5CF6",free:true},
+  {id:"pattern", icon:"🔷",name:"Pattern Hunter",color:"#06B6D4",free:false},
+  {id:"sound",   icon:"🎵",name:"Sound Trainer",color:"#F59E0B",free:false},
+  {id:"word",    icon:"📝",name:"Word Capture",color:"#10B981",free:false},
+  {id:"bolega",  icon:"🗣️",name:"Leo Bolega!",color:"#F43F5E",free:false},
+  {id:"shloka",  icon:"🪔",name:"Shloka Spark",color:"#FB923C",free:false},
+  {id:"body",    icon:"💪",name:"Body Commander",color:"#10B981",free:false},
+  {id:"feeling", icon:"🫀",name:"Feeling Finder",color:"#EC4899",free:false}
+];
+
+var PLACEHOLDERS = {
+  question:'Ask Leo anything! e.g. "Why does a fan spin?" or "What\'s inside a pressure cooker?"',
+  toystory:'Tell Leo about your toy! e.g. "I have a red car" or "My teddy bear is very old"',
+  glitch:'Give Leo an IMPOSSIBLE combo! e.g. "Dadi riding a samosa!" or "A chapati on the phone!"'
+};
+
+var WELCOMES = {
+  question:null,
+  toystory:null,
+  glitch:null
+};
+
+var FACES = {
+  happy:   {bg:"#FFD93D",emoji:"😄",extra:"✨"},
+  thinking:{bg:"#A78BFA",emoji:"🤔",extra:"💭"},
+  excited: {bg:"#FB923C",emoji:"🤩",extra:"⭐"},
+  proud:   {bg:"#10B981",emoji:"😤",extra:"💪"},
+  dramatic:{bg:"#EC4899",emoji:"😱",extra:"⚡"}
+};
+
+// ══ ONBOARDING ════════════════════════════════════════════════════════════════
+function goStep2(){
+  var n = document.getElementById("nameInput").value.trim();
+  if(!n) { document.getElementById("nameInput").focus(); return; }
+  state.childName = n;
+  document.getElementById("ob-step1").style.display="none";
+  document.getElementById("ob-step2").style.display="block";
+  document.getElementById("greetH").textContent = n + "!! Leo aa gaya!!";
+  document.getElementById("dot1").className="ob-dot done";
+  document.getElementById("dot2").className="ob-dot active";
+  document.getElementById("dot3").className="ob-dot idle";
+}
+
+document.getElementById("nameInput").addEventListener("keydown", function(e){
+  if(e.key==="Enter") goStep2();
+});
+
+function selAge(btn, age){
+  state.childAge = age;
+  document.querySelectorAll(".age-btn").forEach(function(b){ b.classList.remove("sel"); });
+  btn.classList.add("sel");
+  setTimeout(function(){
+    document.getElementById("ob-step2").style.display="none";
+    document.getElementById("ob-step3").style.display="block";
+    document.getElementById("dot2").className="ob-dot done";
+    document.getElementById("dot3").className="ob-dot active";
+  }, 300);
+}
+
+function selBhasha(btn, lang){
+  state.bhasha = lang;
+  document.querySelectorAll(".bhasha-btn").forEach(function(b){ b.classList.remove("sel"); });
+  btn.classList.add("sel");
+}
+
+function launchApp(){
+  document.getElementById("screen-onboard").classList.remove("active");
+  document.getElementById("screen-app").classList.add("active");
+  initApp();
+}
+
+// ══ APP INIT ══════════════════════════════════════════════════════════════════
+function initApp(){
+  buildPortalStrip();
+  updateXP();
+  switchPortal("question");
+  document.getElementById("inputHint").textContent =
+    "🔊 Leo speaks aloud · ✅ tap after every mission · Bhasha: " + state.bhasha;
+  // init speech synthesis voices
+  if(window.speechSynthesis) window.speechSynthesis.getVoices();
+}
+
+function buildPortalStrip(){
+  var strip = document.getElementById("portalStrip");
+  strip.innerHTML = "";
+  PORTALS.forEach(function(p){
+    var btn = document.createElement("button");
+    btn.className = "p-btn" + (p.id===state.activePortal?" active":"") + (!p.free?" locked":"");
+    btn.style.setProperty("--pc", p.color);
+    btn.innerHTML = '<span class="p-icon">' + (p.free?p.icon:"🔒") + '</span>'
+      + '<span class="p-name">' + p.name + '</span>'
+      + '<div class="p-dot"></div>';
+    btn.onclick = function(){
+      if(!p.free){ openPayPopup(p); return; }
+      switchPortal(p.id);
+    };
+    strip.appendChild(btn);
+  });
+}
+
+function switchPortal(id){
+  state.activePortal = id;
+  state.messages = [];
+  state.missionDone = false;
+  state.lastMsgIdx = -1;
+  var p = PORTALS.find(function(x){ return x.id===id; });
+  var color = p ? p.color : "#FB923C";
+
+  // Update strip
+  document.querySelectorAll(".p-btn").forEach(function(btn, i){
+    btn.classList.remove("active");
+    if(PORTALS[i].id===id) btn.classList.add("active");
+    btn.style.setProperty("--pc", PORTALS[i].color);
+  });
+
+  // Leo card
+  var card = document.getElementById("leoCard");
+  card.style.background = "linear-gradient(135deg,"+color+"18,"+color+"08)";
+  card.style.border = "1px solid "+color+"33";
+
+  var welcomes = {
+    question: state.childName + "!! What are you curious about today?! Ask Leo anything — GO! 🔍",
+    toystory: state.childName + "!! Show Leo your most FORGOTTEN toy! Describe it! 🧸",
+    glitch:   state.childName + "!! Give Leo the MOST IMPOSSIBLE combo in the UNIVERSE!! 👾"
+  };
+  var tags = {
+    question:"🔍 Question Portal — FREE",
+    toystory:"🧸 Toy Story — FREE",
+    glitch:"👾 Story Machine — FREE"
+  };
+  document.getElementById("leoPortalTag").textContent = tags[id] || "🦁 Leo";
+  document.getElementById("leoPortalTag").style.color = color;
+  document.getElementById("leoWelcome").textContent = welcomes[id] || "Leo is ready! 🦁";
+
+  setLeoFace("happy");
+
+  // Input
+  var input = document.getElementById("msgInput");
+  input.placeholder = PLACEHOLDERS[id] || "Ask Leo anything...";
+  input.style.borderColor = color+"44";
+
+  // Send btn color
+  document.getElementById("sendBtn").style.background = "rgba(255,255,255,0.07)";
+
+  // Clear messages
+  document.getElementById("messages").innerHTML = "";
+  document.getElementById("typingRow").style.display = "none";
+}
+
+// ══ LEO FACE ══════════════════════════════════════════════════════════════════
+function setLeoFace(emotion, small){
+  var f = FACES[emotion] || FACES.happy;
+  // Big face
+  var big = document.getElementById("leoFaceBig");
+  big.style.background = f.bg;
+  big.style.boxShadow = "0 0 22px "+f.bg+"55";
+  document.getElementById("lfbEmoji").textContent = f.emoji;
+  document.getElementById("lfbExtra").textContent = f.extra;
+}
+
+function makeMiniLeoFace(emotion, size){
+  size = size||36;
+  var f = FACES[emotion]||FACES.happy;
+  return '<div class="leo-face" style="width:'+size+'px;height:'+size+'px;font-size:'
+    +Math.round(size*0.38)+'px;background:'+f.bg+';box-shadow:0 0 '
+    +Math.round(size*0.25)+'px '+f.bg+'55;border:2px solid rgba(255,255,255,0.25)">'
+    +'<span class="face-emoji">'+f.emoji+'</span>'
+    +'<span class="face-extra" style="position:absolute;top:-5px;right:-3px;font-size:'
+    +Math.round(size*0.22)+'px">'+f.extra+'</span></div>';
+}
+
+// ══ SEND / LEO API ════════════════════════════════════════════════════════════
+function handleKey(e){
+  if(e.key==="Enter" && !e.shiftKey){ e.preventDefault(); handleSend(); }
+}
+
+document.getElementById("msgInput").addEventListener("input", function(){
+  var val = this.value.trim();
+  var btn = document.getElementById("sendBtn");
+  var p = PORTALS.find(function(x){ return x.id===state.activePortal; });
+  var color = p?p.color:"#FB923C";
+  if(val && !state.loading){
+    btn.disabled=false;
+    btn.style.background="linear-gradient(135deg,"+color+","+color+"bb)";
+  } else {
+    btn.disabled=true;
+    btn.style.background="rgba(255,255,255,0.07)";
+  }
+});
+
+function handleSend(){
+  var val = document.getElementById("msgInput").value.trim();
+  if(!val || state.loading) return;
+  document.getElementById("msgInput").value="";
+  var btn = document.getElementById("sendBtn");
+  btn.disabled=true;
+  btn.style.background="rgba(255,255,255,0.07)";
+  callLeo(val);
+}
+
+var UNSAFE_WORDS = ["kill","hurt","knife","blood","naked","secret adult"];
+function isSafe(text){
+  var t = text.toLowerCase();
+  return !UNSAFE_WORDS.some(function(w){ return t.includes(w); });
+}
+
+function buildSystemPrompt(){
+  var n = state.childName;
+  var e = ENDEARMENTS[state.bhasha]||"beta";
+  var p = state.activePortal;
+  return "You are Leo the Caretaker — a warm, maternal AI persona for Indian children aged 4-6.\n"
+  +"CHILD'S NAME: "+n+" (use EXACTLY in EVERY response — never skip it)\n"
+  +"ENDEARMENT WORD: "+e+" (use naturally, 1-2 times per response)\n"
+  +"CURRENT PORTAL: "+p+"\n\n"
+  +"STRICT RULES:\n"
+  +"1. MAXIMUM 2-3 sentences per response. NEVER more.\n"
+  +"2. EVERY response MUST include: (a) a funny cartoon analogy, AND (b) a specific physical mission using household objects.\n"
+  +"3. Speak Indian English. Be dramatic, warm, silly. Use sound effects like WHOOOOSH!, ZING!, AREY!, DHOOM!.\n"
+  +"4. Start every response with the child's name said with ENERGY.\n"
+  +"5. Physical missions: run to something, count things, touch/find/build with household items.\n"
+  +"6. NEVER be robotic or formal.\n\n"
+  +"PORTAL SPECIFIC:\n"
+  +(p==="question"?"Answer curiosity questions about household objects with funny science analogies.\n":"")
+  +(p==="toystory"?"Create dramatic crossover storylines for their toy and assign a scene-building mission.\n":"")
+  +(p==="glitch"?"React with PANIC to impossible combos (Glitch Monster!). Assign math/counting mission to 'save reality'.\n":"")
+  +"\nSAFETY: If dangerous/inappropriate — say: '"+n+" "+e+", Leo needs to tell Mama/Papa about that! Let's ask them right now! 🦁'\n\n"
+  +"EXAMPLE for Question Portal — 'Why does a fan spin?':\n"
+  +"\""+n+", a fan is like a SUPERHERO with three arms — it spins SO fast to hug all the air in the room at once! 🦁 Quick "+e+", run to the nearest fan and COUNT how many arms it has — shout the number back to Leo!!\"";
+}
+
+async function callLeo(userMsg){
+  var n = state.childName;
+  var e = ENDEARMENTS[state.bhasha]||"beta";
+
+  if(!isSafe(userMsg)){
+    var safeMsg = n+" "+e+", Leo needs to tell Mama/Papa about that! Let's ask them together right now! 🦁";
+    addMessage("assistant", safeMsg);
+    speakText(safeMsg);
+    return;
+  }
+
+  state.loading = true;
+  addMessage("user", userMsg);
+  showTyping(true);
+  setLeoFace("thinking");
+
+  var history = state.messages.map(function(m){ return {role:m.role,content:m.content}; });
+
+  try {
+    var resp = await fetch("/api/leo",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({
+        model:"claude-sonnet-4-6",
+        max_tokens:1000,
+        system: buildSystemPrompt(),
+        messages: history
+      })
+    });
+    var data = await resp.json();
+    var reply = (data.content&&data.content[0]&&data.content[0].text)
+      ? data.content[0].text
+      : "Arey, Leo had a little glitch! Ask me again "+e+"! 🦁";
+
+    var lower = reply.toLowerCase();
+    var emotion = (lower.includes("run")||lower.includes("jump")||lower.includes("quick")||lower.includes("go!")) ? "excited"
+      : (lower.includes("genius")||lower.includes("amazing")||lower.includes("champion")) ? "proud"
+      : (lower.includes("arey")||lower.includes("panic")||lower.includes("glitch")) ? "dramatic"
+      : "happy";
+
+    setLeoFace(emotion);
+    showTyping(false);
+    addMessage("assistant", reply, emotion);
+    speakText(reply);
+    state.missionDone = false;
+  } catch(err){
+    showTyping(false);
+    var errMsg = "Oops! Leo's internet is wobbly — try again "+e+"! 🦁";
+    addMessage("assistant", errMsg);
+    setLeoFace("happy");
+  }
+  state.loading = false;
+}
+
+// ══ MESSAGES ══════════════════════════════════════════════════════════════════
+function addMessage(role, text, emotion){
+  var p = PORTALS.find(function(x){ return x.id===state.activePortal; });
+  var color = p?p.color:"#FB923C";
+  emotion = emotion||"happy";
+
+  state.messages.push({role:role,content:text});
+  var idx = state.messages.length-1;
+
+  var container = document.getElementById("messages");
+  var row = document.createElement("div");
+  row.className = "msg-row"+(role==="user"?" user":"");
+  row.id = "msg-"+idx;
+
+  if(role==="assistant"){
+    var faceWrap = document.createElement("div");
+    faceWrap.className = "msg-face";
+    faceWrap.innerHTML = makeMiniLeoFace(emotion, 36);
+    row.appendChild(faceWrap);
+  }
+
+  var bubble = document.createElement("div");
+  bubble.className = "msg-bubble "+(role==="user"?"user-bubble":"leo-bubble");
+  if(role==="user"){
+    bubble.style.background = "linear-gradient(135deg,"+color+","+color+"bb)";
+  } else {
+    bubble.style.borderColor = color+"22";
+    // Add mission done button on last leo message
+    bubble.innerHTML = escHtml(text);
+    if(role==="assistant"){
+      var mBtn = document.createElement("button");
+      mBtn.className = "mission-btn";
+      mBtn.textContent = "✅ Mission Done! (+15 XP)";
+      mBtn.id = "missionBtn-"+idx;
+      mBtn.onclick = function(){ missionDone(idx); };
+      bubble.appendChild(mBtn);
+    }
+  }
+  if(role==="user") bubble.textContent = text;
+
+  row.appendChild(bubble);
+  container.appendChild(row);
+
+  // Remove mission btn from previous leo messages
+  if(role==="assistant" && state.lastMsgIdx>=0){
+    var oldBtn = document.getElementById("missionBtn-"+state.lastMsgIdx);
+    if(oldBtn) oldBtn.remove();
+  }
+  if(role==="assistant") state.lastMsgIdx = idx;
+
+  scrollBottom();
+}
+
+function missionDone(idx){
+  var btn = document.getElementById("missionBtn-"+idx);
+  if(btn){
+    btn.remove();
+    var doneTag = document.createElement("div");
+    doneTag.className="mission-done-tag";
+    doneTag.textContent="✅ Mission completed! +15 XP!";
+    document.getElementById("msg-"+idx).querySelector(".leo-bubble").appendChild(doneTag);
+  }
+  state.xp += 15;
+  state.missionDone = true;
+  updateXP();
+  showXPBurst();
+  setLeoFace("proud");
+
+  // Leo celebration message
+  var e = ENDEARMENTS[state.bhasha]||"beta";
+  var celebrate = "YESSS "+state.childName+"!! Leo is SO proud of you!! You just earned 15 XP — you're becoming a REAL explorer "+e+"!! 🦁⭐";
+  setTimeout(function(){ addMessage("assistant", celebrate, "proud"); speakText(celebrate); }, 400);
+}
+
+function escHtml(s){
+  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+          .replace(/"/g,"&quot;").replace(/\n/g,"<br>");
+}
+
+function showTyping(show){
+  document.getElementById("typingRow").style.display = show?"flex":"none";
+  if(show) scrollBottom();
+}
+
+function scrollBottom(){
+  setTimeout(function(){ document.getElementById("chatBottom").scrollIntoView({behavior:"smooth"}); },50);
+}
+
+// ══ XP ════════════════════════════════════════════════════════════════════════
+function updateXP(){
+  var xp = state.xp;
+  var li = LEVELS.findIndex(function(v,i){ return xp<(LEVELS[i+1]||99999); });
+  var lvl = Math.max(0,li);
+  var next = LEVELS[lvl+1]||LEVELS[LEVELS.length-1];
+  var pct = Math.min(100,((xp-LEVELS[lvl])/(next-LEVELS[lvl]))*100);
+  document.getElementById("xpName").textContent = state.childName+" · Lv"+(lvl+1)+" "+TITLES[lvl];
+  document.getElementById("xpFill").style.width = pct+"%";
+  document.getElementById("xpNums").textContent = xp+" / "+next+" XP";
+}
+
+function showXPBurst(){
+  var el = document.getElementById("xpBurst");
+  el.style.display="block";
+  el.style.animation="none";
+  void el.offsetWidth;
+  el.style.animation="xp-pop 1.2s ease forwards";
+  setTimeout(function(){ el.style.display="none"; },1300);
+}
+
+// ══ SARVAM TTS VOICE ══════════════════════════════════════════════════════════
+// Sarvam Bulbul v2 — Indian TTS. Falls back to Web Speech if key missing.
+// Language code mapping for Sarvam
+var SARVAM_LANG = {
+  Hindi:"hi-IN", Tamil:"ta-IN", Telugu:"te-IN", Malayalam:"ml-IN",
+  Punjabi:"pa-IN", Bengali:"bn-IN", Marathi:"mr-IN", Kannada:"kn-IN",
+  Gujarati:"gu-IN", Odia:"or-IN", Assamese:"as-IN", Maithili:"hi-IN", English:"en-IN"
+};
+
+// Current audio element (to stop previous before playing new)
+var currentAudio = null;
+
+async function speakText(text){
+  // ── Sarvam via Vercel proxy ──────────────────────────────────────────────
+  {
+    try {
+      // Stop any playing audio
+      if(currentAudio){ currentAudio.pause(); currentAudio=null; }
+
+      // Strip emoji for cleaner TTS
+      var clean = text.replace(/[\u{1F300}-\u{1FFFF}\u{2600}-\u{27BF}]/gu,"").trim();
+      if(!clean) return;
+
+      var langCode = SARVAM_LANG[state.bhasha] || "hi-IN";
+
+      document.getElementById("speakDot").classList.add("active");
+      state.speaking = true;
+
+      var resp = await fetch("/api/sarvam", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          text: clean,
+          target_language_code: langCode,
+          speaker: "anushka",
+          pace: 0.85,
+          pitch: 0.1,
+          loudness: 1.3
+        })
+      });
+
+      if(!resp.ok){
+        var err = await resp.json().catch(function(){ return {}; });
+        console.warn("Sarvam TTS error:", resp.status, err);
+        document.getElementById("speakDot").classList.remove("active");
+        state.speaking = false;
+        fallbackSpeak(text); // fall back to browser TTS
+        return;
+      }
+
+      var data = await resp.json();
+      var b64 = data.audios && data.audios[0];
+      if(!b64){
+        fallbackSpeak(text);
+        return;
+      }
+
+      // Decode base64 WAV and play
+      var binary = atob(b64);
+      var bytes = new Uint8Array(binary.length);
+      for(var i=0;i<binary.length;i++) bytes[i]=binary.charCodeAt(i);
+      var blob = new Blob([bytes], {type:"audio/wav"});
+      var url = URL.createObjectURL(blob);
+      var audio = new Audio(url);
+      currentAudio = audio;
+      audio.onended = function(){
+        document.getElementById("speakDot").classList.remove("active");
+        state.speaking = false;
+        URL.revokeObjectURL(url);
+        currentAudio = null;
+      };
+      audio.onerror = function(){
+        document.getElementById("speakDot").classList.remove("active");
+        state.speaking = false;
+        currentAudio = null;
+      };
+      audio.play();
+      return;
+
+    } catch(e){
+      console.warn("Sarvam fetch failed:", e);
+      document.getElementById("speakDot").classList.remove("active");
+      state.speaking = false;
+      fallbackSpeak(text);
+    }
+}
+
+// Browser Web Speech fallback
+function fallbackSpeak(text){
+  if(!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  var clean = text.replace(/[\u{1F300}-\u{1FFFF}\u{2600}-\u{27BF}]/gu,"").trim();
+  var utter = new SpeechSynthesisUtterance(clean);
+  utter.rate = 0.88;
+  utter.pitch = 1.12;
+  utter.volume = 1;
+  var voices = window.speechSynthesis.getVoices();
+  var pick = voices.find(function(v){ return v.lang.includes("en-IN"); })
+          || voices.find(function(v){ return v.name.toLowerCase().includes("india"); })
+          || voices.find(function(v){ return v.name.toLowerCase().includes("female"); })
+          || voices[0];
+  if(pick) utter.voice = pick;
+  utter.onstart=function(){ document.getElementById("speakDot").classList.add("active"); state.speaking=true; };
+  utter.onend=function(){ document.getElementById("speakDot").classList.remove("active"); state.speaking=false; };
+  window.speechSynthesis.speak(utter);
+}
+
+// ══ MIC (Speech Recognition) ═════════════════════════════════════════════════
+function toggleMic(){
+  if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){
+    showToast("Voice input not supported in this browser");
+    return;
+  }
+  if(state.recording){
+    if(state.recognition) state.recognition.stop();
+    state.recording=false;
+    document.getElementById("micBtn").classList.remove("recording");
+    document.getElementById("micBtn").textContent="🎤";
+    return;
+  }
+  var SR = window.SpeechRecognition||window.webkitSpeechRecognition;
+  var rec = new SR();
+  rec.lang="en-IN";
+  rec.interimResults=false;
+  rec.maxAlternatives=1;
+  rec.onresult=function(e){
+    var t = e.results[0][0].transcript;
+    document.getElementById("msgInput").value=t;
+    document.getElementById("msgInput").dispatchEvent(new Event("input"));
+  };
+  rec.onend=function(){
+    state.recording=false;
+    document.getElementById("micBtn").classList.remove("recording");
+    document.getElementById("micBtn").textContent="🎤";
+  };
+  rec.onerror=function(){ showToast("Mic error — try typing instead"); };
+  state.recognition=rec;
+  rec.start();
+  state.recording=true;
+  document.getElementById("micBtn").classList.add("recording");
+  document.getElementById("micBtn").textContent="⏹️";
+}
+
+// ══ PAYMENT POPUP ════════════════════════════════════════════════════════════
+function openPayPopup(portal){
+  document.getElementById("popupPortalName").textContent =
+    "Unlock "+portal.name+" for just ₹70/month or get all 10 portals for ₹399/month!";
+  document.getElementById("payPopup").classList.add("active");
+}
+function closePopup(e){
+  if(e.target===document.getElementById("payPopup"))
+    document.getElementById("payPopup").classList.remove("active");
+}
+
+// ══ TOAST ════════════════════════════════════════════════════════════════════
+function showToast(msg){
+  var t=document.getElementById("toast");
+  t.textContent=msg; t.style.display="block";
+  setTimeout(function(){ t.style.display="none"; },2500);
+}
+
+
+
+// Load voices on init
+if(window.speechSynthesis){
+  window.speechSynthesis.onvoiceschanged=function(){ window.speechSynthesis.getVoices(); };
+}
+</script>
+</body>
+</html>
