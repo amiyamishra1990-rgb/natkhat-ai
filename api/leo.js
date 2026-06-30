@@ -1,6 +1,6 @@
 // api/leo.js — Vercel serverless function
-// Proxies Claude API calls for Natkhat AI prototype
-// Fixes CORS so Android Chrome can call Claude
+// Proxies Claude calls through AiCredits.in (OpenAI-compatible, INR billing)
+// Fixes CORS so Android Chrome can call Leo's brain
 
 export default async function handler(req, res) {
   // CORS headers — allow any origin for prototype testing
@@ -12,20 +12,42 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') { res.status(405).json({ error: 'Method not allowed' }); return; }
 
   try {
-    const { model, max_tokens, system, messages } = req.body;
+    // Incoming body uses Anthropic-style shape: { model, max_tokens, system, messages }
+    const { max_tokens, system, messages } = req.body;
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    // Build OpenAI-style messages array: system message first, then conversation
+    const openaiMessages = [
+      { role: 'system', content: system },
+      ...messages
+    ];
+
+    const response = await fetch('https://api.aicredits.in/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01'
+        'Authorization': `Bearer ${process.env.AICREDITS_API_KEY}`
       },
-      body: JSON.stringify({ model, max_tokens, system, messages })
+      body: JSON.stringify({
+        model: 'anthropic/claude-sonnet-4-6',
+        max_tokens: max_tokens || 1000,
+        messages: openaiMessages
+      })
     });
 
     const data = await response.json();
-    res.status(response.status).json(data);
+
+    if (!response.ok) {
+      console.error('AiCredits error:', data);
+      res.status(response.status).json({ error: 'AiCredits API error', detail: data });
+      return;
+    }
+
+    // Translate OpenAI-shape response → Anthropic-shape response
+    // so the frontend HTML doesn't need to change its parsing logic
+    const text = data.choices?.[0]?.message?.content || '';
+    res.status(200).json({
+      content: [{ type: 'text', text }]
+    });
 
   } catch (err) {
     console.error('Leo proxy error:', err);
