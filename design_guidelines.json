@@ -1,0 +1,190 @@
+{
+  "app_name": "Natkhat AI",
+  "personality": "4 Tactile / Playful DARK (User Overridden Palette)",
+  "personality_one_liner": "A dark, highly vibrant gamified dashboard built specifically for 4-6 year-old kids, focusing on chunky UI, magical glowing elements, and immediate emotional feedback.",
+  "color": {
+    "surface": "#08080F",
+    "onSurface": "#FFFFFF",
+    "surfaceSecondary": "#1A1A24",
+    "onSurfaceSecondary": "#E2E8F0",
+    "surfaceTertiary": "#272736",
+    "onSurfaceTertiary": "#CBD5E1",
+    "surfaceInverse": "#FFFFFF",
+    "onSurfaceInverse": "#08080F",
+    "brand": "#FB923C",
+    "brandPrimary": "#FB923C",
+    "onBrandPrimary": "#000000",
+    "brandSecondary": "#A78BFA",
+    "onBrandSecondary": "#000000",
+    "brandTertiary": "#EC4899",
+    "onBrandTertiary": "#FFFFFF",
+    "success": "#10B981",
+    "onSuccess": "#FFFFFF",
+    "warning": "#F59E0B",
+    "onWarning": "#000000",
+    "error": "#EF4444",
+    "onError": "#FFFFFF",
+    "info": "#06B6D4",
+    "onInfo": "#000000",
+    "border": "rgba(255,255,255,0.07)",
+    "borderStrong": "rgba(255,255,255,0.15)",
+    "divider": "rgba(255,255,255,0.07)"
+  },
+  "typography": {
+    "displayFontFamily": "Fredoka One",
+    "textFontFamily": "Nunito",
+    "scale": {
+      "sm": 12,
+      "base": 14,
+      "lg": 16,
+      "xl": 20,
+      "2xl": 24
+    }
+  },
+  "spacing": {
+    "rule": "Generous spacing. Pad elements heavily so it's touch-friendly for 4-6 year-olds.",
+    "xs": 4,
+    "sm": 8,
+    "md": 12,
+    "lg": 16,
+    "xl": 24,
+    "2xl": 32,
+    "3xl": 48
+  },
+  "radius_tokens": {
+    "sm": 6,
+    "md": 14,
+    "lg": 20,
+    "pill": 999
+  },
+  "shadow_tier": "0",
+  "navigation": "bottom_tabs",
+  "icon_set": "Phosphor",
+  "glassmorphism": {
+    "enabled": "true",
+    "do's": [
+      "Use blur extensively on bottom tabs, floating modal sheets, and the locked portal overlays",
+      "Pair blur with strong neon borders and glowing elements to match the dark theme"
+    ],
+    "dont's": [
+      "Don't use glass on core buttons (Continue, Play); these should be high-contrast vibrant gradients"
+    ]
+  },
+  "platform_libraries": {
+    "glass": {
+      "ios": "expo-glass-effect",
+      "android": "expo-blur",
+      "low_end_android_fallback": "solid surfaceSecondary"
+    },
+    "image": "expo-image",
+    "blur": "expo-blur",
+    "bottom_sheet": "@gorhom/bottom-sheet",
+    "animation": "react-native-reanimated",
+    "gesture": "react-native-gesture-handler"
+  },
+  "screens": [
+    {
+      "name": "Splash Screen",
+      "purpose": "A magical intro featuring Leo to hook the child instantly.",
+      "states": {
+        "loading": "Full screen glow loop around Leo",
+        "empty": "N/A",
+        "error": "N/A"
+      },
+      "layout": "Full-bleed abstract background with the animated Leo character growing from small to large, followed by a confetti burst and tap-nose interaction."
+    },
+    {
+      "name": "Parent Login",
+      "purpose": "Secure gateway for parents before handing the phone to the child.",
+      "states": {
+        "loading": "Spinner in CTA button",
+        "empty": "Clean phone entry format",
+        "error": "Red inline text below input"
+      },
+      "layout": "Single column. Clean layout over dark background. Top section has logo, middle is the input, and bottom sticky CTA."
+    },
+    {
+      "name": "Child Profile Setup",
+      "purpose": "Capture the child's info playfully.",
+      "states": {
+        "loading": "Spinner",
+        "empty": "Empty input fields",
+        "error": "Vibrate animation on missed fields"
+      },
+      "layout": "Large tactile bubbles for age selection. 12 language bhasha selectors in a grid layout (2-col or 3-col based on screen width)."
+    },
+    {
+      "name": "Home Screen",
+      "purpose": "The main hub mapping the child's learning journey and portals.",
+      "states": {
+        "loading": "Skeleton of the 2-col portal grid",
+        "empty": "Illustration of sleeping Leo telling to wake up",
+        "error": "Error block with playful 'Oops!' retry button"
+      },
+      "layout": "Dashboard-first approach. Top bar shows XP bar (track rgba(255,255,255,0.1), fill gradient FB923C→EC4899), level title, and streak flame. Below, a 2-col modular grid of 10 portal cards. Cards have dark bg, border rgba(255,255,255,0.07), radius 20px. Free portals feature 'FREE' badge. Locked portals feature 🔒 overlay and 'PAID' badge."
+    },
+    {
+      "name": "Portal Session UI",
+      "purpose": "The core educational interaction layer with Leo and missions.",
+      "states": {
+        "loading": "Animated dots",
+        "empty": "N/A",
+        "error": "N/A"
+      },
+      "layout": "Camera/voice input view occupying the main area, with Leo bobbing continuously on the screen. Generous bottom area for mission instructions and high-contrast primary actions."
+    },
+    {
+      "name": "Payment Popup Sheet",
+      "purpose": "Convert free users to premium when hitting a locked portal.",
+      "states": {
+        "loading": "Loading plan details",
+        "empty": "N/A",
+        "error": "Failed to load pricing"
+      },
+      "layout": "Bottom sheet modal popping over the home screen. Glassmorphic header, high-contrast typography emphasizing value, and a sticky gradient payment button at the bottom."
+    }
+  ],
+  "images": {
+    "leo_mascot": {
+      "url": "https://images.unsplash.com/photo-1760931969401-9bd6ee902798?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Nzh8MHwxfHNlYXJjaHwxfHxjdXRlJTIwM2QlMjBnbG93aW5nJTIwcm9ib3QlMjBmYWNlJTIwZGFyayUyMGJhY2tncm91bmR8ZW58MHx8fHwxNzgyODk2Nzc1fDA&ixlib=rb-4.1.0&q=85",
+      "alt": "Leo glowing robot face"
+    },
+    "splash_bg": {
+      "url": "https://images.unsplash.com/photo-1677784976154-816c3ceca511?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NzR8MHwxfHNlYXJjaHwxfHxhYnN0cmFjdCUyMG5lb24lMjBwYXJ0aWNsZXMlMjBkYXJrJTIwYmFja2dyb3VuZHxlbnwwfHx8fDE3ODI4OTY3OTN8MA&ixlib=rb-4.1.0&q=85",
+      "alt": "Abstract neon particles"
+    },
+    "portal_question": {
+      "url": "https://images.unsplash.com/photo-1599508704512-2f19efd1e35f?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMjV8MHwxfHNlYXJjaHwxfHwzZCUyMGdsb3dpbmclMjBxdWVzdGlvbiUyMG1hcmslMjBkYXJrJTIwYmFja2dyb3VuZHxlbnwwfHx8fDE3ODI4OTY3OTN8MA&ixlib=rb-4.1.0&q=85",
+      "alt": "Glowing question mark"
+    },
+    "portal_toy_story": {
+      "url": "https://images.unsplash.com/photo-1753290068896-12915c9bc8fb?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMzl8MHwxfHNlYXJjaHwxfHxjb2xvcmZ1bCUyMHRveSUyMGJsb2NrcyUyMGRhcmslMjBiYWNrZ3JvdW5kfGVufDB8fHx8MTc4Mjg5Njc3NXww&ixlib=rb-4.1.0&q=85",
+      "alt": "Toy blocks"
+    },
+    "portal_story_machine": {
+      "url": "https://images.unsplash.com/photo-1595272407091-3a74aac8090b?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDN8MHwxfHNlYXJjaHwxfHxtYWdpY2FsJTIwZ2xvd2luZyUyMHN0b3J5JTIwYm9vayUyMGRhcmslMjBiYWNrZ3JvdW5kfGVufDB8fHx8MTc4Mjg5Njc3NXww&ixlib=rb-4.1.0&q=85",
+      "alt": "Magical story book"
+    },
+    "portal_bhasha": {
+      "url": "https://images.unsplash.com/photo-1778148802822-f674cda7c4c0?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMzJ8MHwxfHNlYXJjaHwxfHwzZCUyMGdsb3dpbmclMjBsZXR0ZXJzJTIwYWxwaGFiZXQlMjBkYXJrJTIwYmFja2dyb3VuZHxlbnwwfHx8fDE3ODI4OTY3OTN8MA&ixlib=rb-4.1.0&q=85",
+      "alt": "3D glowing alphabet letters"
+    }
+  },
+  "haptics": {
+    "portal_tap": "impactLight",
+    "level_up": "notificationSuccess",
+    "leo_tap": "impactMedium",
+    "mission_complete": "notificationSuccess",
+    "locked_portal_tap": "notificationWarning"
+  },
+  "instructions_to_main_agent": [
+    "Strictly follow the user's color tokens: #08080F for the main background. Use the defined hex codes for accents.",
+    "Implement the exact card border style: rgba(255,255,255,0.07) with 20px radius.",
+    "Buttons must have a linear-gradient(135deg, primaryColor, darkerShade) with 14px radius.",
+    "Ensure the XP bar uses an rgba(255,255,255,0.1) track with a FB923C to EC4899 fill.",
+    "Use Fredoka One for headings and Nunito for body copy as mandated.",
+    "Ensure touch targets are extra large and well-padded to accommodate 4-6 year-old kids.",
+    "Use React Native Reanimated heavily for Leo's 5 emotion states, face bobbing, XP burst, level-ups, and confetti.",
+    "Implement the Home Screen portal grid exactly as a 2-column list, incorporating locked overlays (🔒 + PAID) and FREE badges seamlessly."
+  ]
+}
