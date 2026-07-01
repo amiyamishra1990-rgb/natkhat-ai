@@ -25,6 +25,8 @@ import Animated, {
 
 import LeoFace from '@/src/components/LeoFace';
 import LevelUpModal from '@/src/components/LevelUpModal';
+import ToyPrimer from '@/src/components/ToyPrimer';
+import GlitchPrimer from '@/src/components/GlitchPrimer';
 import { colors, font, radius, spacing, LeoEmotion } from '@/src/theme';
 import { api } from '@/src/lib/api';
 import { getChild, saveChild } from '@/src/lib/session';
@@ -55,11 +57,7 @@ const PORTAL_MAP: Record<string, Portal & { prompts: string[] }> = {
     tagline: 'Bring toys to life!',
     free: true,
     xp: 20,
-    prompts: [
-      'My teddy bear wants an adventure!',
-      'My red car needs a superhero mission!',
-      'My doll wants to be a chef!',
-    ],
+    prompts: [],
   },
   glitch: {
     id: 'glitch',
@@ -69,11 +67,7 @@ const PORTAL_MAP: Record<string, Portal & { prompts: string[] }> = {
     tagline: 'Impossible combos!',
     free: true,
     xp: 25,
-    prompts: [
-      'Dadi flying on a samosa!',
-      'An elephant playing cricket on the moon!',
-      'A tomato singing in a school!',
-    ],
+    prompts: [],
   },
 };
 
@@ -105,10 +99,13 @@ export default function PortalSession() {
       const c = await getChild();
       if (!c) return router.replace('/login');
       setChild(c);
-      // Leo intro line for the portal
-      const intro = `${c.child_name}!! ${portal.emoji} Welcome to ${portal.name}!! ${portal.tagline} Ask me anything or tap a suggestion below! 🦁`;
-      setTurns([{ role: 'assistant', content: intro }]);
-      setEmotion('excited');
+      const intros: Record<string, string> = {
+        question: `${c.child_name}!! ${portal.emoji} Welcome to Question Portal!! Ask me ANYTHING and I'll tell you a funny story + a mission! 🦁`,
+        toystory: `${c.child_name}!! ${portal.emoji} Point your camera at a toy — OR pick one below! Leo will make a WILD crossover story just for you! 🎬`,
+        glitch: `${c.child_name}!! ${portal.emoji} DANGER!! Leo needs an IMPOSSIBLE combo — something that CAN'T happen — QUICK before reality glitches!! ⚡`,
+      };
+      setTurns([{ role: 'assistant', content: intros[portal.id] ?? intros.question }]);
+      setEmotion(portal.id === 'glitch' ? 'dramatic' : 'excited');
     })();
   }, [id]);
 
@@ -300,8 +297,8 @@ export default function PortalSession() {
             </View>
           )}
 
-          {/* Suggested prompts on first load */}
-          {turns.length <= 1 && (
+          {/* Portal-specific primer on first turn */}
+          {turns.length <= 1 && portal.id === 'question' && (
             <View style={styles.promptsWrap}>
               <Text style={styles.promptsLabel}>Try one of these!</Text>
               <View style={styles.promptsRow}>
@@ -318,6 +315,24 @@ export default function PortalSession() {
               </View>
             </View>
           )}
+          {turns.length <= 1 && portal.id === 'toystory' && (
+            <ToyPrimer
+              onPick={(toy) =>
+                send(
+                  `My toy is a ${toy}! Tell me an EPIC crossover story just about my ${toy}, and give me a build-a-scene mission using pillows or books!`,
+                )
+              }
+            />
+          )}
+          {turns.length <= 1 && portal.id === 'glitch' && (
+            <GlitchPrimer
+              onSubmit={(combo) =>
+                send(
+                  `GLITCH MONSTER!! Reality is breaking!! Impossible combo: "${combo}" — PANIC and give me a specific counting/math mission to save reality!`,
+                )
+              }
+            />
+          )}
 
           {/* Mission action */}
           {missionState === 'awaiting' && (
@@ -332,16 +347,34 @@ export default function PortalSession() {
                 end={{ x: 1, y: 1 }}
                 style={styles.missionGrad}
               >
-                <Text style={styles.missionText}>✅ I did the mission!</Text>
+                <Text style={styles.missionText}>
+                  {portal.id === 'toystory'
+                    ? '🏗️ I built the scene!'
+                    : portal.id === 'glitch'
+                      ? '🛡️ REALITY SAVED!'
+                      : '✅ I did the mission!'}
+                </Text>
                 <Text style={styles.missionSub}>Earn +{portal.xp} XP</Text>
               </LinearGradient>
             </Pressable>
           )}
           {missionState === 'done' && (
             <View style={styles.doneCard}>
-              <Text style={styles.doneEmoji}>🎉</Text>
-              <Text style={styles.doneText}>Amazing! Leo is so proud of you!</Text>
-              <Text style={styles.doneSub}>Ask another question or head home.</Text>
+              <Text style={styles.doneEmoji}>
+                {portal.id === 'toystory' ? '🎬' : portal.id === 'glitch' ? '🌟' : '🎉'}
+              </Text>
+              <Text style={styles.doneText}>
+                {portal.id === 'toystory'
+                  ? 'WOW! Your toy is a superstar!'
+                  : portal.id === 'glitch'
+                    ? 'REALITY SAVED! You are a GENIUS!'
+                    : 'Amazing! Leo is so proud of you!'}
+              </Text>
+              <Text style={styles.doneSub}>
+                {portal.id === 'glitch'
+                  ? 'Try another impossible combo?'
+                  : 'Ask another question or head home.'}
+              </Text>
             </View>
           )}
         </ScrollView>
@@ -351,7 +384,13 @@ export default function PortalSession() {
           <TextInput
             value={input}
             onChangeText={setInput}
-            placeholder={`Ask Leo, ${child.child_name}…`}
+            placeholder={
+              portal.id === 'toystory'
+                ? `Tell Leo about your toy…`
+                : portal.id === 'glitch'
+                  ? `More impossible combos…`
+                  : `Ask Leo, ${child.child_name}…`
+            }
             placeholderTextColor={colors.onSurfaceFaint}
             style={styles.input}
             testID="portal-input"
@@ -374,7 +413,9 @@ export default function PortalSession() {
               end={{ x: 1, y: 1 }}
               style={styles.sendBtn}
             >
-              <Text style={styles.sendText}>Ask</Text>
+              <Text style={styles.sendText}>
+                {portal.id === 'glitch' ? 'ZAP!' : portal.id === 'toystory' ? 'Go!' : 'Ask'}
+              </Text>
             </LinearGradient>
           </Pressable>
         </View>

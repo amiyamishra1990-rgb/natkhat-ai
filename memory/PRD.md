@@ -50,13 +50,19 @@ Components:
 - New route: `/portal/[id]` (dynamic portal session for question / toystory / glitch)
 - Reusable components: `PaymentSheet`, `LevelUpModal`
 
+## Iteration 3 additions (delivered)
+- **Portal 2 — Toy Story**: `ToyPrimer` component with pulsing "📷 Camera scan" gradient card + 3×3 emoji toy grid (Teddy Bear, Red Car, Doll, Robot, Dinosaur, Ball, Blocks, Airplane, Elephant). Tapping a toy sends a portal-flavored prompt to Leo asking for an EPIC crossover story + build-a-scene mission with pillows/books. Backend system prompt updated per-portal so Leo returns exactly a 2-sentence crossover story + specific build mission.
+- **Portal 3 — Story Machine (Glitch Monster)**: `GlitchPrimer` component opens with a full-width **REALITY GLITCH!!** red alarm (shake + flash + siren emoji, fades after ~2.6 s). Below: custom combo input + 6 emoji-tagged impossible combos ("Dadi flying on a samosa!", "elephant playing cricket on the moon", etc). Backend system prompt keys Leo to PANIC dramatically and assign a specific counting/math mission to "save reality".
+- Portal-specific mission-done label + celebration copy: Toy Story → "🏗️ I built the scene!" → "🎬 WOW! Your toy is a superstar!"; Story Machine → "🛡️ REALITY SAVED!" → "🌟 REALITY SAVED! You are a GENIUS!"
+- Portal-specific input placeholder + send button label per portal (Ask / Go! / ZAP!)
+- Backend `leo_system_prompt` now emits portal-specific rules for Toy Story, Story Machine, and Question Portal
+
 ## What's next (deferred)
-- Portal-specific mechanics for Toy Story (camera scan) and Story Machine (glitch alarm + counting)
 - Voice mic input + Sarvam TTS playback (needs SARVAM_API_KEY)
+- Real camera scan for Toy Story (needs GOOGLE_CLOUD_VISION_KEY + AWS_ACCESS_KEY_ID)
 - Bottom-tab navigation shell (Home / Portals / Bhasha / Parent)
 - Parent Dashboard (activity feed, mood heatmap, radar, verification inbox, badges, safety alerts)
 - FCM push notifications (Emergent-managed)
 - Feeling Finder + mood diary UI
-- Camera pipelines (Rekognition → Vision) — needs AWS + Google keys
 - Real Firebase Phone OTP at native build time
 - Razorpay live checkout
