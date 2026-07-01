@@ -12,7 +12,8 @@
       "supportsTablet": true,
       "infoPlist": {
         "NSMicrophoneUsageDescription": "Talk with Leo using your voice",
-        "NSCameraUsageDescription": "Scan toys to unlock stories with Leo"
+        "NSCameraUsageDescription": "Scan toys to unlock stories with Leo",
+        "NSFaceIDUsageDescription": "Unlock the Parent Dashboard with Face ID"
       }
     },
     "android": {

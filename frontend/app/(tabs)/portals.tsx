@@ -10,17 +10,15 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import LeoFace from '@/src/components/LeoFace';
 import PaymentSheet from '@/src/components/PaymentSheet';
 import PortalCard, { Portal } from '@/src/components/PortalCard';
-import XPBar from '@/src/components/XPBar';
 import { api } from '@/src/lib/api';
 import { getChild, saveChild } from '@/src/lib/session';
 import { colors, font, spacing } from '@/src/theme';
 
 const BASE = process.env.EXPO_PUBLIC_BACKEND_URL || '';
 
-export default function Home() {
+export default function Portals() {
   const router = useRouter();
   const [child, setChild] = useState<any>(null);
   const [portals, setPortals] = useState<Portal[]>([]);
@@ -97,7 +95,7 @@ export default function Home() {
 
   if (loading) {
     return (
-      <View style={styles.loader} testID="home-loader">
+      <View style={styles.loader} testID="portals-loader">
         <ActivityIndicator color={colors.brand} size="large" />
       </View>
     );
@@ -108,19 +106,9 @@ export default function Home() {
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
-      <View style={styles.header} testID="home-header">
-        <View style={styles.headerTop}>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.hi} numberOfLines={1}>
-              Hi, {child?.child_name} 🦁
-            </Text>
-            <Text style={styles.sub}>
-              🔥 {child?.streak_days ?? 1} day streak · {child?.bhasha ?? 'Hindi'}
-            </Text>
-          </View>
-          <LeoFace size={54} emotion="happy" bob={false} />
-        </View>
-        <XPBar xp={child?.xp ?? 0} levelInfo={child?.level_info} />
+      <View style={styles.header} testID="portals-header">
+        <Text style={styles.title}>All Portals 🎮</Text>
+        <Text style={styles.subtitle}>Pick one to play with Leo!</Text>
       </View>
 
       <ScrollView
@@ -137,11 +125,6 @@ export default function Home() {
           />
         }
       >
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Portals</Text>
-          <Text style={styles.sectionHint}>Tap to play with Leo!</Text>
-        </View>
-
         {pairs.map((row, idx) => (
           <View style={styles.row} key={idx}>
             {row.map((portal) => (
@@ -155,10 +138,6 @@ export default function Home() {
             {row.length === 1 && <View style={{ flex: 1 }} />}
           </View>
         ))}
-
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>Screen time? Nahi beta — Room time!</Text>
-        </View>
       </ScrollView>
 
       <PaymentSheet
@@ -174,51 +153,16 @@ export default function Home() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.surface },
-  loader: {
-    flex: 1,
-    backgroundColor: colors.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  loader: { flex: 1, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' },
   header: {
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.md,
+    paddingTop: spacing.sm,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
-    backgroundColor: colors.surface,
   },
-  headerTop: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: spacing.sm,
-    marginBottom: spacing.sm,
-  },
-  hi: {
-    color: colors.onSurface,
-    fontFamily: font.display,
-    fontSize: 24,
-  },
-  sub: {
-    color: colors.onSurfaceMuted,
-    fontFamily: font.body,
-    fontSize: 12,
-    marginTop: 2,
-  },
+  title: { color: colors.onSurface, fontFamily: font.display, fontSize: 24 },
+  subtitle: { color: colors.onSurfaceMuted, fontFamily: font.body, fontSize: 12, marginTop: 2 },
   scroll: { padding: spacing.lg, paddingBottom: spacing.xl2 },
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    justifyContent: 'space-between',
-    marginBottom: spacing.md,
-  },
-  sectionTitle: { color: colors.onSurface, fontFamily: font.display, fontSize: 22 },
-  sectionHint: { color: colors.onSurfaceFaint, fontFamily: font.body, fontSize: 12 },
   row: { flexDirection: 'row', gap: spacing.md, marginBottom: spacing.md },
-  footer: { marginTop: spacing.xl, alignItems: 'center' },
-  footerText: {
-    color: colors.onSurfaceMuted,
-    fontFamily: font.body,
-    fontSize: 12,
-    fontStyle: 'italic',
-  },
 });

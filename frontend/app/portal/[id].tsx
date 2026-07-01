@@ -34,7 +34,17 @@ import { getChild, saveChild } from '@/src/lib/session';
 import { speakLeo, stopLeoVoice } from '@/src/lib/leoVoice';
 import type { Portal } from '@/src/components/PortalCard';
 
-const PORTAL_MAP: Record<string, Portal & { prompts: string[] }> = {
+type PortalConfig = Portal & {
+  prompts: string[];
+  initialEmotion: LeoEmotion;
+  placeholder: (childName: string) => string;
+  missionLabel: string;
+  doneEmoji: string;
+  doneText: string;
+  doneSub: string;
+};
+
+const PORTAL_MAP: Record<string, PortalConfig> = {
   question: {
     id: 'question',
     name: 'Question Portal',
@@ -50,6 +60,12 @@ const PORTAL_MAP: Record<string, Portal & { prompts: string[] }> = {
       'Why do stars twinkle?',
       'Why do we sneeze?',
     ],
+    initialEmotion: 'excited',
+    placeholder: (name) => `Ask Leo, ${name}…`,
+    missionLabel: '✅ I did the mission!',
+    doneEmoji: '🎉',
+    doneText: 'Amazing! Leo is so proud of you!',
+    doneSub: 'Ask another question or head home.',
   },
   toystory: {
     id: 'toystory',
@@ -60,6 +76,12 @@ const PORTAL_MAP: Record<string, Portal & { prompts: string[] }> = {
     free: true,
     xp: 20,
     prompts: [],
+    initialEmotion: 'excited',
+    placeholder: () => `Tell Leo about your toy…`,
+    missionLabel: '🏗️ I built the scene!',
+    doneEmoji: '🎬',
+    doneText: 'WOW! Your toy is a superstar!',
+    doneSub: 'Ask another question or head home.',
   },
   glitch: {
     id: 'glitch',
@@ -70,6 +92,166 @@ const PORTAL_MAP: Record<string, Portal & { prompts: string[] }> = {
     free: true,
     xp: 25,
     prompts: [],
+    initialEmotion: 'dramatic',
+    placeholder: () => `More impossible combos…`,
+    missionLabel: '🛡️ REALITY SAVED!',
+    doneEmoji: '🌟',
+    doneText: 'REALITY SAVED! You are a GENIUS!',
+    doneSub: 'Try another impossible combo?',
+  },
+  pattern: {
+    id: 'pattern',
+    name: 'Pattern Hunter',
+    emoji: '🔷',
+    color: '#06B6D4',
+    tagline: 'Shape hunt!',
+    free: false,
+    xp: 20,
+    prompts: [
+      'Start my Shape Hunt!',
+      'Hunt for circles!',
+      'Hunt for squares!',
+      'Hunt for triangles!',
+      'Hunt for stars!',
+    ],
+    initialEmotion: 'excited',
+    placeholder: () => `Tell Leo you're ready…`,
+    missionLabel: '🔷 Found all 3 shapes!',
+    doneEmoji: '🏆',
+    doneText: "AMAZING! You're a Shape Hunting CHAMPION!",
+    doneSub: 'Hunt for another shape?',
+  },
+  sound: {
+    id: 'sound',
+    name: 'Sound Trainer',
+    emoji: '🐯',
+    color: '#F59E0B',
+    tagline: 'Train Bubbles!',
+    free: false,
+    xp: 20,
+    prompts: [
+      'I made a ROAR sound!',
+      'I made a squeaky sound!',
+      'I made a whoosh sound!',
+      'I made a boom sound!',
+      'I made my own secret sound!',
+    ],
+    initialEmotion: 'happy',
+    placeholder: () => `Describe your secret sound…`,
+    missionLabel: '🐯 Bubbles learned my sound!',
+    doneEmoji: '🐯',
+    doneText: 'ROAR! Bubbles LOVES your new sound!',
+    doneSub: 'Teach Bubbles another sound?',
+  },
+  word: {
+    id: 'word',
+    name: 'Word Capture',
+    emoji: '🔤',
+    color: '#10B981',
+    tagline: 'Trap the letters!',
+    free: false,
+    xp: 15,
+    prompts: [
+      'I found the letter A!',
+      'I found the letter B!',
+      'I found a word starting with C!',
+      'I captured a letter!',
+      'Show me a phonics mission!',
+    ],
+    initialEmotion: 'thinking',
+    placeholder: () => `Tell Leo which letter you found…`,
+    missionLabel: '🔤 I trapped the letter!',
+    doneEmoji: '📖',
+    doneText: 'Letter TRAPPED! Leo is impressed!',
+    doneSub: 'Hunt for another letter?',
+  },
+  bolega: {
+    id: 'bolega',
+    name: 'Leo Bolega!',
+    emoji: '🗣️',
+    color: '#F43F5E',
+    tagline: 'English speaking daily!',
+    free: false,
+    xp: 20,
+    prompts: [
+      "Give me today's sentence!",
+      "Let's whisper it!",
+      "Let's shout it!",
+      "Let's say it slow!",
+    ],
+    initialEmotion: 'excited',
+    placeholder: () => `Say the sentence back to Leo…`,
+    missionLabel: '🗣️ I said it 3 ways!',
+    doneEmoji: '🎤',
+    doneText: 'PERFECT echo, superstar speaker!',
+    doneSub: "Try tomorrow's sentence?",
+  },
+  shloka: {
+    id: 'shloka',
+    name: 'Shloka Spark',
+    emoji: '🕉️',
+    color: '#FB923C',
+    tagline: 'Little wisdom stories!',
+    free: false,
+    xp: 25,
+    prompts: [
+      'Tell me a story about Hanuman!',
+      'Tell me a story about Ganesha!',
+      'Tell me a wisdom story!',
+      'What can I learn today?',
+    ],
+    initialEmotion: 'proud',
+    placeholder: () => `Ask Leo for a wisdom story…`,
+    missionLabel: '🕉️ I did my values mission!',
+    doneEmoji: '🙏',
+    doneText: 'Wonderful! Your heart just grew bigger!',
+    doneSub: 'Hear another wisdom story?',
+  },
+  body: {
+    id: 'body',
+    name: 'Body Commander',
+    emoji: '💪',
+    color: '#10B981',
+    tagline: 'Superhero moves!',
+    free: false,
+    xp: 25,
+    prompts: [
+      'Give me a superhero workout!',
+      'I am 4-6 years old!',
+      'I am 7-10 years old!',
+      'Ready for my mission, Commander!',
+    ],
+    initialEmotion: 'excited',
+    placeholder: () => `Tell Leo your age or say GO…`,
+    missionLabel: '💪 Circuit complete!',
+    doneEmoji: '🦸',
+    doneText: 'SUPERHERO STATUS: UNLOCKED!',
+    doneSub: 'Run another circuit?',
+  },
+  feeling: {
+    id: 'feeling',
+    name: 'Feeling Finder',
+    emoji: '💗',
+    color: '#EC4899',
+    tagline: 'Find your feelings!',
+    free: false,
+    xp: 20,
+    prompts: [
+      'I feel happy!',
+      'I feel angry!',
+      'I feel scared!',
+      'I feel sad!',
+      'I feel excited!',
+      'I feel confused!',
+      'I feel proud!',
+      'I feel tired!',
+    ],
+    initialEmotion: 'happy',
+    placeholder: () => `Tell Leo how you feel…`,
+    missionLabel: '💗 I did my release mission!',
+    doneEmoji: '🌈',
+    doneText: 'Leo is SO proud you shared your feelings!',
+    doneSub: 'Check in with another feeling?',
   },
 };
 
@@ -129,9 +311,16 @@ export default function PortalSession() {
         question: `${c.child_name}!! ${portal.emoji} Welcome to Question Portal!! Ask me ANYTHING and I'll tell you a funny story + a mission! 🦁`,
         toystory: `${c.child_name}!! ${portal.emoji} Point your camera at a toy — OR pick one below! Leo will make a WILD crossover story just for you! 🎬`,
         glitch: `${c.child_name}!! ${portal.emoji} DANGER!! Leo needs an IMPOSSIBLE combo — something that CAN'T happen — QUICK before reality glitches!! ⚡`,
+        pattern: `${c.child_name}!! ${portal.emoji} Time for a SHAPE HUNT! Leo will call out a shape — find 3 before the timer runs out! Ready?? ⏱️`,
+        sound: `${c.child_name}!! ${portal.emoji} Bubbles the Cloud Tiger wants to learn a SECRET SOUND! Make a wild noise with your mouth or hands and tell Leo about it! 🐯`,
+        word: `${c.child_name}!! ${portal.emoji} Letter hunt time! Find a letter on a book, box, or toy and tell Leo what you spotted! 🔤`,
+        bolega: `${c.child_name}!! ${portal.emoji} Leo Bolega time! Repeat today's English sentence after me — whisper it, shout it, then say it SLOW! 🗣️`,
+        shloka: `${c.child_name}!! ${portal.emoji} Leo has a little wisdom story for you today! Listen close — there's a special mission at the end! ✨`,
+        body: `${c.child_name}!! ${portal.emoji} Commander Leo reporting! Tell me your age squad and I'll give you a 3-move SUPERHERO workout! 💪`,
+        feeling: `${c.child_name}!! ${portal.emoji} Leo has 8 feeling faces! Pick one that matches how you feel right now! 💗`,
       };
       setTurns([{ role: 'assistant', content: intros[portal.id] ?? intros.question }]);
-      setEmotion(portal.id === 'glitch' ? 'dramatic' : 'excited');
+      setEmotion(portal.initialEmotion);
     })();
   }, [id]);
 
@@ -340,7 +529,7 @@ export default function PortalSession() {
           )}
 
           {/* Portal-specific primer on first turn */}
-          {turns.length <= 1 && portal.id === 'question' && (
+          {turns.length <= 1 && portal.prompts.length > 0 && (
             <View style={styles.promptsWrap}>
               <Text style={styles.promptsLabel}>Try one of these!</Text>
               <View style={styles.promptsRow}>
@@ -389,34 +578,16 @@ export default function PortalSession() {
                 end={{ x: 1, y: 1 }}
                 style={styles.missionGrad}
               >
-                <Text style={styles.missionText}>
-                  {portal.id === 'toystory'
-                    ? '🏗️ I built the scene!'
-                    : portal.id === 'glitch'
-                      ? '🛡️ REALITY SAVED!'
-                      : '✅ I did the mission!'}
-                </Text>
+                <Text style={styles.missionText}>{portal.missionLabel}</Text>
                 <Text style={styles.missionSub}>Earn +{portal.xp} XP</Text>
               </LinearGradient>
             </Pressable>
           )}
           {missionState === 'done' && (
             <View style={styles.doneCard}>
-              <Text style={styles.doneEmoji}>
-                {portal.id === 'toystory' ? '🎬' : portal.id === 'glitch' ? '🌟' : '🎉'}
-              </Text>
-              <Text style={styles.doneText}>
-                {portal.id === 'toystory'
-                  ? 'WOW! Your toy is a superstar!'
-                  : portal.id === 'glitch'
-                    ? 'REALITY SAVED! You are a GENIUS!'
-                    : 'Amazing! Leo is so proud of you!'}
-              </Text>
-              <Text style={styles.doneSub}>
-                {portal.id === 'glitch'
-                  ? 'Try another impossible combo?'
-                  : 'Ask another question or head home.'}
-              </Text>
+              <Text style={styles.doneEmoji}>{portal.doneEmoji}</Text>
+              <Text style={styles.doneText}>{portal.doneText}</Text>
+              <Text style={styles.doneSub}>{portal.doneSub}</Text>
             </View>
           )}
         </ScrollView>
@@ -436,13 +607,7 @@ export default function PortalSession() {
           <TextInput
             value={input}
             onChangeText={setInput}
-            placeholder={
-              portal.id === 'toystory'
-                ? `Tell Leo about your toy…`
-                : portal.id === 'glitch'
-                  ? `More impossible combos…`
-                  : `Ask Leo, ${child.child_name}…`
-            }
+            placeholder={portal.placeholder(child.child_name)}
             placeholderTextColor={colors.onSurfaceFaint}
             style={styles.input}
             testID="portal-input"

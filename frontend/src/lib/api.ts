@@ -62,6 +62,21 @@ export const api = {
       method: 'POST',
       body: JSON.stringify(payload),
     }),
+  getDashboard: (child_id: string) =>
+    req<{
+      ok: boolean;
+      child: any;
+      sessions: any[];
+      moods: any[];
+      alerts: any[];
+      verifications: any[];
+      badges: any[];
+    }>(`/dashboard/${child_id}`),
+  verifyMission: (verification_id: string, verified: boolean = true) =>
+    req<{ ok: boolean; already_verified?: boolean; verification?: any }>('/mission/verify', {
+      method: 'POST',
+      body: JSON.stringify({ verification_id, verified }),
+    }),
 };
 
 // STT is a multipart upload (audio file), so it doesn't use the JSON `req` helper.
