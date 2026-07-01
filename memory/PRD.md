@@ -66,3 +66,15 @@ Components:
 - Feeling Finder + mood diary UI
 - Real Firebase Phone OTP at native build time
 - Razorpay live checkout
+
+## Iteration 4 additions (delivered)
+- **Sarvam Bulbul v2 TTS** wired live: `/api/tts` POSTs to `https://api.sarvam.ai/text-to-speech` with `speaker=anushka`, `model=bulbul:v2`, `pace=0.85`, `pitch=0.1`, and the child's `sarvam` language code (Hindi → `hi-IN`, Tamil → `ta-IN`, etc.). Returns `{audio_base64, lang_code, mime}`.
+- **Sarvam Saarika v2.5 STT** wired live: `/api/stt` accepts multipart audio upload, forwards to `https://api.sarvam.ai/speech-to-text` with `language_code` + `model=saarika:v2.5`. Returns `{transcript, lang_code}`.
+- **Frontend voice pipeline**:
+  - `MicButton` — hold-to-record with pulsing ring + red dot, on release uploads WAV to `/api/stt` and auto-sends transcript to Leo. Mic permission handled with graceful "Open Settings" fallback per `handle_permissions_contract`.
+  - `speakLeo()` — fetches TTS, decodes base64 to a data URI on web / cache file on native, plays via `createAudioPlayer`. Auto-cleans previous playback.
+  - `LeoFace` tappable inside a portal session — tapping replays the last Leo response.
+  - "🔊 Leo is talking…" badge above Leo while audio plays.
+  - Auto-play on new Leo response in all three free portals (Question / Toy Story / Story Machine).
+- **Native build readiness**: `app.json` declares `NSMicrophoneUsageDescription` + `NSCameraUsageDescription` (iOS) and `RECORD_AUDIO` + `CAMERA` (Android). Config plugins: `expo-audio`, `expo-file-system`. Play Store package `com.natkhatai.app`.
+- **`.env`**: real `SARVAM_API_KEY` in place — TTS returns ~160 KB base64 WAV per response (verified live).

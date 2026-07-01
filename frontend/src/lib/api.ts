@@ -49,9 +49,39 @@ export const api = {
       method: 'POST',
       body: JSON.stringify(payload),
     }),
+  tts: (text: string, bhasha: string) =>
+    req<{ ok: boolean; audio_base64: string; lang_code?: string; mime?: string; error?: string }>(
+      '/tts',
+      {
+        method: 'POST',
+        body: JSON.stringify({ text, bhasha }),
+      },
+    ),
   logSession: (payload: any) =>
     req<{ ok: boolean }>('/session/log', {
       method: 'POST',
       body: JSON.stringify(payload),
     }),
 };
+
+// STT is a multipart upload (audio file), so it doesn't use the JSON `req` helper.
+export async function sttUpload(
+  audioUri: string,
+  bhasha: string,
+): Promise<{ ok: boolean; transcript: string; error?: string }> {
+  const url = `${BASE}/api/stt`;
+  const form = new FormData();
+  // In React Native, FormData supports { uri, name, type }
+  // Cast to any because RN's FormData typing is not aware of the RN file blob shape.
+  form.append('file', {
+    uri: audioUri,
+    name: 'voice.m4a',
+    type: 'audio/m4a',
+  } as any);
+  form.append('bhasha', bhasha);
+  const res = await fetch(url, { method: 'POST', body: form as any });
+  if (!res.ok) {
+    return { ok: false, transcript: '', error: `STT ${res.status}` };
+  }
+  return res.json();
+}

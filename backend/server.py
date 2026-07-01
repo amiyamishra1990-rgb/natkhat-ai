@@ -5,14 +5,14 @@ FastAPI + MongoDB. All third-party API calls are proxied here (never expose keys
 
 import logging
 import os
-import random
 import uuid
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any, List, Optional
+from typing import List, Optional
 
+import httpx
 from dotenv import load_dotenv
-from fastapi import APIRouter, FastAPI, HTTPException
+from fastapi import APIRouter, FastAPI, File, Form, HTTPException, UploadFile
 from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import BaseModel, Field
 from starlette.middleware.cors import CORSMiddleware
@@ -398,22 +398,96 @@ async def leo_brain(req: LeoReq):
         return {"content": [{"type": "text", "text": fallback}], "fallback": True}
 
 
-# ---------- Routes: TTS / STT / Vision / Emotion (stubs) ----------
+def sarvam_lang_for(bhasha: str) -> str:
+    for b in BHASHAS:
+        if b["code"].lower() == (bhasha or "").lower():
+            return b["sarvam"]
+    return "hi-IN"
+
+
+# ---------- Routes: TTS / STT (Sarvam) / Vision / Emotion (stubs) ----------
+class TTSReq(BaseModel):
+    text: str
+    bhasha: str = "Hindi"
+    speaker: str = "anushka"
+    pace: float = 0.85
+    pitch: float = 0.1
+
+
 @api_router.post("/tts")
-async def tts_proxy(payload: dict):
-    """Sarvam Bulbul v2 TTS proxy. Stubbed until SARVAM_API_KEY provided."""
-    if not os.environ.get("SARVAM_API_KEY"):
+async def tts_proxy(req: TTSReq):
+    """Sarvam Bulbul v2 TTS. Returns base64 WAV audio in {audio_base64, lang_code}."""
+    key = os.environ.get("SARVAM_API_KEY")
+    if not key:
         return {"ok": False, "stub": True, "audio_base64": "", "note": "Add SARVAM_API_KEY to enable Leo's voice"}
-    # Real impl left as adapter placeholder to slot in when key arrives
-    return {"ok": False, "stub": True, "note": "TTS adapter placeholder"}
+
+    lang = sarvam_lang_for(req.bhasha)
+    payload = {
+        "inputs": [req.text[:1500]],  # Sarvam max text length safety
+        "target_language_code": lang,
+        "speaker": req.speaker,
+        "model": "bulbul:v2",
+        "pitch": req.pitch,
+        "pace": req.pace,
+        "loudness": 1.0,
+    }
+    try:
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            r = await client.post(
+                "https://api.sarvam.ai/text-to-speech",
+                headers={"api-subscription-key": key, "Content-Type": "application/json"},
+                json=payload,
+            )
+        if r.status_code != 200:
+            logger.warning("Sarvam TTS %s %s", r.status_code, r.text[:200])
+            return {"ok": False, "error": r.text[:200], "status": r.status_code}
+        data = r.json()
+        audios = data.get("audios") or []
+        return {
+            "ok": True,
+            "audio_base64": audios[0] if audios else "",
+            "lang_code": lang,
+            "mime": "audio/wav",
+        }
+    except Exception as exc:
+        logger.exception("Sarvam TTS failed: %s", exc)
+        return {"ok": False, "error": str(exc)}
 
 
 @api_router.post("/stt")
-async def stt_proxy(payload: dict):
-    """Sarvam Saarika STT proxy. Stubbed."""
-    if not os.environ.get("SARVAM_API_KEY"):
+async def stt_proxy(
+    file: UploadFile = File(...),
+    bhasha: str = Form("Hindi"),
+):
+    """Sarvam Saarika STT. Accepts multipart audio file, returns {transcript, lang_code}."""
+    key = os.environ.get("SARVAM_API_KEY")
+    if not key:
         return {"ok": False, "stub": True, "transcript": "", "note": "Add SARVAM_API_KEY"}
-    return {"ok": False, "stub": True, "note": "STT adapter placeholder"}
+
+    lang = sarvam_lang_for(bhasha)
+    content = await file.read()
+    filename = file.filename or "audio.wav"
+    mime = file.content_type or "audio/wav"
+    try:
+        async with httpx.AsyncClient(timeout=45.0) as client:
+            r = await client.post(
+                "https://api.sarvam.ai/speech-to-text",
+                headers={"api-subscription-key": key},
+                files={"file": (filename, content, mime)},
+                data={"language_code": lang, "model": "saarika:v2.5"},
+            )
+        if r.status_code != 200:
+            logger.warning("Sarvam STT %s %s", r.status_code, r.text[:200])
+            return {"ok": False, "error": r.text[:200], "status": r.status_code}
+        data = r.json()
+        return {
+            "ok": True,
+            "transcript": data.get("transcript", ""),
+            "lang_code": data.get("language_code", lang),
+        }
+    except Exception as exc:
+        logger.exception("Sarvam STT failed: %s", exc)
+        return {"ok": False, "error": str(exc)}
 
 
 @api_router.post("/vision")

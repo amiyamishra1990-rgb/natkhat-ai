@@ -25,11 +25,13 @@ import Animated, {
 
 import LeoFace from '@/src/components/LeoFace';
 import LevelUpModal from '@/src/components/LevelUpModal';
+import MicButton from '@/src/components/MicButton';
 import ToyPrimer from '@/src/components/ToyPrimer';
 import GlitchPrimer from '@/src/components/GlitchPrimer';
 import { colors, font, radius, spacing, LeoEmotion } from '@/src/theme';
 import { api } from '@/src/lib/api';
 import { getChild, saveChild } from '@/src/lib/session';
+import { speakLeo, stopLeoVoice } from '@/src/lib/leoVoice';
 import type { Portal } from '@/src/components/PortalCard';
 
 const PORTAL_MAP: Record<string, Portal & { prompts: string[] }> = {
@@ -87,12 +89,36 @@ export default function PortalSession() {
   const [awardedXp, setAwardedXp] = useState(0);
   const [levelUp, setLevelUp] = useState<null | { level: number; title: string; emoji: string }>(null);
   const [showBurst, setShowBurst] = useState(false);
+  const [speaking, setSpeaking] = useState(false);
 
   const scrollRef = useRef<ScrollView>(null);
   const startTs = useRef<number>(Date.now());
   const burstY = useSharedValue(0);
   const burstOp = useSharedValue(0);
   const burstScale = useSharedValue(0.6);
+
+  useEffect(() => {
+    return () => {
+      stopLeoVoice();
+    };
+  }, []);
+
+  const playLeoSpeech = async (text: string) => {
+    if (!child) return;
+    setSpeaking(true);
+    setEmotion('excited');
+    const ok = await speakLeo(
+      text,
+      child.bhasha,
+      () => {
+        setSpeaking(false);
+      },
+      () => {
+        setSpeaking(false);
+      },
+    );
+    if (!ok) setSpeaking(false);
+  };
 
   useEffect(() => {
     (async () => {
@@ -140,6 +166,8 @@ export default function PortalSession() {
         setEmotion('happy');
         setMissionState('awaiting');
       }
+      // Auto-play Leo's voice
+      playLeoSpeech(text);
     } catch (e) {
       setTurns((t) => [
         ...t,
@@ -261,9 +289,23 @@ export default function PortalSession() {
         style={{ flex: 1 }}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
       >
-        {/* Leo (floating) */}
+        {/* Leo (floating) — tap to replay voice */}
         <View style={styles.leoWrap}>
-          <LeoFace size={110} emotion={emotion} bob testID="portal-leo" />
+          <LeoFace
+            size={110}
+            emotion={speaking ? 'excited' : emotion}
+            bob={!speaking}
+            onTap={() => {
+              const last = [...turns].reverse().find((t) => t.role === 'assistant');
+              if (last) playLeoSpeech(last.content);
+            }}
+            testID="portal-leo"
+          />
+          {speaking && (
+            <View style={styles.speakingBadge} testID="portal-leo-speaking">
+              <Text style={styles.speakingBadgeText}>🔊 Leo is talking…</Text>
+            </View>
+          )}
           {showBurst && (
             <Animated.View style={[styles.burst, burstAnim]} pointerEvents="none">
               <Text style={styles.burstText}>+{portal.xp} XP!</Text>
@@ -381,6 +423,16 @@ export default function PortalSession() {
 
         {/* Input */}
         <View style={styles.inputWrap}>
+          <MicButton
+            color={portal.color}
+            bhasha={child.bhasha}
+            disabled={busy}
+            onTranscript={(text, autoSend) => {
+              if (autoSend) send(text);
+              else setInput(text);
+            }}
+            testID="portal-mic"
+          />
           <TextInput
             value={input}
             onChangeText={setInput}
@@ -463,6 +515,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: spacing.md,
   },
+  speakingBadge: {
+    marginTop: spacing.xs,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 4,
+    backgroundColor: 'rgba(251,146,60,0.18)',
+    borderRadius: radius.pill,
+    borderWidth: 1,
+    borderColor: 'rgba(251,146,60,0.5)',
+  },
+  speakingBadgeText: { color: colors.brand, fontFamily: font.bodyBold, fontSize: 12 },
   burst: {
     position: 'absolute',
     top: 10,
