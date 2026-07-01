@@ -1,30 +1,36 @@
-import { Text, View, StyleSheet, Image } from "react-native";
+import { useRouter } from 'expo-router';
+import { useEffect } from 'react';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
-const EXPO_PUBLIC_BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
+import { colors } from '@/src/theme';
+import { getChild, getParent } from '@/src/lib/session';
 
 export default function Index() {
-  console.log(EXPO_PUBLIC_BACKEND_URL, "EXPO_PUBLIC_BACKEND_URL");
+  const router = useRouter();
+
+  useEffect(() => {
+    (async () => {
+      const parent = await getParent();
+      const child = await getChild();
+      if (!parent) {
+        router.replace('/splash');
+      } else if (!child) {
+        router.replace('/child-profile');
+      } else if (!child.has_seen_intro) {
+        router.replace('/leo-intro');
+      } else {
+        router.replace('/home');
+      }
+    })();
+  }, []);
 
   return (
-    <View style={styles.container}>
-      <Image
-        source={require("../assets/images/app-image.png")}
-        style={styles.image}
-      />
+    <View style={styles.wrap} testID="index-loader">
+      <ActivityIndicator color={colors.brand} size="large" />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#0c0c0c",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  image: {
-    width: "100%",
-    height: "100%",
-    resizeMode: "contain",
-  },
+  wrap: { flex: 1, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' },
 });
