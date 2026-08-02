@@ -4,10 +4,10 @@
 
 # Natkhat AI — Project Dashboard
 
-**Version:** 1.9.0
+**Version:** 1.10.0
 **Status:** Living — updated in the same PR as any sprint/milestone/decision change
 **Owner:** Repository maintainers
-**Last Updated:** 2026-08-02 (Milestone 10)
+**Last Updated:** 2026-08-02 (Milestone 10 — fully complete)
 
 ## Governance Compliance
 
@@ -63,25 +63,30 @@ business features, no database/auth/storage implementation.
 
 Milestones 0, 1, 1.5, 2, 5, 6, 7, 8, and 9 are **approved and complete**.
 Milestone 3 (PROJECT.md close-out) is satisfied by prior updates;
-Milestone 4 is superseded (see §15). Milestone 10 — CI foundation: the
-`ci.yml` half is complete; the previously-blocked prerequisite (no
-remote, no commits) is now resolved — first commit `6ff7e44` pushed to
-`origin/main`, per explicit user approval this session. Branch
-protection and the real (not just local) CI verification are being
-finalized on this PR — see Current Status/Build Status for the
-in-progress result. No further Sprint 01 milestone has been started.
+Milestone 4 is superseded (see §15). **Milestone 10 — CI foundation is
+now fully complete**: `ci.yml` authored, first commit `6ff7e44` pushed
+to `origin/main`, the real GitHub Actions workflow triggered and all
+five jobs verified passing, and branch protection on `main` configured
+and independently verified — see Current Status for full detail,
+including two real bugs the local-only validation had missed and which
+real CI caught. Next actionable milestone is Milestone 11 (`.ai/`
+workspace population), **not started, pending approval**.
 
 ## Current Branch
 
 `main` — first commit `6ff7e44` ("chore(repo): establish Sprint 01
-repository foundation (Milestones 0-10)") pushed to
-`origin/main` at [github.com/amiyamishra1990-rgb/natkhat-ai](https://github.com/amiyamishra1990-rgb/natkhat-ai)
-(pre-existing empty repo, created 2026-07-26, verified empty before
-push — 0 branches, 0 size). This branch, `chore/project-milestone-10-ci-verification`,
-is the first real PR against `main`, opened specifically to exercise
-`ci.yml`'s `pull_request` trigger (see Build Status) — its only content
-change is this file, per the user's explicit instruction to update
-only status/tracking documentation while completing Milestone 10.
+repository foundation (Milestones 0-10)") pushed to `origin/main` at
+[github.com/amiyamishra1990-rgb/natkhat-ai](https://github.com/amiyamishra1990-rgb/natkhat-ai)
+(pre-existing empty repo, created 2026-07-26 by the user, verified
+empty before push — 0 branches, 0 size, never previously pushed to;
+**public** visibility, a pre-existing decision from repo creation, not
+made in this session). PR
+[#1](https://github.com/amiyamishra1990-rgb/natkhat-ai/pull/1)
+(`chore/project-milestone-10-ci-verification` → `main`) is open,
+CI-green, but **blocked on required review** (`mergeStateStatus:
+BLOCKED`, `reviewDecision: REVIEW_REQUIRED`) — branch protection's
+`enforce_admins: true` means even the repo owner cannot self-merge it;
+see Blockers.
 
 ## Current Release
 
@@ -89,10 +94,13 @@ Pre-release — no deployable environment yet.
 
 ## Build Status
 
-Verification in progress on this PR — see this file's Change Log once
-merged for the confirmed result of the five `ci.yml` jobs (`lint`,
-`typecheck`, `test`, `build`, `mobile`) and branch-protection
-configuration.
+**Green** — verified on real GitHub Actions, not just locally: all
+five `ci.yml` jobs (`lint`, `typecheck`, `test`, `build`, `mobile`)
+pass on
+[run 30753691637](https://github.com/amiyamishra1990-rgb/natkhat-ai/actions/runs/30753691637)
+against PR #1. Two real defects were caught by this real run (neither
+had surfaced in local validation) and fixed on the same PR branch — see
+Current Status.
 
 ## Current Status
 
@@ -122,8 +130,46 @@ in this environment, so this is the deepest local static validation
 possible), and every underlying command the workflow calls
 (`turbo run lint typecheck test build`, `flutter analyze`, `flutter
 test`) was re-run directly and still passes after the Milestone 9
-tooling additions. **The workflow has not actually executed on
-GitHub** — see Build Status.
+tooling additions.
+
+**Update — the workflow has now actually executed on GitHub, and real
+CI found two real bugs local validation missed.** First commit
+`6ff7e44` was pushed to `origin/main` (pre-existing, verified-empty
+repo at `github.com/amiyamishra1990-rgb/natkhat-ai`), then PR
+[#1](https://github.com/amiyamishra1990-rgb/natkhat-ai/pull/1)
+(`chore/project-milestone-10-ci-verification`, content limited to
+`PROJECT.md` tracking updates per the user's explicit scope
+instruction) was opened specifically to exercise `ci.yml`'s
+`pull_request` trigger. The first real run failed 4/5 jobs (`mobile`
+correctly passed — no `apps/mobile/**` changes to gate on):
+`lint`/`typecheck`/`test`/`build` all failed identically at `pnpm
+install --frozen-lockfile` with `ERR_PNPM_OUTDATED_LOCKFILE` —
+`package.json` declared `"@natkhat-ai/config-prettier": "workspace:*"`
+but `pnpm-lock.yaml` still had `workspace:^`, because that field was
+hand-edited for convention-consistency at Milestone 9 without
+re-running `pnpm install` afterward. Reproduced locally (`pnpm install
+--frozen-lockfile` failed identically), fixed with a plain `pnpm
+install` (resyncs the lockfile; 1-line diff, nothing else changed),
+verified, committed (`fix(repo): sync pnpm-lock.yaml specifier for
+@natkhat-ai/config-prettier`), and pushed. The second run then failed
+the same 4 jobs differently: `ERR_PNPM_UNSUPPORTED_ENGINE` —
+`@commitlint/cli@21.2.1` requires Node `>=22.12.0`, but `.nvmrc`/
+`engines.node` still targeted the Milestone 1 default of Node 20,
+which `ci.yml` correctly installs via `setup-node`. This had never
+surfaced locally because the local dev environment already runs Node
+v24. Confirmed no ADR or constitution pins a specific Node version (a
+`docs/` grep for "Node" version references returned nothing), so this
+is a tooling-config fix, not an architecture change: bumped `.nvmrc`
+(`20` → `22`) and root `package.json`'s `engines.node` (`>=20.0.0` →
+`>=22.12.0`), re-verified `pnpm install --frozen-lockfile` and `turbo
+run lint typecheck test build` locally, committed (`fix(repo): bump
+Node engine requirement to >=22.12.0`) and pushed. The third run
+passed all 5 jobs:
+[run 30753691637](https://github.com/amiyamishra1990-rgb/natkhat-ai/actions/runs/30753691637)
+— `lint`, `typecheck`, `test`, `build`, `mobile` all green. This is
+exactly the class of defect Milestone 10 exists to catch (real,
+clean-room CI vs. a long-lived local dev environment with stale state)
+— see Build Status.
 
 Job names (`lint`, `typecheck`, `test`, `build`) were deliberately made
 four separate jobs, not one job running the combined `turbo run lint
@@ -135,24 +181,14 @@ names, which only exist as four distinct GitHub status checks if they
 are four distinct jobs. Recorded here as an interpretation, not a
 silent architecture decision.
 
-**Branch protection on `main` (the other half of Milestone 10) is
-blocked, not completed:** this repository has zero commits
-(`git log` on `main` still errors with "does not have any commits
-yet") and no configured remote (`git remote -v` returns nothing), so
-there is no GitHub repository for `gh api
-repos/<owner>/<repo>/branches/main/protection` to target — `gh auth
-status` confirms an authenticated account with `repo`/`workflow`
-scopes, but having API access is not the same as there being a
-repository to call it against, and creating one (plus making the
-first-ever commit and pushing) is a materially different, shared-state
-action than "author `ci.yml`," not something this milestone's approved
-scope or the session's instructions authorized. The exact configuration
-to apply once a remote and at least one commit exist (combining §16's
-required status checks with §17's "main protected, required review +
-status checks"):
+**Branch protection on `main` is now configured and independently
+verified**, completing the other half of Milestone 10. After all five
+checks were confirmed passing with their exact real GitHub Actions
+context names (`lint`, `typecheck`, `test`, `build`, `mobile` — read
+directly from `gh pr checks`, not assumed from the YAML), applied:
 
 ```
-gh api repos/<owner>/<repo>/branches/main/protection \
+gh api repos/amiyamishra1990-rgb/natkhat-ai/branches/main/protection \
   --method PUT \
   -F required_status_checks[strict]=true \
   -F 'required_status_checks[contexts][]=lint' \
@@ -164,6 +200,34 @@ gh api repos/<owner>/<repo>/branches/main/protection \
   -F 'required_pull_request_reviews[required_approving_review_count]=1' \
   -F restrictions=null
 ```
+
+Combines §16's required status checks with §17's "main protected,
+required review + status checks." Verified by an independent `GET`
+(not just trusting the `PUT` response) — the returned config matches
+exactly: 5 required contexts, `strict: true` (branches must be
+up-to-date before merging), `required_approving_review_count: 1`,
+`enforce_admins: true`, force-push and branch deletion both disabled.
+Also verified functionally, not just by reading config back: PR #1's
+own `gh pr view` now reports `mergeStateStatus: BLOCKED` /
+`reviewDecision: REVIEW_REQUIRED` — branch protection is actually
+being enforced by GitHub, not just recorded as configured.
+
+**Practical consequence worth flagging directly**: `enforce_admins:
+true` means this is not bypassable by repo admins either — **the repo
+owner cannot self-merge PR #1** (or any future PR) without at least one
+approving review from a different account. `.github/CODEOWNERS` is
+still a placeholder with no real reviewers assigned (Milestone 1), and
+this is currently a single-maintainer repository, so as configured,
+_nothing can be merged to `main` right now without either adding a
+second collaborator to review, or the user deliberately relaxing
+`required_approving_review_count`/`enforce_admins` themselves._ This
+was not silently softened (e.g. by dropping `enforce_admins` or the
+review requirement) because §17 explicitly calls for "required review
+
+- status checks" and doing so unilaterally would be weakening
+  governance this session wasn't asked to touch — surfaced instead so
+  the user can make that call. PR #1 is left open, unmerged, for the
+  user's own review/merge decision.
 
 **A correction to Milestone 9's own record**, found while following
 this session's explicit instruction to revisit Milestone 9's
@@ -507,13 +571,14 @@ Constitution).
 
 ## Pending Tasks / Next Tasks
 
-- **Branch protection on `main` (rest of Milestone 10) is blocked on a
-  prerequisite, not pending approval**: needs a GitHub remote and at
-  least one pushed commit before `gh api
-repos/<owner>/<repo>/branches/main/protection` (exact command in
-  Current Status) can be run. Await explicit user instruction before
-  creating a remote and/or making the first commit — that is a
-  separate, shared-state decision from authoring `ci.yml`.
+- **PR [#1](https://github.com/amiyamishra1990-rgb/natkhat-ai/pull/1)
+  is open, CI-green, but blocked on required review** —
+  `enforce_admins: true` on the new branch protection means even the
+  repo owner cannot self-merge it. Needs either a second collaborator
+  to review/approve, or the user to deliberately relax
+  `required_approving_review_count`/`enforce_admins` themselves (not
+  done unilaterally here — see Current Status). This is not a Sprint
+  01 blocker, just an immediate next action for the user.
 - Await user approval before starting Milestone 11 (`.ai/` workspace
   population — starter prompt template(s) in `.ai/prompts/`), per
   `docs/sprints/sprint-01.md`, §15.
@@ -612,35 +677,37 @@ test` — see Current Status above for full detail. Fixed a missing
   10, 2026-08-02):** the executable-bit concern originally recorded
   here was a false alarm — see Current Status/Change Log for the
   empirical correction; no action was actually needed.
-- Milestone 10: authored `.github/workflows/ci.yml` (`ci.yml` half of
-  CI foundation complete, per `docs/sprints/sprint-01.md`, §15, §16) —
-  five jobs (`lint`, `typecheck`, `test`, `build`, `mobile`), Turborepo
-  `--filter`-scoped to the PR base SHA, Flutter checks gated on
-  `apps/mobile/**` changes via `git diff`. Branch protection on `main`
-  (the other half) is **blocked**, not completed — no GitHub remote or
-  commits exist yet; see Current Status/Blockers for the exact
-  configuration to apply once they do. Also corrected a factual error
-  in Milestone 9's own record (executable-bit concern; see that entry
-  above and Change Log). No application code, business logic, database,
-  auth, or product functionality touched.
+- Milestone 10: **fully complete**, per `docs/sprints/sprint-01.md`,
+  §15, §16, §17 — `.github/workflows/ci.yml` authored (five jobs:
+  `lint`, `typecheck`, `test`, `build`, `mobile`); first commit
+  `6ff7e44` pushed to the pre-existing, verified-empty
+  `github.com/amiyamishra1990-rgb/natkhat-ai`; the real workflow
+  triggered via PR #1 and, after fixing two real bugs it caught (a
+  `pnpm-lock.yaml` specifier drift and a Node engine requirement too
+  low for `@commitlint/cli@21`), all five jobs verified passing on
+  GitHub; branch protection on `main` configured with the confirmed
+  real check names and independently verified both by reading the
+  config back and by observing PR #1 actually become merge-blocked.
+  Also corrected a factual error in Milestone 9's own record
+  (executable-bit concern; see that entry above and Change Log). No
+  application code, business logic, database, auth, or product
+  functionality touched; no architecture, ADR, or Constitution changed.
+  PR #1 left open, unmerged, for the user's own review — see Pending
+  Tasks.
 
 ## Blockers
 
-**One open blocker**: branch protection on `main` (part of Milestone
-10, per §15) cannot be configured — no GitHub remote and no commits
-exist yet in this repository. Not a design gap: the exact `gh api`
-command to run once a remote and a first commit exist is documented in
-Current Status. Unblocking this requires an explicit user decision to
-create a remote and make the first commit — a separate, shared-state
-action from anything authorized so far.
+None blocking Sprint 01 progress. **One operational item needs the
+user's attention** (not a Sprint blocker): PR #1 is CI-green but
+merge-blocked by the branch protection just configured
+(`enforce_admins: true` + 1 required review, and this is currently a
+single-maintainer repo) — see Pending Tasks/Current Status.
 
 Known Risk #5 (missing Child Privacy & Safety Constitution) is resolved
-as of Milestone 1.5 — see Known Risks below. Known Risk #6 (Milestone 1
-scope discrepancy), Known Risk #7 (Milestone 2 scope discrepancy), and
-Known Risk #8 (Milestone 9 scope discrepancy) remain recorded as
-historical/resolved-by-precedent — see Known Risks below. Awaiting user
-approval before Milestone 11 begins (independent of the branch-protection
-blocker above).
+as of Milestone 1.5 — see Known Risks below. Known Risks #6, #7, #8
+(scope discrepancies) remain recorded as historical/resolved-by-precedent.
+Known Risk #9 (branch protection blocked) is now **resolved** — see
+Known Risks below. Awaiting user approval before Milestone 11 begins.
 
 ## Known Risks
 
@@ -697,32 +764,38 @@ Top risks (full register: [docs/sprints/sprint-01.md](docs/sprints/sprint-01.md)
    the strict-repo-truth path (`docs/sprints/sprint-01.md` as Single
    Source of Truth) — Milestone 9 executed exactly as written in §15,
    CI / GitHub Actions deferred to its real milestone (10).
-9. **Infrastructure — OPEN (2026-08-02, Milestone 10)** — branch
-   protection on `main` (§15, §16, §17) cannot be configured: this
-   repository has no GitHub remote and no commits. `ci.yml` (the other
-   Milestone 10 deliverable) does not depend on this and is complete.
-   Not resolved by this session because creating a remote and making
-   the first commit is a distinct, shared-state decision outside this
-   milestone's authorized scope ("implement ONLY Milestone 10"); the
-   exact `gh api ... branches/main/protection` command to run once
-   unblocked is documented in Current Status/Pending Tasks. Tracked
-   here as open, not resolved-by-precedent like #6–#8, because the
-   underlying prerequisite genuinely does not exist yet.
+9. **Infrastructure — RESOLVED (2026-08-02, Milestone 10)** — branch
+   protection on `main` was blocked (no remote, no commits) as of the
+   prior session; the user explicitly approved unblocking it this
+   session ("we will finish the blocked Git/GitHub portion"). First
+   commit `6ff7e44` pushed to the pre-existing, verified-empty
+   `github.com/amiyamishra1990-rgb/natkhat-ai`; real `ci.yml` triggered
+   via PR #1 and verified green (after fixing two real bugs it caught —
+   see Current Status/Change Log); branch protection configured with
+   the confirmed real check names and independently verified (config
+   read back via `GET`, and PR #1 observed to actually be
+   merge-blocked). New operational item surfaced by this resolution,
+   not itself a Sprint 01 risk: `enforce_admins: true` blocks even the
+   repo owner from self-merging without a second reviewer — see
+   Blockers/Pending Tasks.
 
 ## Repository Health
 
-Foundation stage. Three tooling-config packages (Milestone 7) and two
-application scaffolds — `apps/backend` (NestJS) and `apps/mobile`
-(Flutter) — exist and are validated (Milestone 8), with no business
-logic in either. Developer tooling — Husky, lint-staged, commitlint —
-installed and validated (Milestone 9; the executable-bit concern
-originally recorded against this milestone was corrected at Milestone
-10 — no action was actually needed). `.github/workflows/ci.yml`
-authored and validated locally (Milestone 10) but never executed on
-GitHub. Git initialized at Milestone 1; still zero commits, no remote —
-that remains the user's call, and is now also the one open blocker
-(branch protection, Known Risk #9). Known Risks #5, #6, #7, #8 are
-resolved/historical; Known Risk #9 is open.
+Foundation stage, now live on GitHub. Three tooling-config packages
+(Milestone 7) and two application scaffolds — `apps/backend` (NestJS)
+and `apps/mobile` (Flutter) — exist and are validated (Milestone 8),
+with no business logic in either. Developer tooling — Husky,
+lint-staged, commitlint — installed and validated (Milestone 9; the
+executable-bit concern originally recorded against this milestone was
+corrected at Milestone 10 — no action was actually needed).
+`.github/workflows/ci.yml` authored, pushed, and verified green on real
+GitHub Actions (Milestone 10) after fixing two real bugs it caught
+(lockfile specifier drift; Node engine requirement). Branch protection
+on `main` configured and independently verified. First commit `6ff7e44`
+pushed to `github.com/amiyamishra1990-rgb/natkhat-ai` (public,
+pre-existing). All 9 Known Risks are resolved/historical — none open.
+One operational item outstanding: PR #1 is CI-green but needs a second
+reviewer (or a deliberate protection-rule change by the user) to merge.
 
 ## Major Decisions
 
@@ -733,6 +806,85 @@ resolved/historical; Known Risk #9 is open.
 - [ADR-0001](docs/decisions/ADR-0001-monorepo.md) — Adopt a Single Monorepo (Turborepo + pnpm Workspaces)
 
 ## Change Log
+
+- **2026-08-02** — Milestone 10 (CI foundation) **fully complete**:
+  this session's request explicitly approved finishing the
+  Git/GitHub-remote prerequisite that the prior session's Milestone 10
+  work had left blocked. Before touching anything: verified the
+  repository was safe to push — `git add -A --dry-run` listed exactly
+  164 files (no `node_modules/`, `dist/`, `build/`, `.turbo/`,
+  `coverage/`, `.dart_tool/`, Android/iOS build artifacts, or `.idea/`
+  — all correctly gitignored, confirmed by both the file listing and
+  direct `git check-ignore -v` tests, including one live test that
+  created and removed a real `apps/backend/coverage/` directory to
+  confirm the pattern actually works, not just reads correctly);
+  filename- and content-scanned all 164 candidate files for secrets
+  (`.env`, `.pem`/`.key`/`.keystore`/`.jks`, `local.properties`,
+  `key.properties`, AWS/GitHub/Google/OpenAI/Slack token patterns) —
+  none found, only the intentional placeholder `.env.example`; and
+  confirmed via `gh repo list`/`gh api repos/.../branches` that
+  `github.com/amiyamishra1990-rgb/natkhat-ai` already existed
+  (created 2026-07-26 by the user, public) and was genuinely empty (0
+  branches, 0 size, `pushed_at` == `created_at`) before pushing
+  anything to it.
+
+  Created the first commit, `6ff7e44` ("chore(repo): establish Sprint
+  01 repository foundation (Milestones 0-10)"), through the real
+  `pre-commit`/`commit-msg` hooks (no `--no-verify`) — lint-staged
+  auto-fixed formatting on 91 matching files and ran ESLint on 6
+  backend files with no errors, commitlint accepted the message
+  cleanly. Added `origin` and pushed `main` directly (the standard
+  bootstrap exception to GitHub Flow — there is no prior `main` to
+  branch from for an empty repo). Since `ci.yml` only triggers on
+  `pull_request`, opened
+  [PR #1](https://github.com/amiyamishra1990-rgb/natkhat-ai/pull/1)
+  from branch `chore/project-milestone-10-ci-verification` (scope
+  `project`, per §17's convention for `PROJECT.md`-only changes) to
+  exercise the real workflow — its content is limited to `PROJECT.md`
+  tracking updates, per this session's explicit scope instruction.
+
+  The first real run failed 4/5 jobs with `ERR_PNPM_OUTDATED_LOCKFILE`
+  (`pnpm-lock.yaml` still had `workspace:^` for
+  `@natkhat-ai/config-prettier` after that field was hand-edited to
+  `workspace:*` at Milestone 9 without re-running `pnpm install`) —
+  reproduced locally, fixed with `pnpm install`, committed and pushed.
+  The second run failed the same 4 jobs with
+  `ERR_PNPM_UNSUPPORTED_ENGINE` (`@commitlint/cli@21.2.1` requires Node
+  `>=22.12.0`; `.nvmrc`/`engines.node` still targeted Milestone 1's
+  Node 20 default, never caught locally because the local environment
+  already runs Node v24) — confirmed no ADR/constitution pins a Node
+  version, bumped `.nvmrc` and `engines.node` to `>=22.12.0`, verified,
+  committed, and pushed. The third run passed all five jobs
+  (`lint`, `typecheck`, `test`, `build`, `mobile`) — see
+  [run 30753691637](https://github.com/amiyamishra1990-rgb/natkhat-ai/actions/runs/30753691637).
+  Both fixes are real, narrowly-scoped tooling-config corrections, not
+  architecture changes.
+
+  Configured branch protection on `main` using the confirmed real
+  check-context names (exact `gh api` command in Current Status),
+  combining §16's required status checks with §17's required review.
+  Verified two ways: an independent `GET` of the protection config
+  (not just trusting the `PUT` response) matched exactly, and PR #1
+  itself was observed to flip to `mergeStateStatus: BLOCKED` /
+  `reviewDecision: REVIEW_REQUIRED` — proof GitHub is actually
+  enforcing it, not just recording it. Flagged directly, not silently
+  absorbed: `enforce_admins: true` means the repo owner cannot
+  self-merge PR #1 (or anything else) without a second reviewer, given
+  this is currently a single-maintainer repo with `CODEOWNERS` still a
+  placeholder — this was not softened unilaterally, since §17
+  explicitly calls for required review and loosening it wasn't asked
+  for; left for the user to decide. PR #1 itself left open and
+  unmerged — merging wasn't part of this session's explicit instruction
+  set, and self-merging under freshly-set review rules would be an
+  odd thing for the agent that just configured those rules to do
+  unilaterally.
+
+  No application code, business logic, database, auth, or product
+  functionality touched; no architecture, ADR, Constitution, or
+  approved governance document changed; no force-push, no deletion, no
+  destructive git operation; only the two real bugs above and
+  `PROJECT.md` tracking fields were modified. — AI agent (Claude Code),
+  pending user review before Milestone 11 and before merging PR #1.
 
 - **2026-08-02** — Milestone 10 (CI foundation) — `ci.yml` half
   complete, branch-protection half blocked: per this session's explicit
@@ -1035,6 +1187,9 @@ analyze`/`flutter test`, even though ADR-0002/`sprint-01.md` §11
 
 ## Last Updated
 
-2026-08-02 — Milestone 10 (CI foundation): `ci.yml` complete, branch
-protection blocked (no remote/commits yet)
-(pre-commit; no PR yet, no commits made in this session).
+2026-08-02 — Milestone 10 (CI foundation) fully complete: first commit
+`6ff7e44` pushed to `origin/main`, real CI verified green on
+[PR #1](https://github.com/amiyamishra1990-rgb/natkhat-ai/pull/1) after
+fixing two real bugs it caught, branch protection on `main` configured
+and independently verified. PR #1 itself remains open, unmerged,
+pending a second reviewer or a user decision on the review requirement.
