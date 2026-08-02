@@ -15,7 +15,7 @@ importers:
         specifier: ^21.2.0
         version: 21.2.0
       '@natkhat-ai/config-prettier':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:packages/config-prettier
       husky:
         specifier: ^9.1.7
