@@ -1,0 +1,6 @@
+# Defines the pnpm workspace graph per ADR-0001.
+# packages/ (config-typescript, config-eslint, config-prettier) was
+# created at Milestone 7. apps/ is not created until Milestone 8.
+packages:
+  - 'apps/*'
+  - 'packages/*'

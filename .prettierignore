@@ -1,0 +1,12 @@
+# Flutter app is not a pnpm workspace member and uses Dart tooling,
+# not Prettier (ADR-0002).
+apps/mobile/
+
+# Generated / dependency output (mirrors .gitignore).
+node_modules/
+.turbo/
+dist/
+build/
+coverage/
+
+pnpm-lock.yaml

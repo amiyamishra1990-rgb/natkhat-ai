@@ -1,0 +1,20 @@
+{
+  "name": "@natkhat-ai/config-prettier",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Shared Prettier formatting standard for Natkhat AI apps and packages.",
+  "license": "UNLICENSED",
+  "main": "index.json",
+  "files": [
+    "index.json"
+  ],
+  "scripts": {
+    "format:check": "prettier --check ."
+  },
+  "peerDependencies": {
+    "prettier": "^3.4.0"
+  },
+  "devDependencies": {
+    "prettier": "^3.4.2"
+  }
+}

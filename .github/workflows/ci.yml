@@ -1,0 +1,120 @@
+name: CI
+
+# CI foundation only (docs/sprints/sprint-01.md, §15 Milestone 10, §16).
+# Runs on every PR into main; no deploy workflows in Sprint 01.
+on:
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  # One job per required status check named in §16 ("Required status
+  # checks on main: lint, typecheck, test, build") so each can be
+  # configured individually in branch protection. Turborepo filters
+  # each task to packages changed since the PR base, per §16.
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec turbo run lint --filter="...[${{ github.event.pull_request.base.sha }}]"
+
+  typecheck:
+    name: typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec turbo run typecheck --filter="...[${{ github.event.pull_request.base.sha }}]"
+
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec turbo run test --filter="...[${{ github.event.pull_request.base.sha }}]"
+
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec turbo run build --filter="...[${{ github.event.pull_request.base.sha }}]"
+
+  # Flutter checks, gated on apps/mobile/** changes (§16). apps/mobile
+  # is not a pnpm/Turborepo workspace member (ADR-0002), so it cannot
+  # be scoped via `turbo --filter`; changed-path detection is done
+  # directly via `git diff` against the PR base instead. Steps are
+  # skipped (not the job) when nothing under apps/mobile changed, so
+  # this can still be a required status check without blocking
+  # unrelated PRs.
+  mobile:
+    name: mobile
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check for apps/mobile changes
+        id: changes
+        run: |
+          if git diff --quiet "${{ github.event.pull_request.base.sha }}...HEAD" -- apps/mobile; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: subosito/flutter-action@v2
+        if: steps.changes.outputs.changed == 'true'
+        with:
+          flutter-version: '3.44.8'
+          channel: stable
+      - name: flutter analyze
+        if: steps.changes.outputs.changed == 'true'
+        working-directory: apps/mobile
+        run: flutter analyze
+      - name: flutter test
+        if: steps.changes.outputs.changed == 'true'
+        working-directory: apps/mobile
+        run: flutter test

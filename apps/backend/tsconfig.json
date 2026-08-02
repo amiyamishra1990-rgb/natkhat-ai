@@ -1,0 +1,14 @@
+{
+  "extends": "@natkhat-ai/config-typescript/base.json",
+  "compilerOptions": {
+    "target": "ES2023",
+    "resolvePackageJsonExports": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": "./",
+    "incremental": true,
+    "outDir": "./dist"
+  }
+}
