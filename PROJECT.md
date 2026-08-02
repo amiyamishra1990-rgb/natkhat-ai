@@ -63,22 +63,25 @@ business features, no database/auth/storage implementation.
 
 Milestones 0, 1, 1.5, 2, 5, 6, 7, 8, and 9 are **approved and complete**.
 Milestone 3 (PROJECT.md close-out) is satisfied by prior updates;
-Milestone 4 is superseded (see §15). Milestone 10 — CI foundation: **the
-`ci.yml` half is complete** (`.github/workflows/ci.yml`, five jobs —
-`lint`, `typecheck`, `test`, `build`, `mobile` — validated for YAML
-correctness and against the underlying commands, which all pass
-locally). **The branch-protection half is blocked**, not silently
-skipped: this repository has zero commits and no configured Git remote
-(`git log`/`git remote -v` both confirm this), so there is no GitHub
-repository for `gh api .../branches/main/protection` to target — see
-Current Status and Blockers for the exact configuration to apply once
-one exists. No further Sprint 01 milestone has been started.
+Milestone 4 is superseded (see §15). Milestone 10 — CI foundation: the
+`ci.yml` half is complete; the previously-blocked prerequisite (no
+remote, no commits) is now resolved — first commit `6ff7e44` pushed to
+`origin/main`, per explicit user approval this session. Branch
+protection and the real (not just local) CI verification are being
+finalized on this PR — see Current Status/Build Status for the
+in-progress result. No further Sprint 01 milestone has been started.
 
 ## Current Branch
 
-`main` — git initialized this milestone; no commits yet (repository
-initialization only, per `docs/sprints/sprint-01.md`, §15, Milestone
-1).
+`main` — first commit `6ff7e44` ("chore(repo): establish Sprint 01
+repository foundation (Milestones 0-10)") pushed to
+`origin/main` at [github.com/amiyamishra1990-rgb/natkhat-ai](https://github.com/amiyamishra1990-rgb/natkhat-ai)
+(pre-existing empty repo, created 2026-07-26, verified empty before
+push — 0 branches, 0 size). This branch, `chore/project-milestone-10-ci-verification`,
+is the first real PR against `main`, opened specifically to exercise
+`ci.yml`'s `pull_request` trigger (see Build Status) — its only content
+change is this file, per the user's explicit instruction to update
+only status/tracking documentation while completing Milestone 10.
 
 ## Current Release
 
@@ -86,10 +89,10 @@ Pre-release — no deployable environment yet.
 
 ## Build Status
 
-N/A — `.github/workflows/ci.yml` now exists and its underlying commands
-are validated locally (see Current Status), but it has never actually
-run on GitHub: there is no remote/pushed commits yet for `pull_request`
-events to trigger against.
+Verification in progress on this PR — see this file's Change Log once
+merged for the confirmed result of the five `ci.yml` jobs (`lint`,
+`typecheck`, `test`, `build`, `mobile`) and branch-protection
+configuration.
 
 ## Current Status
 
