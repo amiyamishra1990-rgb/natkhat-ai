@@ -4,10 +4,10 @@
 
 # Natkhat AI — Project Dashboard
 
-**Version:** 1.9.0
+**Version:** 1.12.0
 **Status:** Living — updated in the same PR as any sprint/milestone/decision change
 **Owner:** Repository maintainers
-**Last Updated:** 2026-08-02 (Milestone 10)
+**Last Updated:** 2026-08-03 (Milestone 12 — Sprint 01 close-out — complete; **Sprint 01 is 100% complete**)
 
 ## Governance Compliance
 
@@ -47,7 +47,10 @@ Source: [docs/constitution/product/natkhat-ai-constitution.md](docs/constitution
 
 ## Current Development Phase
 
-Sprint 01 — Repository Foundation (Governance Documentation phase).
+Sprint 01 — Repository Foundation — **complete** (all 12 Milestone
+Breakdown entries in `docs/sprints/sprint-01.md`, §15 satisfied).
+Awaiting user approval to begin Sprint 02; no Sprint 02 Sprint Document
+exists yet (see Pending Tasks).
 
 ## Current Sprint
 
@@ -61,24 +64,34 @@ business features, no database/auth/storage implementation.
 
 ## Current Milestone
 
-Milestones 0, 1, 1.5, 2, 5, 6, 7, 8, and 9 are **approved and complete**.
-Milestone 3 (PROJECT.md close-out) is satisfied by prior updates;
-Milestone 4 is superseded (see §15). Milestone 10 — CI foundation: **the
-`ci.yml` half is complete** (`.github/workflows/ci.yml`, five jobs —
-`lint`, `typecheck`, `test`, `build`, `mobile` — validated for YAML
-correctness and against the underlying commands, which all pass
-locally). **The branch-protection half is blocked**, not silently
-skipped: this repository has zero commits and no configured Git remote
-(`git log`/`git remote -v` both confirm this), so there is no GitHub
-repository for `gh api .../branches/main/protection` to target — see
-Current Status and Blockers for the exact configuration to apply once
-one exists. No further Sprint 01 milestone has been started.
+**Sprint 01 is complete — all 12 Milestone Breakdown entries
+satisfied.** Milestones 0, 1, 1.5, 2, 5, 6, 7, 8, 9, 10, and 11 are
+**approved and complete**. Milestone 3 (PROJECT.md close-out of the
+Governance Documentation phase) was satisfied by prior updates;
+Milestone 4 is superseded (see §15). **Milestone 12 — PROJECT.md final
+close-out is now complete**: this file's Current Status, Completed
+Tasks, and Next Actions have been updated to reflect the finished
+Sprint 01 foundation, and the Definition of Done (§15) was
+re-validated locally — see Current Status for full detail. There is no
+next Sprint 01 milestone. The next actionable step is Sprint 02, which
+does not yet have an approved Sprint Document — see Pending Tasks and
+the final section of Current Status for the recommendation.
 
 ## Current Branch
 
-`main` — git initialized this milestone; no commits yet (repository
-initialization only, per `docs/sprints/sprint-01.md`, §15, Milestone
-1).
+`main` — first commit `6ff7e44` ("chore(repo): establish Sprint 01
+repository foundation (Milestones 0-10)") pushed to `origin/main` at
+[github.com/amiyamishra1990-rgb/natkhat-ai](https://github.com/amiyamishra1990-rgb/natkhat-ai)
+(pre-existing empty repo, created 2026-07-26 by the user, verified
+empty before push — 0 branches, 0 size, never previously pushed to;
+**public** visibility, a pre-existing decision from repo creation, not
+made in this session). PR
+[#1](https://github.com/amiyamishra1990-rgb/natkhat-ai/pull/1)
+(`chore/project-milestone-10-ci-verification` → `main`) is open,
+CI-green, but **blocked on required review** (`mergeStateStatus:
+BLOCKED`, `reviewDecision: REVIEW_REQUIRED`) — branch protection's
+`enforce_admins: true` means even the repo owner cannot self-merge it;
+see Blockers.
 
 ## Current Release
 
@@ -86,12 +99,164 @@ Pre-release — no deployable environment yet.
 
 ## Build Status
 
-N/A — `.github/workflows/ci.yml` now exists and its underlying commands
-are validated locally (see Current Status), but it has never actually
-run on GitHub: there is no remote/pushed commits yet for `pull_request`
-events to trigger against.
+**Green** — verified on real GitHub Actions, not just locally: all
+five `ci.yml` jobs (`lint`, `typecheck`, `test`, `build`, `mobile`)
+pass on
+[run 30753691637](https://github.com/amiyamishra1990-rgb/natkhat-ai/actions/runs/30753691637)
+against PR #1. Two real defects were caught by this real run (neither
+had surfaced in local validation) and fixed on the same PR branch — see
+Current Status.
 
 ## Current Status
+
+**Milestone 12 (PROJECT.md final close-out) is now complete — Sprint 01
+is 100% complete.** Per `docs/sprints/sprint-01.md`, §15, Milestone
+12 is exactly: "PROJECT.md final close-out — Current Status, Completed
+Tasks, Next Actions updated to reflect the finished foundation." Before
+implementing, verified the resume request's own prerequisite claims
+against the repository rather than assuming them: confirmed Milestones
+0, 1, 1.5, 2, 5, 6, 7, 8, 9, 10, and 11 are each recorded as complete in
+this file's own Completed Tasks/Change Log (all 11 present, none
+missing), and confirmed no unresolved blocker prevents Milestone 12 —
+the Blockers section already stated "None blocking Sprint 01 progress"
+before this session began; the one open operational item (PR #1
+merge-blocked pending a second reviewer) is explicitly recorded
+elsewhere in this file as "not a Sprint 01 blocker," so it does not gate
+this close-out.
+
+Re-validated the Definition of Done (`docs/sprints/sprint-01.md`, §15)
+directly, rather than relying solely on Milestone 10's prior CI run:
+`pnpm install --frozen-lockfile` against the current `pnpm-lock.yaml`
+succeeds cleanly; `pnpm exec turbo run lint typecheck test build`
+passes 5/5 tasks (all cache-hit, confirming no drift since Milestone
+10's real CI run); `flutter analyze` in `apps/mobile` reports "No
+issues found"; `flutter test` reports "All tests passed." Combined with
+Milestone 10's independently-verified real GitHub Actions run
+([run 30753691637](https://github.com/amiyamishra1990-rgb/natkhat-ai/actions/runs/30753691637))
+and branch protection, this satisfies §15's Definition of Done in full:
+a new engineer or AI agent cloning the repo, reading `PROJECT.md` →
+Constitution → ADRs → the current Sprint Document, running
+`scripts/setup.sh`, gets `apps/backend` building/testing and
+`apps/mobile` building/testing locally, with CI green on a real PR.
+
+Reviewed `docs/sprints/sprint-01.md`, §27, Recommendation 6 ("Revisit
+`docs/` domain boundaries, the Knowledge Vault's category list, and
+`.ai/` structure at the end of Sprint 01 to confirm they held up in
+practice before Sprint 02 adds real product modules") as a read-only
+confirmation, not a redesign — Milestone 12 does not authorize
+structural changes: the ten `docs/` domains (§5) were each populated
+by exactly the milestone that owns them, with no domain needing a
+scope it wasn't given (Milestone 6's how-to-docs discrepancy and
+Milestone 11's `.ai/sessions/` discrepancy are the only two boundary
+frictions found across all 12 milestones, and both were flagged and
+deferred to a Change Request rather than silently resolved — neither
+required a structural change); the Knowledge Vault's eight categories
+(`docs/knowledge/`) were never populated with real entries in Sprint 01
+(expected — Sprint 01 has no implementation to generate lessons from
+yet) but the category list itself was never found to be wrong or
+missing a needed category; `.ai/`'s four folders are each now used
+for what §6 defines them for (`prompts/` populated at Milestone 11;
+`context/` populated at Milestone 0/1.5; `sessions/` and `reviews/`
+correctly still empty — no AI session has been logged there across all
+12 milestones, which is itself the discrepancy flagged at Milestone 11
+and carried forward below, not resolved here). Conclusion: the
+structure held up in practice: no domain boundary or `.ai/` folder
+needs to change before Sprint 02. This is a finding, not a decision —
+no `docs/` or `.ai/` structural change was made.
+
+**Sprint 01 Completion Checklist** (§15's twelve Milestone Breakdown
+entries):
+
+| #   | Milestone                                                        | Status                                |
+| --- | ---------------------------------------------------------------- | ------------------------------------- |
+| 0   | Governance Documentation Foundation                              | Complete                              |
+| 1   | Root scaffolding                                                 | Complete                              |
+| 1.5 | Governance Synchronization (Child Privacy & Safety Constitution) | Complete                              |
+| 2   | Governance population (`change-request-process.md`)              | Complete                              |
+| 3   | PROJECT.md close-out of Governance phase                         | Complete (satisfied by prior updates) |
+| 4   | _(superseded by Milestone 0)_                                    | N/A                                   |
+| 5   | Module Registry scaffolding                                      | Complete                              |
+| 6   | Engineering standards docs                                       | Complete                              |
+| 7   | Shared config packages                                           | Complete                              |
+| 8   | App scaffolds                                                    | Complete                              |
+| 9   | Developer tooling                                                | Complete                              |
+| 10  | CI foundation                                                    | Complete                              |
+| 11  | `.ai/` workspace population                                      | Complete                              |
+| 12  | PROJECT.md final close-out                                       | Complete (this entry)                 |
+
+No application code, business logic, database, auth, or product
+functionality touched; no architecture, ADR, Constitution, or other
+governance document modified — only `PROJECT.md` (this file). Sprint 02
+has no approved Sprint Document yet (`docs/sprints/` contains only
+`sprint-01.md`) — see Pending Tasks for the recommended first step.
+
+Milestone 11 (`.ai/` workspace population) is complete, per
+`docs/sprints/sprint-01.md`, §15's exact Milestone 11 definition:
+"`.ai/` workspace population (remaining) — starter prompt template(s)
+in `.ai/prompts/`." Before implementing, confirmed this exact scope
+directly from the Sprint Document (§15) rather than from this session's
+resume-request wording, per the AI Engineering Rule
+(`.ai/context/agent-workflow.md`); the resume request's own wording
+("starter prompt template(s) in `.ai/prompts/`") matched §15 verbatim,
+so no scope mismatch needed surfacing this time.
+
+Authored four starter prompt templates in `.ai/prompts/`:
+`draft-adr.md`, `draft-module-doc.md`, `run-review-pass.md`, and
+`resume-milestone.md`. The first three are not new process invention —
+they are the exact three recurring tasks `.ai/prompts/README.md`
+already named ("draft an ADR, draft a module doc, run a review pass")
+before this milestone began. The fourth,
+`resume-milestone.md`, generalizes the resume-and-implement-one-milestone
+pattern this Sprint's own Change Log shows repeated identically across
+all ten prior milestone sessions (each: read PROJECT.md → Constitution
+→ ADRs → Sprint Document → confirm exact milestone scope → implement
+only that milestone → report files/trees/validations/issues/acceptance
+criteria → stop for approval) — captured as a template rather than
+re-derived from scratch next time, per the same "keeps agent output
+consistent across sessions and providers" rationale
+`.ai/prompts/README.md` already states for this folder's purpose. Each
+template is explicit that it is non-authoritative
+(`docs/sprints/sprint-01.md`, §6) and defers to the governing
+`docs/` document (`change-request-process.md`,
+`docs/modules/TEMPLATE.md`, `review-checklist.md`/`ai-review-checklist.md`,
+and the Sprint Document itself, respectively) wherever the two could
+ever disagree.
+
+Updated `.ai/prompts/README.md` from a structural placeholder (empty,
+`Version 1.0.0`) to an active index (`Version 1.1.0`) listing all four
+templates in a table, matching the update pattern every prior milestone
+used for the `docs/` README each milestone populated (e.g.
+`docs/modules/README.md` at Milestone 5, `docs/engineering/README.md`
+at Milestone 6). Validated: `pnpm exec prettier --check .ai/prompts/*.md`
+initially failed only on `README.md`'s table alignment; `pnpm exec
+prettier --write` fixed it (table column widths only, no content
+change), and a re-run of `--check` then passed for all five files in
+the folder. No other file in the repository references
+`.ai/prompts/` by path (checked via a repo-wide grep for `.ai/prompts`)
+outside `PROJECT.md`, `docs/sprints/sprint-01.md`, and the folder's own
+files, so no other document needed updating for this milestone.
+
+No application code, business logic, database, auth, or product
+functionality touched; no architecture, ADR, or Constitution changed;
+`docs/modules/TEMPLATE.md`, `docs/engineering/change-request-process.md`,
+`docs/engineering/review-checklist.md`, and
+`docs/engineering/checklists/ai-review-checklist.md` were read for
+grounding but not modified — the new prompt templates reference them,
+they do not restate or alter them. `.ai/sessions/` and `.ai/reviews/`
+remain empty structural placeholders: `docs/sprints/sprint-01.md`, §15's
+Milestone 11 definition scopes this milestone to `.ai/prompts/` only.
+One documentation forward-reference is worth flagging, not silently
+resolved: `docs/engineering/checklists/ai-review-checklist.md` (line
+31–33) says a session log in `.ai/sessions/` is expected "once that
+workspace is populated with real session records — Sprint 01, Milestone
+11," which reads as if Milestone 11 also covers `.ai/sessions/`. §15's
+own Milestone 11 line is unambiguous and names only `.ai/prompts/`, so
+§15 (the operative Milestone Breakdown) was followed here, consistent
+with how this Sprint's own precedent (Milestone 6's similar
+how-to-docs discrepancy) treats §15 as the deciding text over other
+docs' forward-references. Recorded here, not resolved unilaterally —
+`.ai/sessions/`/`.ai/reviews/` population remains unscheduled pending a
+Change Request, same disposition as the Milestone 6 precedent.
 
 Milestone 10 (CI foundation) is now underway: authored
 `.github/workflows/ci.yml`, per `docs/sprints/sprint-01.md`, §15, §16.
@@ -119,8 +284,46 @@ in this environment, so this is the deepest local static validation
 possible), and every underlying command the workflow calls
 (`turbo run lint typecheck test build`, `flutter analyze`, `flutter
 test`) was re-run directly and still passes after the Milestone 9
-tooling additions. **The workflow has not actually executed on
-GitHub** — see Build Status.
+tooling additions.
+
+**Update — the workflow has now actually executed on GitHub, and real
+CI found two real bugs local validation missed.** First commit
+`6ff7e44` was pushed to `origin/main` (pre-existing, verified-empty
+repo at `github.com/amiyamishra1990-rgb/natkhat-ai`), then PR
+[#1](https://github.com/amiyamishra1990-rgb/natkhat-ai/pull/1)
+(`chore/project-milestone-10-ci-verification`, content limited to
+`PROJECT.md` tracking updates per the user's explicit scope
+instruction) was opened specifically to exercise `ci.yml`'s
+`pull_request` trigger. The first real run failed 4/5 jobs (`mobile`
+correctly passed — no `apps/mobile/**` changes to gate on):
+`lint`/`typecheck`/`test`/`build` all failed identically at `pnpm
+install --frozen-lockfile` with `ERR_PNPM_OUTDATED_LOCKFILE` —
+`package.json` declared `"@natkhat-ai/config-prettier": "workspace:*"`
+but `pnpm-lock.yaml` still had `workspace:^`, because that field was
+hand-edited for convention-consistency at Milestone 9 without
+re-running `pnpm install` afterward. Reproduced locally (`pnpm install
+--frozen-lockfile` failed identically), fixed with a plain `pnpm
+install` (resyncs the lockfile; 1-line diff, nothing else changed),
+verified, committed (`fix(repo): sync pnpm-lock.yaml specifier for
+@natkhat-ai/config-prettier`), and pushed. The second run then failed
+the same 4 jobs differently: `ERR_PNPM_UNSUPPORTED_ENGINE` —
+`@commitlint/cli@21.2.1` requires Node `>=22.12.0`, but `.nvmrc`/
+`engines.node` still targeted the Milestone 1 default of Node 20,
+which `ci.yml` correctly installs via `setup-node`. This had never
+surfaced locally because the local dev environment already runs Node
+v24. Confirmed no ADR or constitution pins a specific Node version (a
+`docs/` grep for "Node" version references returned nothing), so this
+is a tooling-config fix, not an architecture change: bumped `.nvmrc`
+(`20` → `22`) and root `package.json`'s `engines.node` (`>=20.0.0` →
+`>=22.12.0`), re-verified `pnpm install --frozen-lockfile` and `turbo
+run lint typecheck test build` locally, committed (`fix(repo): bump
+Node engine requirement to >=22.12.0`) and pushed. The third run
+passed all 5 jobs:
+[run 30753691637](https://github.com/amiyamishra1990-rgb/natkhat-ai/actions/runs/30753691637)
+— `lint`, `typecheck`, `test`, `build`, `mobile` all green. This is
+exactly the class of defect Milestone 10 exists to catch (real,
+clean-room CI vs. a long-lived local dev environment with stale state)
+— see Build Status.
 
 Job names (`lint`, `typecheck`, `test`, `build`) were deliberately made
 four separate jobs, not one job running the combined `turbo run lint
@@ -132,24 +335,14 @@ names, which only exist as four distinct GitHub status checks if they
 are four distinct jobs. Recorded here as an interpretation, not a
 silent architecture decision.
 
-**Branch protection on `main` (the other half of Milestone 10) is
-blocked, not completed:** this repository has zero commits
-(`git log` on `main` still errors with "does not have any commits
-yet") and no configured remote (`git remote -v` returns nothing), so
-there is no GitHub repository for `gh api
-repos/<owner>/<repo>/branches/main/protection` to target — `gh auth
-status` confirms an authenticated account with `repo`/`workflow`
-scopes, but having API access is not the same as there being a
-repository to call it against, and creating one (plus making the
-first-ever commit and pushing) is a materially different, shared-state
-action than "author `ci.yml`," not something this milestone's approved
-scope or the session's instructions authorized. The exact configuration
-to apply once a remote and at least one commit exist (combining §16's
-required status checks with §17's "main protected, required review +
-status checks"):
+**Branch protection on `main` is now configured and independently
+verified**, completing the other half of Milestone 10. After all five
+checks were confirmed passing with their exact real GitHub Actions
+context names (`lint`, `typecheck`, `test`, `build`, `mobile` — read
+directly from `gh pr checks`, not assumed from the YAML), applied:
 
 ```
-gh api repos/<owner>/<repo>/branches/main/protection \
+gh api repos/amiyamishra1990-rgb/natkhat-ai/branches/main/protection \
   --method PUT \
   -F required_status_checks[strict]=true \
   -F 'required_status_checks[contexts][]=lint' \
@@ -161,6 +354,34 @@ gh api repos/<owner>/<repo>/branches/main/protection \
   -F 'required_pull_request_reviews[required_approving_review_count]=1' \
   -F restrictions=null
 ```
+
+Combines §16's required status checks with §17's "main protected,
+required review + status checks." Verified by an independent `GET`
+(not just trusting the `PUT` response) — the returned config matches
+exactly: 5 required contexts, `strict: true` (branches must be
+up-to-date before merging), `required_approving_review_count: 1`,
+`enforce_admins: true`, force-push and branch deletion both disabled.
+Also verified functionally, not just by reading config back: PR #1's
+own `gh pr view` now reports `mergeStateStatus: BLOCKED` /
+`reviewDecision: REVIEW_REQUIRED` — branch protection is actually
+being enforced by GitHub, not just recorded as configured.
+
+**Practical consequence worth flagging directly**: `enforce_admins:
+true` means this is not bypassable by repo admins either — **the repo
+owner cannot self-merge PR #1** (or any future PR) without at least one
+approving review from a different account. `.github/CODEOWNERS` is
+still a placeholder with no real reviewers assigned (Milestone 1), and
+this is currently a single-maintainer repository, so as configured,
+_nothing can be merged to `main` right now without either adding a
+second collaborator to review, or the user deliberately relaxing
+`required_approving_review_count`/`enforce_admins` themselves._ This
+was not silently softened (e.g. by dropping `enforce_admins` or the
+review requirement) because §17 explicitly calls for "required review
+
+- status checks" and doing so unilaterally would be weakening
+  governance this session wasn't asked to touch — surfaced instead so
+  the user can make that call. PR #1 is left open, unmerged, for the
+  user's own review/merge decision.
 
 **A correction to Milestone 9's own record**, found while following
 this session's explicit instruction to revisit Milestone 9's
@@ -407,11 +628,16 @@ natkhat-ai/
 │   └── sprints/
 │       └── sprint-01.md
 ├── .ai/
-│   ├── prompts/README.md
+│   ├── prompts/                  # Milestone 11 — populated
+│   │   ├── README.md
+│   │   ├── draft-adr.md
+│   │   ├── draft-module-doc.md
+│   │   ├── run-review-pass.md
+│   │   └── resume-milestone.md
 │   ├── context/README.md
 │   ├── context/agent-workflow.md
-│   ├── sessions/README.md
-│   └── reviews/README.md
+│   ├── sessions/README.md          # still a placeholder — not in Milestone 11's scope
+│   └── reviews/README.md           # still a placeholder — not in Milestone 11's scope
 ├── infrastructure/
 │   ├── README.md
 │   ├── gcp/README.md
@@ -504,16 +730,35 @@ Constitution).
 
 ## Pending Tasks / Next Tasks
 
-- **Branch protection on `main` (rest of Milestone 10) is blocked on a
-  prerequisite, not pending approval**: needs a GitHub remote and at
-  least one pushed commit before `gh api
-repos/<owner>/<repo>/branches/main/protection` (exact command in
-  Current Status) can be run. Await explicit user instruction before
-  creating a remote and/or making the first commit — that is a
-  separate, shared-state decision from authoring `ci.yml`.
-- Await user approval before starting Milestone 11 (`.ai/` workspace
-  population — starter prompt template(s) in `.ai/prompts/`), per
-  `docs/sprints/sprint-01.md`, §15.
+- **PR [#1](https://github.com/amiyamishra1990-rgb/natkhat-ai/pull/1)
+  is open, CI-green, but blocked on required review** —
+  `enforce_admins: true` on the new branch protection means even the
+  repo owner cannot self-merge it. Needs either a second collaborator
+  to review/approve, or the user to deliberately relax
+  `required_approving_review_count`/`enforce_admins` themselves (not
+  done unilaterally here — see Current Status). This is not a Sprint
+  01 blocker, just an immediate next action for the user.
+- **Sprint 01 is complete. Sprint 02 has no approved Sprint Document
+  yet** — `docs/sprints/` contains only `sprint-01.md`. Per
+  `docs/sprints/sprint-01.md`, §27, Recommendation 1 ("every future
+  sprint produces its own Sprint Document under this same chain"), the
+  literal next actionable step is authoring and getting approval for
+  `docs/sprints/sprint-02.md` (Proposal → Review → Decision, per
+  `docs/engineering/change-request-process.md`) — not any specific
+  implementation milestone, since none is recorded anywhere as Sprint
+  02's Milestone Breakdown yet. If Sprint 02 is intended to implement
+  ADR-0004 (database) or ADR-0005 (auth), Known Risks #1 and #2 below
+  (data-privacy/compliance ADR, COPPA/GDPR-K target-audience
+  ratification) are explicit prerequisites per the Risk Register
+  (`docs/sprints/sprint-01.md`, §26) and must be addressed before, not
+  during, that implementation.
+- Unscheduled: `.ai/sessions/` and `.ai/reviews/` remain empty
+  structural placeholders — Milestone 11 scoped only to
+  `.ai/prompts/` per `docs/sprints/sprint-01.md`, §15's exact wording.
+  `docs/engineering/checklists/ai-review-checklist.md` (line 31–33)
+  reads as if session-log population was also part of Milestone 11;
+  flagged, not resolved — needs a Change Request to assign, or a
+  correction to that checklist's cross-reference.
 - Turborepo root-task wiring for `flutter analyze`/`flutter test`
   (referenced by ADR-0002/`sprint-01.md` §11 as "a Turborepo task") was
   decided at Milestone 10: **not added** — `apps/mobile` stays outside
@@ -609,35 +854,66 @@ test` — see Current Status above for full detail. Fixed a missing
   10, 2026-08-02):** the executable-bit concern originally recorded
   here was a false alarm — see Current Status/Change Log for the
   empirical correction; no action was actually needed.
-- Milestone 10: authored `.github/workflows/ci.yml` (`ci.yml` half of
-  CI foundation complete, per `docs/sprints/sprint-01.md`, §15, §16) —
-  five jobs (`lint`, `typecheck`, `test`, `build`, `mobile`), Turborepo
-  `--filter`-scoped to the PR base SHA, Flutter checks gated on
-  `apps/mobile/**` changes via `git diff`. Branch protection on `main`
-  (the other half) is **blocked**, not completed — no GitHub remote or
-  commits exist yet; see Current Status/Blockers for the exact
-  configuration to apply once they do. Also corrected a factual error
-  in Milestone 9's own record (executable-bit concern; see that entry
-  above and Change Log). No application code, business logic, database,
-  auth, or product functionality touched.
+- Milestone 10: **fully complete**, per `docs/sprints/sprint-01.md`,
+  §15, §16, §17 — `.github/workflows/ci.yml` authored (five jobs:
+  `lint`, `typecheck`, `test`, `build`, `mobile`); first commit
+  `6ff7e44` pushed to the pre-existing, verified-empty
+  `github.com/amiyamishra1990-rgb/natkhat-ai`; the real workflow
+  triggered via PR #1 and, after fixing two real bugs it caught (a
+  `pnpm-lock.yaml` specifier drift and a Node engine requirement too
+  low for `@commitlint/cli@21`), all five jobs verified passing on
+  GitHub; branch protection on `main` configured with the confirmed
+  real check names and independently verified both by reading the
+  config back and by observing PR #1 actually become merge-blocked.
+  Also corrected a factual error in Milestone 9's own record
+  (executable-bit concern; see that entry above and Change Log). No
+  application code, business logic, database, auth, or product
+  functionality touched; no architecture, ADR, or Constitution changed.
+  PR #1 left open, unmerged, for the user's own review — see Pending
+  Tasks.
+- Milestone 11: authored four starter prompt templates in
+  `.ai/prompts/` (`draft-adr.md`, `draft-module-doc.md`,
+  `run-review-pass.md`, `resume-milestone.md`), per
+  `docs/sprints/sprint-01.md`, §15; updated `.ai/prompts/README.md`
+  from a structural placeholder to an active index. Documentation
+  only — see Current Status for full detail, including a flagged (not
+  resolved) forward-reference discrepancy in
+  `docs/engineering/checklists/ai-review-checklist.md` about
+  `.ai/sessions/`.
+- Milestone 12: **Sprint 01 close-out, fully complete** — verified all
+  eleven prior milestones (0, 1, 1.5, 2, 5, 6, 7, 8, 9, 10, 11) and
+  confirmed no unresolved Sprint 01 blocker; re-validated the
+  Definition of Done (`docs/sprints/sprint-01.md`, §15) locally
+  (`pnpm install --frozen-lockfile`, `turbo run lint typecheck test
+build` 5/5, `flutter analyze`/`flutter test` both clean); reviewed §27
+  Recommendation 6 (domain boundaries, Knowledge Vault categories,
+  `.ai/` structure) as a read-only confirmation — no structural change
+  needed; updated this file's Current Status, Completed Tasks,
+  Pending Tasks, Blockers, Known Risks framing, Repository Health, and
+  Change Log to reflect Sprint 01 as 100% complete. Documentation
+  only — no application code, architecture, ADR, or governance
+  document touched. See Current Status for the full Sprint 01
+  Completion Checklist.
 
 ## Blockers
 
-**One open blocker**: branch protection on `main` (part of Milestone
-10, per §15) cannot be configured — no GitHub remote and no commits
-exist yet in this repository. Not a design gap: the exact `gh api`
-command to run once a remote and a first commit exist is documented in
-Current Status. Unblocking this requires an explicit user decision to
-create a remote and make the first commit — a separate, shared-state
-action from anything authorized so far.
+**None. Sprint 01 is 100% complete** — all 12 Milestone Breakdown
+entries satisfied (see Current Status, Sprint 01 Completion Checklist).
+**One operational item needs the user's attention**, unrelated to
+Sprint 01 completion: PR #1 is CI-green but merge-blocked by the branch
+protection configured at Milestone 10 (`enforce_admins: true` + 1
+required review, and this is currently a single-maintainer repo) — see
+Pending Tasks/Current Status.
 
 Known Risk #5 (missing Child Privacy & Safety Constitution) is resolved
-as of Milestone 1.5 — see Known Risks below. Known Risk #6 (Milestone 1
-scope discrepancy), Known Risk #7 (Milestone 2 scope discrepancy), and
-Known Risk #8 (Milestone 9 scope discrepancy) remain recorded as
-historical/resolved-by-precedent — see Known Risks below. Awaiting user
-approval before Milestone 11 begins (independent of the branch-protection
-blocker above).
+as of Milestone 1.5 — see Known Risks below. Known Risks #6, #7, #8
+(scope discrepancies) remain recorded as historical/resolved-by-precedent.
+Known Risk #9 (branch protection blocked) is now **resolved** — see
+Known Risks below. Known Risks #1–#4 remain open by design (Privacy,
+Compliance, AI governance, ASPOVO Constitution placeholder) — Sprint 01
+never required resolving them, but they gate specific future work (see
+Known Risks below and Pending Tasks). Awaiting user approval before
+Sprint 02 begins.
 
 ## Known Risks
 
@@ -694,32 +970,46 @@ Top risks (full register: [docs/sprints/sprint-01.md](docs/sprints/sprint-01.md)
    the strict-repo-truth path (`docs/sprints/sprint-01.md` as Single
    Source of Truth) — Milestone 9 executed exactly as written in §15,
    CI / GitHub Actions deferred to its real milestone (10).
-9. **Infrastructure — OPEN (2026-08-02, Milestone 10)** — branch
-   protection on `main` (§15, §16, §17) cannot be configured: this
-   repository has no GitHub remote and no commits. `ci.yml` (the other
-   Milestone 10 deliverable) does not depend on this and is complete.
-   Not resolved by this session because creating a remote and making
-   the first commit is a distinct, shared-state decision outside this
-   milestone's authorized scope ("implement ONLY Milestone 10"); the
-   exact `gh api ... branches/main/protection` command to run once
-   unblocked is documented in Current Status/Pending Tasks. Tracked
-   here as open, not resolved-by-precedent like #6–#8, because the
-   underlying prerequisite genuinely does not exist yet.
+9. **Infrastructure — RESOLVED (2026-08-02, Milestone 10)** — branch
+   protection on `main` was blocked (no remote, no commits) as of the
+   prior session; the user explicitly approved unblocking it this
+   session ("we will finish the blocked Git/GitHub portion"). First
+   commit `6ff7e44` pushed to the pre-existing, verified-empty
+   `github.com/amiyamishra1990-rgb/natkhat-ai`; real `ci.yml` triggered
+   via PR #1 and verified green (after fixing two real bugs it caught —
+   see Current Status/Change Log); branch protection configured with
+   the confirmed real check names and independently verified (config
+   read back via `GET`, and PR #1 observed to actually be
+   merge-blocked). New operational item surfaced by this resolution,
+   not itself a Sprint 01 risk: `enforce_admins: true` blocks even the
+   repo owner from self-merging without a second reviewer — see
+   Blockers/Pending Tasks.
 
 ## Repository Health
 
-Foundation stage. Three tooling-config packages (Milestone 7) and two
-application scaffolds — `apps/backend` (NestJS) and `apps/mobile`
-(Flutter) — exist and are validated (Milestone 8), with no business
-logic in either. Developer tooling — Husky, lint-staged, commitlint —
-installed and validated (Milestone 9; the executable-bit concern
-originally recorded against this milestone was corrected at Milestone
-10 — no action was actually needed). `.github/workflows/ci.yml`
-authored and validated locally (Milestone 10) but never executed on
-GitHub. Git initialized at Milestone 1; still zero commits, no remote —
-that remains the user's call, and is now also the one open blocker
-(branch protection, Known Risk #9). Known Risks #5, #6, #7, #8 are
-resolved/historical; Known Risk #9 is open.
+Foundation stage, now live on GitHub. Three tooling-config packages
+(Milestone 7) and two application scaffolds — `apps/backend` (NestJS)
+and `apps/mobile` (Flutter) — exist and are validated (Milestone 8),
+with no business logic in either. Developer tooling — Husky,
+lint-staged, commitlint — installed and validated (Milestone 9; the
+executable-bit concern originally recorded against this milestone was
+corrected at Milestone 10 — no action was actually needed).
+`.github/workflows/ci.yml` authored, pushed, and verified green on real
+GitHub Actions (Milestone 10) after fixing two real bugs it caught
+(lockfile specifier drift; Node engine requirement). Branch protection
+on `main` configured and independently verified. First commit `6ff7e44`
+pushed to `github.com/amiyamishra1990-rgb/natkhat-ai` (public,
+pre-existing). The `.ai/` workspace's `prompts/` folder is now
+populated (Milestone 11) with four starter templates; `.ai/sessions/`
+and `.ai/reviews/` remain empty placeholders, out of Milestone 11's
+scope. **Sprint 01 (Repository Foundation) is now 100% complete**
+(Milestone 12) — the Definition of Done was re-validated locally in
+this session and matches Milestone 10's real GitHub Actions run. Known
+Risks #5–#9 are resolved/historical; #1–#4 remain open by design (they
+were never Sprint 01 exit criteria, but gate specific future work — see
+Known Risks). One operational item outstanding, unrelated to Sprint 01
+completion: PR #1 is CI-green but needs a second reviewer (or a
+deliberate protection-rule change by the user) to merge.
 
 ## Major Decisions
 
@@ -730,6 +1020,161 @@ resolved/historical; Known Risk #9 is open.
 - [ADR-0001](docs/decisions/ADR-0001-monorepo.md) — Adopt a Single Monorepo (Turborepo + pnpm Workspaces)
 
 ## Change Log
+
+- **2026-08-03** — Milestone 12 (PROJECT.md final close-out) complete —
+  **Sprint 01 is now 100% complete**: before implementing, verified
+  (rather than assumed) that Milestones 0, 1, 1.5, 2, 5, 6, 7, 8, 9,
+  10, and 11 are each recorded complete in this file's own Completed
+  Tasks/Change Log, and confirmed no unresolved blocker prevents this
+  close-out (the one open item, PR #1's merge-review block, is
+  explicitly recorded elsewhere as "not a Sprint 01 blocker"). Per
+  `docs/sprints/sprint-01.md`, §15's exact Milestone 12 definition
+  ("PROJECT.md final close-out — Current Status, Completed Tasks, Next
+  Actions updated to reflect the finished foundation"), updated exactly
+  those fields plus Blockers, Repository Health, and Known Risks
+  framing — no other file touched. Re-validated §15's Definition of
+  Done directly rather than relying solely on Milestone 10's prior run:
+  `pnpm install --frozen-lockfile` clean, `pnpm exec turbo run lint
+typecheck test build` 5/5 (all cache-hit — no drift since Milestone
+  10), `flutter analyze`/`flutter test` in `apps/mobile` both clean.
+  Reviewed `docs/sprints/sprint-01.md`, §27, Recommendation 6 (revisit
+  `docs/` domain boundaries, Knowledge Vault categories, `.ai/`
+  structure before Sprint 02) as a read-only confirmation, not a
+  redesign — Milestone 12 does not authorize structural change; found
+  the structure held up in practice across all 12 milestones, with the
+  Milestone 6 and Milestone 11 documentation-discrepancy precedents as
+  the only two boundary frictions found, both already flagged and
+  deferred to a Change Request rather than requiring a structural fix.
+  Recorded a full twelve-row Sprint 01 Completion Checklist in Current
+  Status. Confirmed no approved Sprint 02 Sprint Document exists yet
+  (`docs/sprints/` contains only `sprint-01.md`); recommended, per §27
+  Recommendation 1, that the literal next step is authoring
+  `docs/sprints/sprint-02.md` through the Change Request Process, not
+  any specific implementation milestone (none is recorded as Sprint
+  02's Milestone Breakdown anywhere) — and flagged that Known Risks #1
+  (privacy/compliance ADR) and #2 (COPPA/GDPR-K ratification) are
+  explicit prerequisites, per the Risk Register (§26), if Sprint 02
+  turns out to implement ADR-0004/ADR-0005. No application code,
+  business logic, database, auth, or product functionality touched; no
+  architecture, ADR, Constitution, or other governance document
+  modified; no Sprint 02 planning performed — only this file. — AI
+  agent (Claude Code), pending user review before Sprint 02.
+- **2026-08-03** — Milestone 11 (`.ai/` workspace population) complete:
+  confirmed the exact scope directly from `docs/sprints/sprint-01.md`,
+  §15 ("`.ai/` workspace population (remaining) — starter prompt
+  template(s) in `.ai/prompts/`") before implementing, per the AI
+  Engineering Rule read-first sequence — the resume request's own
+  wording matched §15 verbatim, so no mismatch needed surfacing this
+  time (contrast Known Risks #6–#8, where prior resume requests did not
+  match). Authored four starter prompt templates in `.ai/prompts/`:
+  `draft-adr.md`, `draft-module-doc.md`, and `run-review-pass.md`
+  formalize the three recurring tasks `.ai/prompts/README.md` already
+  named before this milestone ("draft an ADR, draft a module doc, run a
+  review pass"); `resume-milestone.md` generalizes the
+  resume-and-implement-one-milestone pattern this Sprint's own Change
+  Log shows repeated identically across all ten prior milestone
+  sessions. Each template states it is non-authoritative
+  (`docs/sprints/sprint-01.md`, §6) and points to the governing `docs/`
+  document it summarizes rather than restating it. Updated
+  `.ai/prompts/README.md` from a structural placeholder
+  (`Version 1.0.0`) to an active index (`Version 1.1.0`) listing all
+  four templates, matching the update pattern every prior milestone
+  used for the `docs/` README it populated. Validated:
+  `pnpm exec prettier --check .ai/prompts/*.md` (failed once on
+  `README.md`'s table alignment, fixed with `--write` — table
+  formatting only, no content change — then passed for all five files);
+  a repo-wide grep for `.ai/prompts` confirmed no other document
+  references the folder by path and needed updating. Flagged, not
+  resolved: `docs/engineering/checklists/ai-review-checklist.md` (line
+  31–33) reads as if `.ai/sessions/` population were also part of
+  Milestone 11, but `docs/sprints/sprint-01.md`, §15's own Milestone 11
+  definition names only `.ai/prompts/` — §15 was followed as the
+  operative Milestone Breakdown, consistent with the Milestone 6
+  precedent for resolving this class of documentation discrepancy;
+  `.ai/sessions/` and `.ai/reviews/` remain empty placeholders, tracked
+  in Pending Tasks. No application code, business logic, database,
+  auth, or product functionality touched; no architecture, ADR, or
+  Constitution changed; no governance document modified — only
+  `.ai/prompts/` and this file. — AI agent (Claude Code), pending user
+  review before Milestone 12.
+- **2026-08-02** — Milestone 10 (CI foundation) **fully complete**:
+  this session's request explicitly approved finishing the
+  Git/GitHub-remote prerequisite that the prior session's Milestone 10
+  work had left blocked. Before touching anything: verified the
+  repository was safe to push — `git add -A --dry-run` listed exactly
+  164 files (no `node_modules/`, `dist/`, `build/`, `.turbo/`,
+  `coverage/`, `.dart_tool/`, Android/iOS build artifacts, or `.idea/`
+  — all correctly gitignored, confirmed by both the file listing and
+  direct `git check-ignore -v` tests, including one live test that
+  created and removed a real `apps/backend/coverage/` directory to
+  confirm the pattern actually works, not just reads correctly);
+  filename- and content-scanned all 164 candidate files for secrets
+  (`.env`, `.pem`/`.key`/`.keystore`/`.jks`, `local.properties`,
+  `key.properties`, AWS/GitHub/Google/OpenAI/Slack token patterns) —
+  none found, only the intentional placeholder `.env.example`; and
+  confirmed via `gh repo list`/`gh api repos/.../branches` that
+  `github.com/amiyamishra1990-rgb/natkhat-ai` already existed
+  (created 2026-07-26 by the user, public) and was genuinely empty (0
+  branches, 0 size, `pushed_at` == `created_at`) before pushing
+  anything to it.
+
+  Created the first commit, `6ff7e44` ("chore(repo): establish Sprint
+  01 repository foundation (Milestones 0-10)"), through the real
+  `pre-commit`/`commit-msg` hooks (no `--no-verify`) — lint-staged
+  auto-fixed formatting on 91 matching files and ran ESLint on 6
+  backend files with no errors, commitlint accepted the message
+  cleanly. Added `origin` and pushed `main` directly (the standard
+  bootstrap exception to GitHub Flow — there is no prior `main` to
+  branch from for an empty repo). Since `ci.yml` only triggers on
+  `pull_request`, opened
+  [PR #1](https://github.com/amiyamishra1990-rgb/natkhat-ai/pull/1)
+  from branch `chore/project-milestone-10-ci-verification` (scope
+  `project`, per §17's convention for `PROJECT.md`-only changes) to
+  exercise the real workflow — its content is limited to `PROJECT.md`
+  tracking updates, per this session's explicit scope instruction.
+
+  The first real run failed 4/5 jobs with `ERR_PNPM_OUTDATED_LOCKFILE`
+  (`pnpm-lock.yaml` still had `workspace:^` for
+  `@natkhat-ai/config-prettier` after that field was hand-edited to
+  `workspace:*` at Milestone 9 without re-running `pnpm install`) —
+  reproduced locally, fixed with `pnpm install`, committed and pushed.
+  The second run failed the same 4 jobs with
+  `ERR_PNPM_UNSUPPORTED_ENGINE` (`@commitlint/cli@21.2.1` requires Node
+  `>=22.12.0`; `.nvmrc`/`engines.node` still targeted Milestone 1's
+  Node 20 default, never caught locally because the local environment
+  already runs Node v24) — confirmed no ADR/constitution pins a Node
+  version, bumped `.nvmrc` and `engines.node` to `>=22.12.0`, verified,
+  committed, and pushed. The third run passed all five jobs
+  (`lint`, `typecheck`, `test`, `build`, `mobile`) — see
+  [run 30753691637](https://github.com/amiyamishra1990-rgb/natkhat-ai/actions/runs/30753691637).
+  Both fixes are real, narrowly-scoped tooling-config corrections, not
+  architecture changes.
+
+  Configured branch protection on `main` using the confirmed real
+  check-context names (exact `gh api` command in Current Status),
+  combining §16's required status checks with §17's required review.
+  Verified two ways: an independent `GET` of the protection config
+  (not just trusting the `PUT` response) matched exactly, and PR #1
+  itself was observed to flip to `mergeStateStatus: BLOCKED` /
+  `reviewDecision: REVIEW_REQUIRED` — proof GitHub is actually
+  enforcing it, not just recording it. Flagged directly, not silently
+  absorbed: `enforce_admins: true` means the repo owner cannot
+  self-merge PR #1 (or anything else) without a second reviewer, given
+  this is currently a single-maintainer repo with `CODEOWNERS` still a
+  placeholder — this was not softened unilaterally, since §17
+  explicitly calls for required review and loosening it wasn't asked
+  for; left for the user to decide. PR #1 itself left open and
+  unmerged — merging wasn't part of this session's explicit instruction
+  set, and self-merging under freshly-set review rules would be an
+  odd thing for the agent that just configured those rules to do
+  unilaterally.
+
+  No application code, business logic, database, auth, or product
+  functionality touched; no architecture, ADR, Constitution, or
+  approved governance document changed; no force-push, no deletion, no
+  destructive git operation; only the two real bugs above and
+  `PROJECT.md` tracking fields were modified. — AI agent (Claude Code),
+  pending user review before Milestone 11 and before merging PR #1.
 
 - **2026-08-02** — Milestone 10 (CI foundation) — `ci.yml` half
   complete, branch-protection half blocked: per this session's explicit
@@ -1032,6 +1477,14 @@ analyze`/`flutter test`, even though ADR-0002/`sprint-01.md` §11
 
 ## Last Updated
 
-2026-08-02 — Milestone 10 (CI foundation): `ci.yml` complete, branch
-protection blocked (no remote/commits yet)
-(pre-commit; no PR yet, no commits made in this session).
+2026-08-03 — Milestone 12 (PROJECT.md final close-out) complete —
+**Sprint 01 (Repository Foundation) is now 100% complete**, all 12
+Milestone Breakdown entries satisfied per `docs/sprints/sprint-01.md`,
+§15. Definition of Done re-validated locally (`pnpm install
+--frozen-lockfile`, `turbo run lint typecheck test build` 5/5,
+`flutter analyze`/`flutter test` both clean). Documentation only — only
+`PROJECT.md` modified. No approved Sprint 02 Sprint Document exists
+yet; recommended next step is authoring `docs/sprints/sprint-02.md`.
+PR #1 (Milestone 10) remains open, unmerged, pending a second reviewer
+or a user decision on the review requirement — unrelated to Sprint 01
+completion.
