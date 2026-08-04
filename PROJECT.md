@@ -4,10 +4,13 @@
 
 # Natkhat AI — Project Dashboard
 
-**Version:** 1.12.0
+**Version:** 1.14.0
 **Status:** Living — updated in the same PR as any sprint/milestone/decision change
 **Owner:** Repository maintainers
-**Last Updated:** 2026-08-03 (Milestone 12 — Sprint 01 close-out — complete; **Sprint 01 is 100% complete**)
+**Last Updated:** 2026-08-04 (Post-Sprint-01 remediation, Governance
+Close-Out — ADR-0006 verified with no defect; ADR-0007 founder-ratified
+for target market/age range (India, single market, ages 4–10); Sprint
+01 permanently merged into `main`)
 
 ## Governance Compliance
 
@@ -79,19 +82,26 @@ the final section of Current Status for the recommendation.
 
 ## Current Branch
 
-`main` — first commit `6ff7e44` ("chore(repo): establish Sprint 01
-repository foundation (Milestones 0-10)") pushed to `origin/main` at
-[github.com/amiyamishra1990-rgb/natkhat-ai](https://github.com/amiyamishra1990-rgb/natkhat-ai)
-(pre-existing empty repo, created 2026-07-26 by the user, verified
-empty before push — 0 branches, 0 size, never previously pushed to;
-**public** visibility, a pre-existing decision from repo creation, not
-made in this session). PR
+`main` — Sprint 01 (Milestones 0–12) is now **permanently merged**.
+First commit `6ff7e44`, then PR
 [#1](https://github.com/amiyamishra1990-rgb/natkhat-ai/pull/1)
-(`chore/project-milestone-10-ci-verification` → `main`) is open,
-CI-green, but **blocked on required review** (`mergeStateStatus:
-BLOCKED`, `reviewDecision: REVIEW_REQUIRED`) — branch protection's
-`enforce_admins: true` means even the repo owner cannot self-merge it;
-see Blockers.
+(`chore/project-milestone-10-ci-verification` → `main`, carrying
+Milestone 11/12 completion) merged via merge commit `87de72d` on
+2026-08-03, all 5 required checks green
+([run 30824853976](https://github.com/amiyamishra1990-rgb/natkhat-ai/actions/runs/30824853976)),
+no force-push, no direct push to `main`, no CI bypass. `origin/main` and
+local `main` are synchronized at `87de72d`.
+
+Branch protection on `main` (post-Sprint-01-merge): 5 required status
+checks (`lint`, `typecheck`, `test`, `build`, `mobile`, `strict: true`),
+`enforce_admins: true`, force-push and branch deletion disabled, PR
+workflow mandatory — **with one temporary exception**:
+`required_approving_review_count` was changed from 1 to 0 on
+2026-08-03, because the repository has exactly one collaborator (the
+owner) and could not otherwise merge anything, ever (see Known Risks
+and `docs/decisions/decision-log.md`, 2026-08-03 entry, for the full
+rationale and the exact restore procedure for when a second trusted
+reviewer is added).
 
 ## Current Release
 
@@ -702,26 +712,36 @@ Full detail: `docs/constitution/product/natkhat-ai-constitution.md`.
 
 ## ADR Index
 
-| ADR                                                   | Title                                                                                    | Status                             |
-| ----------------------------------------------------- | ---------------------------------------------------------------------------------------- | ---------------------------------- |
-| [ADR-0001](docs/decisions/ADR-0001-monorepo.md)       | Adopt a Single Monorepo (Turborepo + pnpm Workspaces)                                    | Accepted                           |
-| [ADR-0002](docs/decisions/ADR-0002-flutter.md)        | Adopt Flutter for the Mobile Application                                                 | Accepted                           |
-| [ADR-0003](docs/decisions/ADR-0003-backend.md)        | Adopt NestJS for the Backend Application                                                 | Accepted                           |
-| [ADR-0004](docs/decisions/ADR-0004-database.md)       | Adopt PostgreSQL (via Supabase) with Prisma — Decision Recorded, Implementation Deferred | Accepted — Implementation Deferred |
-| [ADR-0005](docs/decisions/ADR-0005-authentication.md) | Adopt Supabase Auth — Decision Recorded, Implementation Deferred                         | Accepted — Implementation Deferred |
+| ADR                                                                    | Title                                                                                    | Status                                                                                                       |
+| ---------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| [ADR-0001](docs/decisions/ADR-0001-monorepo.md)                        | Adopt a Single Monorepo (Turborepo + pnpm Workspaces)                                    | Accepted                                                                                                     |
+| [ADR-0002](docs/decisions/ADR-0002-flutter.md)                         | Adopt Flutter for the Mobile Application                                                 | Accepted                                                                                                     |
+| [ADR-0003](docs/decisions/ADR-0003-backend.md)                         | Adopt NestJS for the Backend Application                                                 | Accepted                                                                                                     |
+| [ADR-0004](docs/decisions/ADR-0004-database.md)                        | Adopt PostgreSQL (via Supabase) with Prisma — Decision Recorded, Implementation Deferred | Accepted — Implementation Deferred                                                                           |
+| [ADR-0005](docs/decisions/ADR-0005-authentication.md)                  | Adopt Supabase Auth — Decision Recorded, Implementation Deferred                         | Accepted — Implementation Deferred                                                                           |
+| [ADR-0006](docs/decisions/ADR-0006-data-privacy-compliance.md)         | Data Privacy & Compliance Engineering Requirements                                       | Accepted — Engineering Requirements Ratified; Legal Validation Required                                      |
+| [ADR-0007](docs/decisions/ADR-0007-target-audience-interim-posture.md) | Interim Target-Audience Engineering Compliance Posture                                   | Accepted — Target Market/Age Range Founder-Ratified (India, ages 4–10); India DPDP Legal Validation Required |
 
 All ADRs above are additionally governed by the
 [Child Privacy & Safety Constitution](docs/constitution/product/child-privacy-and-safety-constitution.md)
 (Tier-1 Product Constitution Amendment). No ADR may contradict it; on
 any privacy/child-safety question the constitution controls, per the
-Governance Hierarchy (`docs/sprints/sprint-01.md`, §1). This is a
-registered reference only — no new ADR was created for it.
+Governance Hierarchy (`docs/sprints/sprint-01.md`, §1). ADR-0006 and
+ADR-0007 (2026-08-03) are the first ADRs to cite the Child Privacy &
+Safety Constitution explicitly by section within their own Constitution
+Alignment text, closing a traceability gap the Sprint 01 audit found in
+ADR-0001–0005 (which cite only the Product/Engineering Constitutions
+generically).
 
 ## Last Decision
 
-2026-07-28 — Decision Log: author governance documentation before any
-repository scaffolding or source code (see
-[docs/decisions/decision-log.md](docs/decisions/decision-log.md)).
+2026-08-04 — Founder ratification of ADR-0007 §D: initial target market
+is India (single market at launch, future international expansion
+preserved as a later decision) and target age range is 4–10, for a
+parent-managed childhood companion. Explicitly a business/product
+decision, not a legal certification — India DPDP Act legal validation
+of the eventual consent-capture design remains open (see
+[docs/decisions/ADR-0007-target-audience-interim-posture.md](docs/decisions/ADR-0007-target-audience-interim-posture.md)).
 
 ## Feature Roadmap
 
@@ -730,14 +750,22 @@ Constitution).
 
 ## Pending Tasks / Next Tasks
 
-- **PR [#1](https://github.com/amiyamishra1990-rgb/natkhat-ai/pull/1)
-  is open, CI-green, but blocked on required review** —
-  `enforce_admins: true` on the new branch protection means even the
-  repo owner cannot self-merge it. Needs either a second collaborator
-  to review/approve, or the user to deliberately relax
-  `required_approving_review_count`/`enforce_admins` themselves (not
-  done unilaterally here — see Current Status). This is not a Sprint
-  01 blocker, just an immediate next action for the user.
+- **Sprint 01 is permanently merged into `main`** (merge commit
+  `87de72d`, 2026-08-03) — PR #1's second-reviewer deadlock is resolved
+  (see Known Risk #11). No action needed here.
+- **A data-privacy/compliance ADR and an interim target-audience ADR now
+  exist** —
+  [ADR-0006](docs/decisions/ADR-0006-data-privacy-compliance.md) and
+  [ADR-0007](docs/decisions/ADR-0007-target-audience-interim-posture.md),
+  accepted 2026-08-03; ADR-0007 updated 2026-08-04 with founder
+  ratification of target market (India, single market at launch) and
+  age range (4–10) — see ADR-0007 §D. Both clear their respective
+  ADR-existence gates on ADR-0004 (database) and ADR-0005 (auth), but
+  neither authorizes implementation by itself — see ADR-0004/ADR-0005
+  gate status and Known Risk #10 for the specific legal-validation items
+  (India DPDP Act consent-mechanism sufficiency, model-provider terms,
+  breach-notification obligations, data-localization) that remain before
+  schema, migration, or auth code may be written.
 - **Sprint 01 is complete. Sprint 02 has no approved Sprint Document
   yet** — `docs/sprints/` contains only `sprint-01.md`. Per
   `docs/sprints/sprint-01.md`, §27, Recommendation 1 ("every future
@@ -747,11 +775,11 @@ Constitution).
   `docs/engineering/change-request-process.md`) — not any specific
   implementation milestone, since none is recorded anywhere as Sprint
   02's Milestone Breakdown yet. If Sprint 02 is intended to implement
-  ADR-0004 (database) or ADR-0005 (auth), Known Risks #1 and #2 below
-  (data-privacy/compliance ADR, COPPA/GDPR-K target-audience
-  ratification) are explicit prerequisites per the Risk Register
-  (`docs/sprints/sprint-01.md`, §26) and must be addressed before, not
-  during, that implementation.
+  ADR-0004 (database) or ADR-0005 (auth), Known Risk #10's items
+  (target-market/age-range founder ratification, verifiable-consent
+  method, model-provider terms, breach-notification obligations,
+  data-localization) are explicit prerequisites and must be addressed
+  before, not during, that implementation.
 - Unscheduled: `.ai/sessions/` and `.ai/reviews/` remain empty
   structural placeholders — Milestone 11 scoped only to
   `.ai/prompts/` per `docs/sprints/sprint-01.md`, §15's exact wording.
@@ -897,39 +925,82 @@ build` 5/5, `flutter analyze`/`flutter test` both clean); reviewed §27
 
 ## Blockers
 
-**None. Sprint 01 is 100% complete** — all 12 Milestone Breakdown
-entries satisfied (see Current Status, Sprint 01 Completion Checklist).
-**One operational item needs the user's attention**, unrelated to
-Sprint 01 completion: PR #1 is CI-green but merge-blocked by the branch
-protection configured at Milestone 10 (`enforce_admins: true` + 1
-required review, and this is currently a single-maintainer repo) — see
-Pending Tasks/Current Status.
+**None for Sprint 01 — it is permanently merged into `main`** (merge
+commit `87de72d`, 2026-08-03; see Current Branch). The prior operational
+item (PR #1 merge-blocked pending a second reviewer) is **resolved** —
+see Known Risks and `docs/decisions/decision-log.md`.
+
+**For Sprint 02 database/auth implementation specifically** (not a
+Sprint 01 blocker, but a real one for that future work): ADR-0004 and
+ADR-0005's textual prerequisite — "a dedicated data-privacy/compliance
+ADR exists and is accepted" — is now satisfied by
+[ADR-0006](docs/decisions/ADR-0006-data-privacy-compliance.md), and the
+Product Constitution's Target Audience gate is addressed for engineering
+purposes by
+[ADR-0007](docs/decisions/ADR-0007-target-audience-interim-posture.md).
+Both ADRs are explicit that this clears the ADR-existence blocker only —
+implementation still requires the Legal Validation items in ADR-0006 and
+the remaining open items in ADR-0007 §C (§C.1/§C.2/§C.7 are now
+founder-ratified, ADR-0007 §D, 2026-08-04 — India, single market, ages
+4–10) to be resolved. See ADR-0004/ADR-0005 gate status in Known Risks
+below.
 
 Known Risk #5 (missing Child Privacy & Safety Constitution) is resolved
 as of Milestone 1.5 — see Known Risks below. Known Risks #6, #7, #8
 (scope discrepancies) remain recorded as historical/resolved-by-precedent.
-Known Risk #9 (branch protection blocked) is now **resolved** — see
-Known Risks below. Known Risks #1–#4 remain open by design (Privacy,
-Compliance, AI governance, ASPOVO Constitution placeholder) — Sprint 01
-never required resolving them, but they gate specific future work (see
-Known Risks below and Pending Tasks). Awaiting user approval before
-Sprint 02 begins.
+Known Risk #9 (branch protection blocked) is **resolved** — see Known
+Risks below. Known Risks #1 and #2 (Privacy, Compliance) are now
+**partially resolved** — engineering requirements defined via ADR-0006/
+ADR-0007; legal validation and founder ratification of target audience
+remain open (see Known Risks). Known Risk #3 (AI governance) remains
+open by design. Known Risk #4 (ASPOVO Constitution placeholder) is
+re-evaluated this session and classified as **not a Sprint 02 blocker**
+(see Known Risks). Awaiting user approval before Sprint 02 begins.
 
 ## Known Risks
 
 Top risks (full register: [docs/sprints/sprint-01.md](docs/sprints/sprint-01.md), §26):
 
-1. **Privacy** — child/family data handling must not be designed
-   reactively; a data-privacy/compliance ADR is required before
-   ADR-0004/ADR-0005 implementation begins.
-2. **Compliance** — COPPA/GDPR-K-equivalent obligations and the
-   product's target age range are not yet ratified (see Product
-   Constitution).
+1. **Privacy — PARTIALLY RESOLVED (2026-08-03)** — a data-privacy/
+   compliance ADR was required before ADR-0004/ADR-0005 implementation
+   begins; [ADR-0006](docs/decisions/ADR-0006-data-privacy-compliance.md)
+   now exists and is accepted, translating the Child Privacy & Safety
+   Constitution into concrete engineering requirements (encryption,
+   tenant isolation, retention/deletion/export, auditability,
+   model-provider handling, training/advertising prohibitions, etc.).
+   The ADR-existence blocker is cleared. **Not fully resolved**: ADR-0006
+   itself lists specific items requiring formal legal validation (consent-
+   mechanism sufficiency, model-provider contract terms, breach-
+   notification obligations, data-localization requirements) — see Known
+   Risk #10.
+2. **Compliance — PARTIALLY RESOLVED (2026-08-04)** — COPPA/GDPR-K/India
+   DPDP Act obligations and the product's target age range were not yet
+   ratified.
+   [ADR-0007](docs/decisions/ADR-0007-target-audience-interim-posture.md)
+   defines an interim engineering posture (design to the strictest
+   considered regime — India DPDP Act's under-18 "child" threshold —
+   by default) that unblocks database/auth **design** work. **Update
+   (2026-08-04, governance close-out):** the founder has now explicitly
+   ratified the target market (India, single market at launch) and age
+   range (4–10) — see ADR-0007 §D. This is a business decision, not a
+   legal certification. **Not resolved**: India's DPDP Act legal
+   sufficiency of the actual consent-capture design (once designed) and
+   the specific verifiable-parental-consent mechanism remain open —
+   ADR-0007 §C.3/§C.6 — see Known Risk #10.
 3. **AI governance** — "Safe & Responsible AI" and "No addictive
    engagement" need engineering teeth, not just naming; enforced via
    the Governance Hierarchy and the AI Engineering Rule.
-4. **Governance** — the ASPOVO Constitution remains a placeholder;
-   must be explicitly replaced via amendment, not forgotten.
+4. **Governance — RE-EVALUATED (2026-08-03)** — the ASPOVO Constitution
+   remains a placeholder. Re-evaluated against Sprint 02 planning scope
+   this session: Natkhat AI's own governance chain (Product + Child
+   Privacy & Safety + Engineering Constitutions) is self-sufficient for
+   every Natkhat-AI-level decision made to date, including ADR-0006/
+   ADR-0007 — the ASPOVO Constitution's role is a company-level backstop
+   for cross-product/company-wide matters, none of which Sprint 02
+   planning is expected to require. **Classified as not a Sprint 02
+   blocker.** Remains open, deferred, and must still be explicitly
+   replaced via amendment before any future ASPOVO-level (multi-product)
+   conflict arises — not resolved, just no longer blocking.
 5. **Governance — RESOLVED (2026-07-29, Milestone 1.5)** — the Child
    Privacy & Safety Constitution (Trust-by-Design) flagged as missing
    after Milestone 1 was supplied by the user in full and ratified at
@@ -984,35 +1055,64 @@ Top risks (full register: [docs/sprints/sprint-01.md](docs/sprints/sprint-01.md)
    not itself a Sprint 01 risk: `enforce_admins: true` blocks even the
    repo owner from self-merging without a second reviewer — see
    Blockers/Pending Tasks.
+10. **Compliance/Legal — UPDATED (2026-08-04)** — the specific successor
+    to risks #1 and #2, now that ADR-0006/ADR-0007 exist. **Founder
+    ratification obtained (2026-08-04, governance close-out):** target
+    market (India, single market at launch) and age range (4–10) — see
+    ADR-0007 §D. This is a business decision, not a legal certification.
+    Before any database/auth implementation may proceed past design, the
+    following remain open and require formal legal validation (none
+    performed by this remediation phase, per its own scope): India DPDP
+    Act legal sufficiency of the actual consent-capture design once it
+    exists, and the specific verifiable-parental-consent mechanism
+    (ADR-0007 §C.3/§C.6); third-party AI/model-provider data-handling and
+    training-use contract terms; regulatory breach-notification
+    obligations and timelines under India's DPDP Act specifically; India
+    DPDP Act data-localization implications for Supabase region
+    selection. COPPA/GDPR-K items (ADR-0007 §C.4/§C.5) are deferred, not
+    open, unless/until a future non-India market is ratified. See
+    ADR-0006 "Legal Validation Required" and ADR-0007 §C/§D for the
+    complete, itemized lists.
+11. **Governance — RESOLVED-WITH-CONDITION (2026-08-03)** — see
+    Blockers/Current Branch: `main` branch protection's
+    `required_approving_review_count` was temporarily changed from 1 to
+    0 to resolve the unconditional one-person merge deadlock that
+    blocked PR #1 (and would have blocked every future PR) — every
+    other protection (required PR workflow, 5 required status checks,
+    `strict` mode, `enforce_admins`, no force-push, no branch deletion)
+    is unchanged. This is a deliberate, explicitly user-approved,
+    reversible condition, not a permanent weakening — restore
+    `required_approving_review_count` to 1 (or higher) the moment a
+    second trusted collaborator/reviewer is added to the repository; the
+    exact command is in `docs/decisions/decision-log.md`'s 2026-08-03
+    entry. Sprint 01 (Milestones 0–12) is now permanently merged into
+    `main` via this mechanism (merge commit `87de72d`), with all 5 CI
+    checks green and no bypass of any kind.
 
 ## Repository Health
 
-Foundation stage, now live on GitHub. Three tooling-config packages
-(Milestone 7) and two application scaffolds — `apps/backend` (NestJS)
-and `apps/mobile` (Flutter) — exist and are validated (Milestone 8),
-with no business logic in either. Developer tooling — Husky,
-lint-staged, commitlint — installed and validated (Milestone 9; the
-executable-bit concern originally recorded against this milestone was
-corrected at Milestone 10 — no action was actually needed).
-`.github/workflows/ci.yml` authored, pushed, and verified green on real
-GitHub Actions (Milestone 10) after fixing two real bugs it caught
-(lockfile specifier drift; Node engine requirement). Branch protection
-on `main` configured and independently verified. First commit `6ff7e44`
-pushed to `github.com/amiyamishra1990-rgb/natkhat-ai` (public,
-pre-existing). The `.ai/` workspace's `prompts/` folder is now
-populated (Milestone 11) with four starter templates; `.ai/sessions/`
-and `.ai/reviews/` remain empty placeholders, out of Milestone 11's
-scope. **Sprint 01 (Repository Foundation) is now 100% complete**
-(Milestone 12) — the Definition of Done was re-validated locally in
-this session and matches Milestone 10's real GitHub Actions run. Known
-Risks #5–#9 are resolved/historical; #1–#4 remain open by design (they
-were never Sprint 01 exit criteria, but gate specific future work — see
-Known Risks). One operational item outstanding, unrelated to Sprint 01
-completion: PR #1 is CI-green but needs a second reviewer (or a
-deliberate protection-rule change by the user) to merge.
+Foundation stage, now permanently live on `main`. Three tooling-config
+packages (Milestone 7) and two application scaffolds — `apps/backend`
+(NestJS) and `apps/mobile` (Flutter) — exist and are validated
+(Milestone 8), with no business logic in either. Developer tooling —
+Husky, lint-staged, commitlint — installed and validated (Milestone 9).
+`.github/workflows/ci.yml` verified green on real GitHub Actions
+repeatedly (Milestones 10 and the 2026-08-03 remediation merge). Branch
+protection on `main` configured and independently verified, with one
+temporary, tracked exception (`required_approving_review_count: 0` —
+see Known Risk #11). **Sprint 01 (Repository Foundation) is 100%
+complete and permanently merged into `main`** (merge commit `87de72d`,
+2026-08-03). Known Risks #5, #9 resolved; #6–#8 historical; #1 and #2
+partially resolved (ADR-0006/ADR-0007 accepted 2026-08-03; legal
+validation and founder ratification of target audience remain open —
+see Known Risk #10); #3 open by design; #4 re-evaluated and classified
+as not a Sprint 02 blocker; #11 resolved-with-condition (temporary,
+reversible). No operational blocker remains.
 
 ## Major Decisions
 
+- [ADR-0007](docs/decisions/ADR-0007-target-audience-interim-posture.md) — Interim Target-Audience Engineering Compliance Posture — Accepted, Target Market/Age Range Founder-Ratified (India, ages 4–10), India DPDP Legal Validation Required
+- [ADR-0006](docs/decisions/ADR-0006-data-privacy-compliance.md) — Data Privacy & Compliance Engineering Requirements — Accepted, Legal Validation Required
 - [ADR-0005](docs/decisions/ADR-0005-authentication.md) — Adopt Supabase Auth — Decision Recorded, Implementation Deferred
 - [ADR-0004](docs/decisions/ADR-0004-database.md) — Adopt PostgreSQL (via Supabase) with Prisma — Decision Recorded, Implementation Deferred
 - [ADR-0003](docs/decisions/ADR-0003-backend.md) — Adopt NestJS for the Backend Application
@@ -1021,6 +1121,150 @@ deliberate protection-rule change by the user) to merge.
 
 ## Change Log
 
+- **2026-08-04** — Post-Sprint-01 Remediation, Governance Close-Out:
+  reviewed [ADR-0006](docs/decisions/ADR-0006-data-privacy-compliance.md)
+  one final time against the Child Privacy & Safety Constitution, the
+  Product Constitution, the Engineering Constitution, ADR-0004, and
+  ADR-0005 — every requirement's Constitution citation verified accurate
+  (e.g. §24 Safe Sharing reproduces the Constitution §4's six items
+  exactly); no contradiction or weakening found; ADR-0006 left unedited.
+  Presented the founder decision still required by
+  [ADR-0007](docs/decisions/ADR-0007-target-audience-interim-posture.md)
+  §C (target market, in simple language with age-range, jurisdiction,
+  engineering, and legal-validation implications for each option) rather
+  than inventing or silently ratifying one; recommended a single-market
+  launch as the safest practical option preserving future international
+  expansion; stopped and asked the founder directly (two clarifying
+  questions: launch strategy, then specific country) rather than
+  assuming. Founder ratified: single-market launch, India, ages 4–10 (a
+  parent-managed childhood companion) — explicitly not interpreted as
+  legal approval, per the founder's own instruction. Updated ADR-0007
+  (added §D, Founder Ratification; marked §C items 1/2/7 resolved by
+  reference to §D; left §C items 3/4/5/6 open — India DPDP Act
+  legal-sufficiency review and the specific consent-verification
+  mechanism remain the live blockers; COPPA/GDPR-K explicitly deferred,
+  not closed, for any future non-India expansion; version 1.0.0 →
+  1.1.0). Updated `PROJECT.md` (this file — Current Branch/header, ADR
+  Index, Known Risks #2/#10, Blockers, Pending Tasks, Major Decisions,
+  Last Decision, this Change Log entry, Last Updated) to match. Did not
+  create `docs/sprints/sprint-02.md` (explicitly out of scope for this
+  phase) and did not touch database, authentication, API, storage,
+  AI-memory, or business-feature code. Implementation gate recorded
+  explicitly: Sprint 02 planning/documentation allowed; database,
+  authentication, child personal-data collection, and production child
+  users all remain blocked pending the India DPDP Act legal-validation
+  items above. — AI agent (Claude Code), founder decision obtained
+  in-session via direct questions; committing per explicit instruction
+  now that no further founder decision blocks ADR-0007.
+- **2026-08-03** — Post-Sprint-01 Remediation, Phase 2 (Privacy/Child-
+  Safety/Compliance Governance Gates): read PROJECT.md, the Product,
+  Engineering, and Child Privacy & Safety Constitutions, ADR-0004/0005,
+  the ADR Index, Decision Log, Known Risks, and
+  `docs/sprints/sprint-01.md` before making any change, per the AI
+  Engineering Rule. Created
+  [ADR-0006](docs/decisions/ADR-0006-data-privacy-compliance.md) (Data
+  Privacy & Compliance Engineering Requirements), translating the
+  already-ratified Child Privacy & Safety Constitution into 30
+  engineering-actionable requirements (privacy by default, data
+  minimization/purpose limitation, parent ownership/consent/
+  authorization boundaries, a five-tier data classification, per-category
+  requirements for conversations/Leo memories/voice/images/drawings/
+  growth data, encryption at rest/in transit, mandatory tenant/family
+  isolation, retention/deletion/export/correction, backup-deletion
+  propagation, auditability/access logging, safe sharing, search-engine
+  non-indexing, model-provider handling, training/advertising
+  prohibitions, secrets management, and incident-response
+  considerations) without weakening, restating, or reinterpreting the
+  Constitution — the Constitution controls wherever this ADR is silent.
+  Six items are explicitly marked **[LEGAL VALIDATION REQUIRED]** rather
+  than asserted as certified compliance, per this phase's explicit
+  instruction not to invent legal conclusions. Created
+  [ADR-0007](docs/decisions/ADR-0007-target-audience-interim-posture.md)
+  (Interim Target-Audience Engineering Compliance Posture): found
+  repository evidence insufficient to ratify a specific age range or
+  target-market list (per the Product Constitution's own "Not yet
+  ratified" text), so this ADR does **not** invent one — it separates
+  (A) already-ratified product facts (children-facing, parent-managed
+  accounts) from (B) a conservative engineering posture (design to the
+  strictest of India's DPDP Act/GDPR-K/COPPA thresholds by default,
+  unconditional verifiable-parental-consent architecture) that unblocks
+  design work, from (C) seven specific items — exact age range, exact
+  target markets, DPDP/COPPA/GDPR-K applicability determinations, the
+  consent-verification method, and international-availability scope —
+  that explicitly require a founder decision and/or legal validation,
+  none of which this phase performed. Re-evaluated ADR-0004/ADR-0005:
+  their stated "dedicated compliance ADR must exist" prerequisite is now
+  satisfied, so gate status is **PARTIALLY SATISFIED** — design work may
+  proceed under ADR-0006/ADR-0007's posture, but real implementation
+  remains gated on the Legal Validation Required items and the founder
+  decisions in ADR-0007 §C. Did not edit ADR-0004 or ADR-0005 themselves
+  (ADRs are superseded, never rewritten, per this repository's own
+  discipline) — their prerequisite is now met by ADR-0006/0007's
+  existence, not by editing their text. Re-evaluated the ASPOVO
+  Constitution placeholder against Sprint 02 planning scope and
+  classified it as **not a Sprint 02 blocker** — Natkhat AI's own
+  Product/Child-Privacy/Engineering constitutions are self-sufficient
+  for every decision made so far, including this session's; the
+  placeholder remains an open, deferred structural risk, not fabricated
+  or filled in, per this phase's explicit instruction not to invent an
+  ASPOVO Constitution. Updated `PROJECT.md` (this file — Current Branch,
+  Blockers, Known Risks #1/#2/#4 plus new #10/#11, Pending Tasks,
+  Repository Health, ADR Index, Major Decisions, Last Decision) and
+  `docs/decisions/decision-log.md` (one new entry, recording the
+  temporary `required_approving_review_count: 0` branch-protection
+  condition from the prior remediation phase, which had been flagged
+  but not yet logged) — governance traceability only, per this phase's
+  Task 5 scope. No Constitution rewritten (no formal amendment was
+  required — this phase's ADRs sit below the Constitutions in the
+  Governance Hierarchy and do not need to alter them to take effect); no
+  architecture redesigned; no database, auth, API, storage, AI-memory,
+  or business-feature code touched; no Sprint 02 Sprint Document
+  created. These changes are in the working tree only as of this entry
+  — not yet committed, pending explicit approval to commit/push through
+  the protected-branch/PR workflow (same pattern as the two prior
+  remediation phases). — AI agent (Claude Code), pending user review.
+- **2026-08-03** — Post-Sprint-01 Remediation, Phase 1 (Git/Single-
+  Source-of-Truth completion gap and branch-protection deadlock):
+  verified all uncommitted working-tree changes belonged exclusively to
+  approved Sprint 01 Milestones 11/12 (no architecture, ADR,
+  Constitution, business-feature, or Sprint 02 content present) before
+  committing. Created two commits on
+  `chore/project-milestone-10-ci-verification` — `0a79d62`
+  ("docs(ai): populate .ai/prompts workspace with starter templates
+  (Milestone 11)") and `be2c95c` ("docs(project): record Sprint 01
+  completion (Milestone 12 close-out)") — both passing
+  `.husky/pre-commit`/`.husky/commit-msg` hooks with no bypass. Pushed
+  to the existing branch backing open PR #1 (no new branch, no
+  force-push, no direct push to `main`); all 5 CI checks passed on the
+  resulting run
+  ([30824853976](https://github.com/amiyamishra1990-rgb/natkhat-ai/actions/runs/30824853976)).
+  Independently confirmed the branch-protection deadlock was genuine
+  (exactly one collaborator — the repo owner — with
+  `required_approving_review_count: 1` and `enforce_admins: true`,
+  meaning no possible approver existed for any PR, ever) before
+  proposing a fix, and stopped for explicit user approval before
+  changing branch protection, per this phase's explicit instruction.
+  On approval, changed only `required_approving_review_count` (1 → 0)
+  via the `required_pull_request_reviews` sub-resource PATCH endpoint —
+  deliberately narrower than a full protection-object PUT, to minimize
+  risk of touching any other setting; independently re-verified via a
+  fresh `GET` that only that one field changed. Merged PR #1 via
+  `gh pr merge --merge` (merge commit `87de72d`) with all CI checks
+  green and `mergeStateStatus: CLEAN` — no CI bypass, no force-push, no
+  direct push to `main`. Verified post-merge: `origin/main` and local
+  `main` fast-forwarded and synchronized at `87de72d`; working tree
+  clean; all 14 Sprint 01 Milestone rows (0–12) present and `Complete`
+  in `PROJECT.md` on `main`; branch protection unchanged except the one
+  approved field. Left the merged feature branch undeleted (repository's
+  own `deleteBranchOnMerge: false` setting and no documented branch-
+  cleanup policy found — a new judgment call was not made unilaterally).
+  Flagged, not yet executed pending this phase's own explicit scope: per
+  `PROJECT.md`'s own update discipline and the Decision Log's discipline
+  for small implementation decisions, this branch-protection change
+  itself should be recorded — done in the following Phase 2 entry
+  above, together with the rest of that phase's traceability work. No
+  Constitution, ADR, or architecture touched; no Sprint 02 work begun.
+  — AI agent (Claude Code), pending user review.
 - **2026-08-03** — Milestone 12 (PROJECT.md final close-out) complete —
   **Sprint 01 is now 100% complete**: before implementing, verified
   (rather than assumed) that Milestones 0, 1, 1.5, 2, 5, 6, 7, 8, 9,
@@ -1477,14 +1721,31 @@ analyze`/`flutter test`, even though ADR-0002/`sprint-01.md` §11
 
 ## Last Updated
 
-2026-08-03 — Milestone 12 (PROJECT.md final close-out) complete —
-**Sprint 01 (Repository Foundation) is now 100% complete**, all 12
-Milestone Breakdown entries satisfied per `docs/sprints/sprint-01.md`,
-§15. Definition of Done re-validated locally (`pnpm install
---frozen-lockfile`, `turbo run lint typecheck test build` 5/5,
-`flutter analyze`/`flutter test` both clean). Documentation only — only
-`PROJECT.md` modified. No approved Sprint 02 Sprint Document exists
-yet; recommended next step is authoring `docs/sprints/sprint-02.md`.
-PR #1 (Milestone 10) remains open, unmerged, pending a second reviewer
-or a user decision on the review requirement — unrelated to Sprint 01
-completion.
+2026-08-04 — Post-Sprint-01 Remediation, Governance Close-Out.
+**Sprint 01 is permanently merged into `main`** (Phase 1, merge commit
+`87de72d`; branch protection intact except a temporary, tracked,
+reversible `required_approving_review_count: 0`). Phase 2 (2026-08-03)
+created [ADR-0006](docs/decisions/ADR-0006-data-privacy-compliance.md)
+and [ADR-0007](docs/decisions/ADR-0007-target-audience-interim-posture.md),
+clearing ADR-0004/ADR-0005's "dedicated compliance ADR must exist"
+prerequisite. This close-out session (a) verified ADR-0006 against every
+governing Constitution/ADR with no defect found, and (b) obtained
+explicit founder ratification of ADR-0007's target market (India, single
+market at launch) and age range (4–10) — recorded as ADR-0007 §D, a
+business decision explicitly not treated as legal approval. Gate status
+is now **PARTIALLY SATISFIED**: design work may proceed under the ADRs'
+engineering posture; real implementation remains gated on India DPDP Act
+legal validation of the eventual consent-capture design and the specific
+consent-verification mechanism (ADR-0007 §C.3/§C.6, ADR-0006 "Legal
+Validation Required"), neither performed by this phase. The ASPOVO
+Constitution placeholder remains re-evaluated as not a Sprint 02 blocker
+(unchanged this session). Updated `PROJECT.md` (this file) and
+`docs/decisions/ADR-0007-target-audience-interim-posture.md` for
+governance traceability — no Constitution rewritten, no architecture
+redesigned, no database/auth/API/storage/AI-memory/business-feature code
+touched, no Sprint 02 Sprint Document created. Implementation gate:
+Sprint 02 planning/documentation allowed; database, authentication,
+child personal-data collection, and production child users remain
+blocked. Committing and pushing through the protected-branch/PR
+workflow per explicit instruction, now that no further founder decision
+blocks ADR-0007.
