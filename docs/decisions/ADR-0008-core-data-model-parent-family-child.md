@@ -1,14 +1,14 @@
 # ADR-0008: Core Data Model — Parent/Family/Child Entities
 
-**Version:** 1.0.0
-**Status:** Proposed — Pending Founder/Product-Owner Review (Sprint 02,
-Milestone 1 deliverable, reviewed together with
-`docs/modules/identity-family/README.md` at the Sprint 02 per-milestone
-stop-and-report checkpoint; `docs/sprints/sprint-02.md`, §5, requires
-this review before "Accepted" status — not a standalone
-engineering/AI-agent self-certification)
+**Version:** 1.1.0
+**Status:** Accepted — Implementation Deferred (Founder/Product-Owner
+approval recorded 2026-08-05, per `docs/sprints/sprint-02.md`, §5's
+decision-maker note and the Sprint 02 Milestone 1 stop-and-report
+checkpoint; mirrors ADR-0004/ADR-0005's "Accepted — Implementation
+Deferred" pattern. This ADR alone still does not authorize any Prisma
+schema, migration, or database connection code — see Consequences.)
 **Owner:** Engineering
-**Last Updated:** 2026-08-04
+**Last Updated:** 2026-08-05
 
 ## Context
 
