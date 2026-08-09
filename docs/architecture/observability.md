@@ -1,10 +1,10 @@
 # Observability Philosophy
 
-**Version:** 1.0.0
+**Version:** 1.1.0
 **Status:** Documented — philosophy only; no logging/metrics/tracing
 tooling is implemented in Sprint 01 (no application code exists yet)
 **Owner:** Engineering
-**Last Updated:** 2026-07-30
+**Last Updated:** 2026-08-09
 
 Full authorship of the philosophy at `docs/sprints/sprint-01.md`, §21.
 This document does not select tooling — tool choice (e.g. GCP-native
@@ -40,6 +40,9 @@ to which record, and when — immutable, retained per the Child Privacy
 requirements. This is the "Audit Logging" Mandatory Engineering Review
 Gate, verified by
 [`security-checklist.md`](../engineering/checklists/security-checklist.md).
+The concrete event schema, event-type catalog, and access-logging
+design implementing this philosophy is Sprint 02 Milestone 7's
+deliverable — see [`audit-logging.md`](./audit-logging.md).
 
 ## Error reporting
 
