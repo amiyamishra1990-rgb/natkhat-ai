@@ -1,16 +1,19 @@
 # Child-Data Lifecycle Architecture (Retention, Deletion, Export, Backup-Purge)
 
 **Version:** 1.1.0
-**Status:** Proposed — Founder Decisions Recorded, Pending ADR
-Authorship (Sprint 02, Milestone 4 deliverable; `docs/sprints/sprint-02.md`,
+**Status:** Proposed — Founder Decisions Recorded, Recorded in
+[ADR-0015](../decisions/ADR-0015-child-data-lifecycle-architecture.md)
+(Sprint 02, Milestone 4 deliverable; `docs/sprints/sprint-02.md`,
 §5's decision-maker note applies). **Founder decisions on §13.1
 (soft→hard-delete window), §13.2 (backup-purge window), and §13.4
 (Leo memory architecture) are APPROVED, 2026-08-05. §13.3
 (audit/security-log retention) is APPROVED PROVISIONALLY, 2026-08-05,
 and remains subject to change if India legal/privacy review requires a
-different period — see §13.3 and §15. No ADR is authored for this
-milestone yet; per `docs/sprints/sprint-02.md`, §3, M4, one is
-authored as a distinct next step now that the founder has ratified
+different period — see §13.3 and §15. These values are formally
+recorded in
+[ADR-0015](../decisions/ADR-0015-child-data-lifecycle-architecture.md)
+(Accepted — Implementation Deferred), authored per
+`docs/sprints/sprint-02.md`, §3, M4, now that the founder has ratified
 these values.**
 **Owner:** Engineering
 **Last Updated:** 2026-08-05
