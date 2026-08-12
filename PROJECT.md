@@ -4,13 +4,18 @@
 
 # Natkhat AI — Project Dashboard
 
-**Version:** 1.14.0
+**Version:** 1.15.0
 **Status:** Living — updated in the same PR as any sprint/milestone/decision change
 **Owner:** Repository maintainers
-**Last Updated:** 2026-08-04 (Post-Sprint-01 remediation, Governance
-Close-Out — ADR-0006 verified with no defect; ADR-0007 founder-ratified
-for target market/age range (India, single market, ages 4–10); Sprint
-01 permanently merged into `main`)
+**Last Updated:** 2026-08-12 (Sprint 02, Milestone 11 — Design-Phase
+Close-Out & Governance Sync: this file corrected to reflect Sprint 02
+Milestones 1–10 as merged into `main`, and the Milestone 4 child-data
+lifecycle governance gap as closed via
+[ADR-0015](docs/decisions/ADR-0015-child-data-lifecycle-architecture.md)
+(Accepted — Implementation Deferred). This file itself had not been
+updated since 2026-08-04 — the "no Sprint 02 Sprint Document exists"
+and Sprint-01-only ADR Index below were stale; corrected in this pass.
+See Current Status and Change Log for full detail.)
 
 ## Governance Compliance
 
@@ -51,46 +56,79 @@ Source: [docs/constitution/product/natkhat-ai-constitution.md](docs/constitution
 ## Current Development Phase
 
 Sprint 01 — Repository Foundation — **complete** (all 12 Milestone
-Breakdown entries in `docs/sprints/sprint-01.md`, §15 satisfied).
-Awaiting user approval to begin Sprint 02; no Sprint 02 Sprint Document
-exists yet (see Pending Tasks).
+Breakdown entries in `docs/sprints/sprint-01.md`, §15 satisfied) and
+permanently merged into `main`. **Sprint 02 — Architecture & Compliance
+Design Layer is approved and executing**: Milestones 1–10 of 11 are
+complete and merged into `main` (see Current Milestone). Milestone 11
+(Sprint 02 Design-Phase Close-Out & Governance Sync) — this PROJECT.md
+correction pass — is in progress. This section previously stated "no
+Sprint 02 Sprint Document exists yet"; that was stale — see
+[docs/sprints/sprint-02.md](docs/sprints/sprint-02.md), approved and in
+execution since 2026-08-05.
 
 ## Current Sprint
 
-Sprint 01 — Repository Foundation. Sprint Document:
-[docs/sprints/sprint-01.md](docs/sprints/sprint-01.md).
+Sprint 02 — Architecture & Compliance Design Layer. Sprint Document:
+[docs/sprints/sprint-02.md](docs/sprints/sprint-02.md). Sprint 01 —
+Repository Foundation, Sprint Document
+[docs/sprints/sprint-01.md](docs/sprints/sprint-01.md), remains complete
+and permanently merged.
 
 ## Sprint Goal
 
-Establish governance documentation and repository foundation only — no
-business features, no database/auth/storage implementation.
+Per `docs/sprints/sprint-02.md`, §0: produce the architecture/design and
+compliance documentation layer for Sprint 02's eleven milestones —
+identity/family, authorization/sessions, data classification/encryption/
+isolation, child-data lifecycle, consent, Leo memory isolation,
+auditability, AI-provider boundary, India deployment, and the admin/
+website tech-stack ADR — **design and documentation only**. No database
+schema, migration, authentication code, API, storage, or business-feature
+implementation is authorized by Sprint 02 itself; each design remains
+"Accepted — Implementation Deferred" (or, where a legal/founder gate is
+still open, "Proposed") until its own future implementation sprint.
 
 ## Current Milestone
 
-**Sprint 01 is complete — all 12 Milestone Breakdown entries
-satisfied.** Milestones 0, 1, 1.5, 2, 5, 6, 7, 8, 9, 10, and 11 are
-**approved and complete**. Milestone 3 (PROJECT.md close-out of the
-Governance Documentation phase) was satisfied by prior updates;
-Milestone 4 is superseded (see §15). **Milestone 12 — PROJECT.md final
-close-out is now complete**: this file's Current Status, Completed
-Tasks, and Next Actions have been updated to reflect the finished
-Sprint 01 foundation, and the Definition of Done (§15) was
-re-validated locally — see Current Status for full detail. There is no
-next Sprint 01 milestone. The next actionable step is Sprint 02, which
-does not yet have an approved Sprint Document — see Pending Tasks and
-the final section of Current Status for the recommendation.
+**Sprint 02 Milestones 1–10 of 11 are complete and merged into `main`.**
+Milestone 11 (Sprint 02 Design-Phase Close-Out & Governance Sync) is the
+current, in-progress milestone — this PROJECT.md update is that
+milestone's work, per `docs/sprints/sprint-02.md`, §3, M11 ("update
+`PROJECT.md`, the ADR Index, Known Risks, and this Sprint Document's own
+status to reflect what was actually designed vs. what remains gated").
+See the Sprint 02 Milestone Status table in Current Status for the
+per-milestone breakdown, and Pending Tasks/Known Risks for the legal and
+founder gates that remain genuinely open (M11 does not close them — it
+only reports them accurately). Sprint 01 (Milestones 0–12) remains
+separately complete and permanently merged — see the historical Sprint
+01 Completion Checklist further down in Current Status.
 
 ## Current Branch
 
-`main` — Sprint 01 (Milestones 0–12) is now **permanently merged**.
-First commit `6ff7e44`, then PR
+`main` — Sprint 01 (Milestones 0–12) is **permanently merged**. First
+commit `6ff7e44`, then PR
 [#1](https://github.com/amiyamishra1990-rgb/natkhat-ai/pull/1)
 (`chore/project-milestone-10-ci-verification` → `main`, carrying
 Milestone 11/12 completion) merged via merge commit `87de72d` on
 2026-08-03, all 5 required checks green
 ([run 30824853976](https://github.com/amiyamishra1990-rgb/natkhat-ai/actions/runs/30824853976)),
-no force-push, no direct push to `main`, no CI bypass. `origin/main` and
-local `main` are synchronized at `87de72d`.
+no force-push, no direct push to `main`, no CI bypass.
+
+**Sprint 02 (Milestones 1–10) is also merged into `main`**, one PR per
+milestone (M1–M4's architecture/module docs bundled in one PR; M4's ADR
+followed separately once founder-approved), each via the same PR
+workflow with no force-push and no direct push to `main`: PR #2
+(governance close-out, ADR-0006/ADR-0007) → PR #3 (Sprint 02 planning,
+`docs/sprints/sprint-02.md`) → PR #4 (M1–M4 architecture/module docs) →
+PR #5 (M5, consent architecture) → PR #6 (M6, Leo memory/conversation
+isolation) → PR #7 (M7, auditability/observability) → PR #8 (M8,
+AI-provider boundary) → PR #9 (M9, India deployment) → PR #10 (M10,
+Next.js admin/website ADR) → PR #11 (M4 governance-gap closure —
+ADR-0015 promoted to Accepted). `origin/main` is currently at merge
+commit `87f8cb5` (PR #11). Branch-protection status (required checks,
+`enforce_admins`, the temporary `required_approving_review_count: 0`
+condition) is unchanged from the state recorded in Known Risk #11 below —
+this session did not re-verify it against GitHub and does not claim it
+has changed.
 
 Branch protection on `main` (post-Sprint-01-merge): 5 required status
 checks (`lint`, `typecheck`, `test`, `build`, `mobile`, `strict: true`),
@@ -118,6 +156,52 @@ had surfaced in local validation) and fixed on the same PR branch — see
 Current Status.
 
 ## Current Status
+
+**Sprint 02 Milestone Status (current — see Change Log for the
+2026-08-12 M11 entry; the Sprint 01 narrative below this block is
+historical and unchanged):**
+
+| M   | Milestone                                    | Status                                                 | ADR / doc                                                                                                                                                                                                                                  |
+| --- | -------------------------------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1   | Identity & Family Architecture               | Complete, merged                                       | [ADR-0008](docs/decisions/ADR-0008-core-data-model-parent-family-child.md) — Accepted, Implementation Deferred; `docs/modules/identity-family/README.md`                                                                                   |
+| 2   | Authorization & Session Architecture         | Complete, merged                                       | [ADR-0009](docs/decisions/ADR-0009-authorization-and-session-architecture.md) — Accepted, Implementation Deferred; `docs/architecture/authorization-and-sessions.md`                                                                       |
+| 3   | Data Classification, Encryption & Isolation  | Complete, merged                                       | [ADR-0010](docs/decisions/ADR-0010-encryption-and-tenant-isolation-design.md) — Accepted, Implementation Deferred; `docs/architecture/data-classification-and-isolation.md`                                                                |
+| 4   | Child-Data Lifecycle Architecture            | Complete, merged; **governance gap closed 2026-08-11** | [ADR-0015](docs/decisions/ADR-0015-child-data-lifecycle-architecture.md) — Accepted, Implementation Deferred; `docs/architecture/data-lifecycle.md`                                                                                        |
+| 5   | Consent Architecture (Framework-Level)       | Complete, merged — **ADR remains Proposed**            | [ADR-0011](docs/decisions/ADR-0011-consent-architecture.md) — Proposed, blocked on final mechanism selection + India DPDP legal validation; `docs/architecture/consent-architecture.md`                                                    |
+| 6   | Leo Memory & Conversation Isolation          | Complete, merged                                       | [ADR-0012](docs/decisions/ADR-0012-leo-memory-and-conversation-isolation-design.md) — Accepted, Implementation Deferred; `docs/architecture/ai-memory-isolation.md`, `docs/modules/leo-companion/README.md`                                |
+| 7   | Auditability & Observability                 | Complete, merged                                       | `docs/architecture/audit-logging.md` (no dedicated new ADR — extends ADR-0006)                                                                                                                                                             |
+| 8   | AI-Provider Data-Boundary / Multi-Provider   | Complete, merged — **ADR remains Proposed**            | [ADR-0013](docs/decisions/ADR-0013-ai-provider-abstraction-and-multi-provider-compatibility.md) — Proposed, cannot be Accepted until a candidate provider's contract terms clear legal review; `docs/architecture/ai-provider-boundary.md` |
+| 9   | India-First Deployment & Data-Residency      | Complete, merged                                       | `docs/architecture/deployment-india.md` (no dedicated new ADR — data-residency decision remains gated on DPDP legal validation, see Known Risks)                                                                                           |
+| 10  | Admin/Website Stack Formalization (ADR only) | Complete, merged                                       | [ADR-0014](docs/decisions/ADR-0014-adopt-nextjs-for-admin-and-website-applications.md) — Accepted                                                                                                                                          |
+| 11  | Sprint 02 Design-Phase Close-Out & Gov. Sync | **In progress (this update)**                          | `PROJECT.md` only, per `docs/sprints/sprint-02.md`, §3, M11                                                                                                                                                                                |
+
+No scaffold, schema, migration, authentication code, API, storage, or
+business-feature implementation was created by any of M1–M10 — every
+architecture/ADR above is explicitly "Implementation Deferred" (or, for
+M5/M8, not yet Accepted at all). This is a documentation/design sprint
+only, consistent with Sprint 02's Explicit Exclusions (§10) and its own
+Definition of Done (§9). The Milestone 4 child-data lifecycle governance
+gap — retention/deletion/export/backup-purge windows left open by
+ADR-0006 §17/§18/§19/§21 — is now closed: the founder approved the
+candidate values in `docs/architecture/data-lifecycle.md` §13 on
+2026-08-05 (soft→hard-delete: 90 days; backup-purge: 90 days +
+cryptographic erasure for Tier 3; Leo memory's three-class model D4-A/B/
+C), and ADR-0015 was authored recording those values and promoted to
+**Accepted — Implementation Deferred** (Last Updated 2026-08-11, merged
+via PR #11). One value remains **provisional, not final**: the Tier 5
+audit/security-log retention period (§13.3, currently 3 years) is
+subject to change pending India DPDP Act legal review of
+breach-notification/record-keeping obligations (ADR-0006 §30, still
+open) — ADR-0015 does not resolve that legal gate, and neither does this
+PROJECT.md update. See Known Risks below for the full list of items that
+remain genuinely open after M1–M10 (consent-mechanism legal validation,
+AI-provider contract-terms review, India data-localization confirmation,
+breach-notification obligations, and the audit-log-retention
+provisionality above) — M11 reports these, it does not close them.
+
+---
+
+**Historical — Sprint 01 (below, unchanged since 2026-08-04):**
 
 **Milestone 12 (PROJECT.md final close-out) is now complete — Sprint 01
 is 100% complete.** Per `docs/sprints/sprint-01.md`, §15, Milestone
@@ -599,10 +683,28 @@ natkhat-ai/
 │   │   ├── ADR-0003-backend.md
 │   │   ├── ADR-0004-database.md
 │   │   ├── ADR-0005-authentication.md
+│   │   ├── ADR-0006-data-privacy-compliance.md
+│   │   ├── ADR-0007-target-audience-interim-posture.md
+│   │   ├── ADR-0008-core-data-model-parent-family-child.md      # Sprint 02 M1
+│   │   ├── ADR-0009-authorization-and-session-architecture.md   # Sprint 02 M2
+│   │   ├── ADR-0010-encryption-and-tenant-isolation-design.md   # Sprint 02 M3
+│   │   ├── ADR-0011-consent-architecture.md                     # Sprint 02 M5 — Proposed
+│   │   ├── ADR-0012-leo-memory-and-conversation-isolation-design.md # Sprint 02 M6
+│   │   ├── ADR-0013-ai-provider-abstraction-and-multi-provider-compatibility.md # Sprint 02 M8 — Proposed
+│   │   ├── ADR-0014-adopt-nextjs-for-admin-and-website-applications.md # Sprint 02 M10
+│   │   ├── ADR-0015-child-data-lifecycle-architecture.md        # Sprint 02 M4
 │   │   └── decision-log.md
 │   ├── architecture/
 │   │   ├── overview.md
-│   │   └── observability.md
+│   │   ├── observability.md
+│   │   ├── authorization-and-sessions.md          # Sprint 02 M2
+│   │   ├── data-classification-and-isolation.md   # Sprint 02 M3
+│   │   ├── data-lifecycle.md                      # Sprint 02 M4
+│   │   ├── consent-architecture.md                # Sprint 02 M5
+│   │   ├── ai-memory-isolation.md                 # Sprint 02 M6
+│   │   ├── audit-logging.md                       # Sprint 02 M7
+│   │   ├── ai-provider-boundary.md                # Sprint 02 M8
+│   │   └── deployment-india.md                    # Sprint 02 M9
 │   ├── api/README.md
 │   ├── engineering/
 │   │   ├── README.md
@@ -624,7 +726,9 @@ natkhat-ai/
 │   ├── research/README.md
 │   ├── modules/
 │   │   ├── README.md
-│   │   └── TEMPLATE.md
+│   │   ├── TEMPLATE.md
+│   │   ├── identity-family/README.md   # Sprint 02 M1 — Proposed
+│   │   └── leo-companion/README.md     # Sprint 02 M6 — Proposed
 │   ├── knowledge/
 │   │   ├── README.md
 │   │   ├── lessons-learned/
@@ -636,7 +740,8 @@ natkhat-ai/
 │   │   ├── developer-onboarding/
 │   │   └── ai-agent-learnings/
 │   └── sprints/
-│       └── sprint-01.md
+│       ├── sprint-01.md
+│       └── sprint-02.md   # Approved, Milestones 1–10 executed, M11 in progress
 ├── .ai/
 │   ├── prompts/                  # Milestone 11 — populated
 │   │   ├── README.md
@@ -685,19 +790,19 @@ yet authored).
 
 ## Approved Tech Stack
 
-| Layer                | Technology                  | ADR                                |
-| -------------------- | --------------------------- | ---------------------------------- |
-| Monorepo tooling     | Turborepo + pnpm workspaces | ADR-0001                           |
-| Mobile               | Flutter                     | ADR-0002                           |
-| Backend              | NestJS                      | ADR-0003                           |
-| Admin (Sprint 02+)   | Next.js                     | Not yet recorded                   |
-| Website (Sprint 02+) | Next.js                     | Not yet recorded                   |
-| Database             | PostgreSQL, via Supabase    | ADR-0004 (implementation deferred) |
-| ORM                  | Prisma                      | ADR-0004 (implementation deferred) |
-| Auth                 | Supabase Auth               | ADR-0005 (implementation deferred) |
-| Storage              | Supabase Storage            | ADR-0005 (implementation deferred) |
-| Cloud                | Google Cloud (GCP)          | Not yet recorded                   |
-| CI/CD                | GitHub Actions              | Not yet recorded                   |
+| Layer                   | Technology                  | ADR                                                      |
+| ----------------------- | --------------------------- | -------------------------------------------------------- |
+| Monorepo tooling        | Turborepo + pnpm workspaces | ADR-0001                                                 |
+| Mobile                  | Flutter                     | ADR-0002                                                 |
+| Backend                 | NestJS                      | ADR-0003                                                 |
+| Admin (Sprint 02 M10)   | Next.js                     | ADR-0014 (decision recorded; scaffolding not authorized) |
+| Website (Sprint 02 M10) | Next.js                     | ADR-0014 (decision recorded; scaffolding not authorized) |
+| Database                | PostgreSQL, via Supabase    | ADR-0004 (implementation deferred)                       |
+| ORM                     | Prisma                      | ADR-0004 (implementation deferred)                       |
+| Auth                    | Supabase Auth               | ADR-0005 (implementation deferred)                       |
+| Storage                 | Supabase Storage            | ADR-0005 (implementation deferred)                       |
+| Cloud                   | Google Cloud (GCP)          | Not yet recorded                                         |
+| CI/CD                   | GitHub Actions              | Not yet recorded                                         |
 
 Full detail: `docs/constitution/product/natkhat-ai-constitution.md`.
 
@@ -712,15 +817,23 @@ Full detail: `docs/constitution/product/natkhat-ai-constitution.md`.
 
 ## ADR Index
 
-| ADR                                                                    | Title                                                                                    | Status                                                                                                       |
-| ---------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| [ADR-0001](docs/decisions/ADR-0001-monorepo.md)                        | Adopt a Single Monorepo (Turborepo + pnpm Workspaces)                                    | Accepted                                                                                                     |
-| [ADR-0002](docs/decisions/ADR-0002-flutter.md)                         | Adopt Flutter for the Mobile Application                                                 | Accepted                                                                                                     |
-| [ADR-0003](docs/decisions/ADR-0003-backend.md)                         | Adopt NestJS for the Backend Application                                                 | Accepted                                                                                                     |
-| [ADR-0004](docs/decisions/ADR-0004-database.md)                        | Adopt PostgreSQL (via Supabase) with Prisma — Decision Recorded, Implementation Deferred | Accepted — Implementation Deferred                                                                           |
-| [ADR-0005](docs/decisions/ADR-0005-authentication.md)                  | Adopt Supabase Auth — Decision Recorded, Implementation Deferred                         | Accepted — Implementation Deferred                                                                           |
-| [ADR-0006](docs/decisions/ADR-0006-data-privacy-compliance.md)         | Data Privacy & Compliance Engineering Requirements                                       | Accepted — Engineering Requirements Ratified; Legal Validation Required                                      |
-| [ADR-0007](docs/decisions/ADR-0007-target-audience-interim-posture.md) | Interim Target-Audience Engineering Compliance Posture                                   | Accepted — Target Market/Age Range Founder-Ratified (India, ages 4–10); India DPDP Legal Validation Required |
+| ADR                                                                                             | Title                                                                                     | Status                                                                                                                                                                                                |
+| ----------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [ADR-0001](docs/decisions/ADR-0001-monorepo.md)                                                 | Adopt a Single Monorepo (Turborepo + pnpm Workspaces)                                     | Accepted                                                                                                                                                                                              |
+| [ADR-0002](docs/decisions/ADR-0002-flutter.md)                                                  | Adopt Flutter for the Mobile Application                                                  | Accepted                                                                                                                                                                                              |
+| [ADR-0003](docs/decisions/ADR-0003-backend.md)                                                  | Adopt NestJS for the Backend Application                                                  | Accepted                                                                                                                                                                                              |
+| [ADR-0004](docs/decisions/ADR-0004-database.md)                                                 | Adopt PostgreSQL (via Supabase) with Prisma — Decision Recorded, Implementation Deferred  | Accepted — Implementation Deferred                                                                                                                                                                    |
+| [ADR-0005](docs/decisions/ADR-0005-authentication.md)                                           | Adopt Supabase Auth — Decision Recorded, Implementation Deferred                          | Accepted — Implementation Deferred                                                                                                                                                                    |
+| [ADR-0006](docs/decisions/ADR-0006-data-privacy-compliance.md)                                  | Data Privacy & Compliance Engineering Requirements                                        | Accepted — Engineering Requirements Ratified; Legal Validation Required                                                                                                                               |
+| [ADR-0007](docs/decisions/ADR-0007-target-audience-interim-posture.md)                          | Interim Target-Audience Engineering Compliance Posture                                    | Accepted — Target Market/Age Range Founder-Ratified (India, ages 4–10); India DPDP Legal Validation Required                                                                                          |
+| [ADR-0008](docs/decisions/ADR-0008-core-data-model-parent-family-child.md)                      | Core Data Model — Parent/Family/Child Entities (Sprint 02 M1)                             | Accepted — Implementation Deferred                                                                                                                                                                    |
+| [ADR-0009](docs/decisions/ADR-0009-authorization-and-session-architecture.md)                   | Authorization & Session Architecture (Sprint 02 M2)                                       | Accepted — Implementation Deferred                                                                                                                                                                    |
+| [ADR-0010](docs/decisions/ADR-0010-encryption-and-tenant-isolation-design.md)                   | Encryption & Tenant-Isolation Implementation Design (Sprint 02 M3)                        | Accepted — Implementation Deferred                                                                                                                                                                    |
+| [ADR-0011](docs/decisions/ADR-0011-consent-architecture.md)                                     | Consent Architecture, Framework-Level (Sprint 02 M5)                                      | **Proposed** — founder direction on retention-survival/mechanism-shortlist recorded 2026-08-06; cannot reach Accepted until a final mechanism is selected and India DPDP legal validation confirms it |
+| [ADR-0012](docs/decisions/ADR-0012-leo-memory-and-conversation-isolation-design.md)             | Leo Memory & Conversation Isolation Design (Sprint 02 M6)                                 | Accepted — Implementation Deferred                                                                                                                                                                    |
+| [ADR-0013](docs/decisions/ADR-0013-ai-provider-abstraction-and-multi-provider-compatibility.md) | AI-Provider Abstraction & Multi-Provider Compatibility (Sprint 02 M8)                     | **Proposed** — cannot reach Accepted until at least one candidate provider's contract terms clear legal review (ADR-0006 §26)                                                                         |
+| [ADR-0014](docs/decisions/ADR-0014-adopt-nextjs-for-admin-and-website-applications.md)          | Adopt Next.js for Admin & Website Applications (Sprint 02 M10)                            | Accepted (records the already-locked choice; does not authorize scaffolding)                                                                                                                          |
+| [ADR-0015](docs/decisions/ADR-0015-child-data-lifecycle-architecture.md)                        | Child-Data Lifecycle Architecture — Retention/Deletion/Export/Backup-Purge (Sprint 02 M4) | Accepted — Implementation Deferred (founder-approved 2026-08-05; closes the M4 governance gap; §13.3 audit/security-log retention remains APPROVED PROVISIONALLY, pending India DPDP legal review)    |
 
 All ADRs above are additionally governed by the
 [Child Privacy & Safety Constitution](docs/constitution/product/child-privacy-and-safety-constitution.md)
@@ -735,18 +848,37 @@ generically).
 
 ## Last Decision
 
-2026-08-04 — Founder ratification of ADR-0007 §D: initial target market
-is India (single market at launch, future international expansion
-preserved as a later decision) and target age range is 4–10, for a
-parent-managed childhood companion. Explicitly a business/product
-decision, not a legal certification — India DPDP Act legal validation
-of the eventual consent-capture design remains open (see
+2026-08-11 — ADR-0015 (Child-Data Lifecycle Architecture) promoted to
+**Accepted — Implementation Deferred**, closing the Sprint 02 Milestone
+4 governance gap: the founder had already approved the underlying
+candidate values on 2026-08-05
+(`docs/architecture/data-lifecycle.md`, §13 — soft→hard-delete window
+90 days; backup-purge window 90 days with Tier-3 cryptographic erasure;
+Leo memory's three-class retention model), and ADR-0015 formally records
+those ratified values per `docs/sprints/sprint-02.md`, §5's
+decision-maker note. Explicitly a business/product decision plus an
+engineering design record, not a legal certification — this ADR does not
+authorize any deletion job, backup system, export pipeline, or schema,
+and one value it records (Tier 5 audit/security-log retention, §13.3) is
+**APPROVED PROVISIONALLY only**, subject to change pending India DPDP
+Act legal review of breach-notification/record-keeping obligations
+(see
+[docs/decisions/ADR-0015-child-data-lifecycle-architecture.md](docs/decisions/ADR-0015-child-data-lifecycle-architecture.md)).
+Prior decision, still standing: 2026-08-04 — Founder ratification of
+ADR-0007 §D: initial target market is India (single market at launch,
+future international expansion preserved as a later decision) and
+target age range is 4–10, for a parent-managed childhood companion.
+Explicitly a business/product decision, not a legal certification —
+India DPDP Act legal validation of the eventual consent-capture design
+remains open (see
 [docs/decisions/ADR-0007-target-audience-interim-posture.md](docs/decisions/ADR-0007-target-audience-interim-posture.md)).
 
 ## Feature Roadmap
 
-Not yet started. Sprint 01 has no business features (see Product
-Constitution).
+Not yet started. Neither Sprint 01 nor Sprint 02 authorizes business
+features or their implementation (see Product Constitution) — Sprint 02
+is a design/architecture and compliance documentation layer only (see
+Sprint Goal).
 
 ## Pending Tasks / Next Tasks
 
@@ -766,20 +898,34 @@ Constitution).
   (India DPDP Act consent-mechanism sufficiency, model-provider terms,
   breach-notification obligations, data-localization) that remain before
   schema, migration, or auth code may be written.
-- **Sprint 01 is complete. Sprint 02 has no approved Sprint Document
-  yet** — `docs/sprints/` contains only `sprint-01.md`. Per
-  `docs/sprints/sprint-01.md`, §27, Recommendation 1 ("every future
-  sprint produces its own Sprint Document under this same chain"), the
-  literal next actionable step is authoring and getting approval for
-  `docs/sprints/sprint-02.md` (Proposal → Review → Decision, per
-  `docs/engineering/change-request-process.md`) — not any specific
-  implementation milestone, since none is recorded anywhere as Sprint
-  02's Milestone Breakdown yet. If Sprint 02 is intended to implement
-  ADR-0004 (database) or ADR-0005 (auth), Known Risk #10's items
-  (target-market/age-range founder ratification, verifiable-consent
-  method, model-provider terms, breach-notification obligations,
-  data-localization) are explicit prerequisites and must be addressed
-  before, not during, that implementation.
+- **Correction:** this bullet previously stated "Sprint 02 has no
+  approved Sprint Document yet." That was stale as of 2026-08-04 and is
+  false as of this update — `docs/sprints/sprint-02.md` exists, was
+  approved, and Milestones 1–10 of its 11 are complete and merged into
+  `main` (see Current Status's Sprint 02 Milestone Status table). Left
+  here, struck through in effect rather than deleted, per this
+  repository's append-only correction discipline (see the Milestone 9
+  executable-bit precedent in Completed Tasks).
+- **Sprint 02 Milestone 11 (this update) is in progress.** Remaining
+  after this PROJECT.md correction: none of Sprint 02's still-open
+  founder/legal gates are resolved by M11 — M11's own Definition of Done
+  is "PROJECT.md accurately reflects Sprint 02's actual end state," not
+  closing those gates. Specifically still open (see Known Risks for
+  full detail): (a) India DPDP legal validation of the consent-capture
+  design and final selection of a specific verifiable-parental-consent
+  mechanism from ADR-0011's shortlist — ADR-0011 stays Proposed until
+  both occur; (b) AI/model-provider data-handling and training-use
+  contract-terms legal review before any provider evaluated by ADR-0013
+  is actually selected — ADR-0013 stays Proposed; (c) India DPDP
+  data-localization confirmation before M9's candidate region
+  (`docs/architecture/deployment-india.md`) becomes a real infrastructure
+  decision; (d) regulatory breach-notification obligations/timelines
+  under India's DPDP Act (ADR-0006 §30), which also gates whether
+  ADR-0015 §13.3's 3-year audit/security-log retention period stays as
+  approved-provisionally or must change. If a future sprint intends to
+  implement any Sprint 02 design (database, auth, consent capture,
+  AI-provider integration, or India infrastructure), all of the above
+  are explicit prerequisites, not implementation-time cleanup.
 - Unscheduled: `.ai/sessions/` and `.ai/reviews/` remain empty
   structural placeholders — Milestone 11 scoped only to
   `.ai/prompts/` per `docs/sprints/sprint-01.md`, §15's exact wording.
@@ -922,6 +1068,78 @@ build` 5/5, `flutter analyze`/`flutter test` both clean); reviewed §27
   only — no application code, architecture, ADR, or governance
   document touched. See Current Status for the full Sprint 01
   Completion Checklist.
+- **Sprint 02, Milestone 1 (Identity & Family Architecture):**
+  `docs/modules/identity-family/README.md` and
+  [ADR-0008](docs/decisions/ADR-0008-core-data-model-parent-family-child.md)
+  (Accepted — Implementation Deferred). Design only — no schema,
+  migration, or database.
+- **Sprint 02, Milestone 2 (Authorization & Session Architecture):**
+  `docs/architecture/authorization-and-sessions.md` and
+  [ADR-0009](docs/decisions/ADR-0009-authorization-and-session-architecture.md)
+  (Accepted — Implementation Deferred). Design only.
+- **Sprint 02, Milestone 3 (Data Classification, Encryption &
+  Tenant-Isolation Design):**
+  `docs/architecture/data-classification-and-isolation.md` and
+  [ADR-0010](docs/decisions/ADR-0010-encryption-and-tenant-isolation-design.md)
+  (Accepted — Implementation Deferred). Design only — no encryption
+  code, no key management implementation.
+- **Sprint 02, Milestone 4 (Child-Data Lifecycle Architecture):**
+  `docs/architecture/data-lifecycle.md`; founder approved candidate
+  retention/deletion/export/backup-purge values 2026-08-05;
+  [ADR-0015](docs/decisions/ADR-0015-child-data-lifecycle-architecture.md)
+  authored and promoted to Accepted — Implementation Deferred,
+  2026-08-11, closing the M4 governance gap (§13.3 audit/security-log
+  retention remains APPROVED PROVISIONALLY, pending India DPDP legal
+  review). Design only — no deletion job, backup system, or export
+  pipeline implemented.
+- **Sprint 02, Milestone 5 (Consent Architecture, Framework-Level):**
+  `docs/architecture/consent-architecture.md` and
+  [ADR-0011](docs/decisions/ADR-0011-consent-architecture.md) —
+  **Proposed**, not Accepted: a non-binding consent-verification
+  mechanism shortlist was produced for founder/legal review, but no
+  mechanism was selected and India DPDP legal sufficiency was not
+  validated, by design (out of M5's own scope). No consent-capture code,
+  UI, or real consent record exists.
+- **Sprint 02, Milestone 6 (Leo Memory & Conversation Isolation
+  Architecture):** `docs/architecture/ai-memory-isolation.md`,
+  `docs/modules/leo-companion/README.md`, and
+  [ADR-0012](docs/decisions/ADR-0012-leo-memory-and-conversation-isolation-design.md)
+  (Accepted — Implementation Deferred). Design only.
+- **Sprint 02, Milestone 7 (Auditability & Observability
+  Architecture):** `docs/architecture/audit-logging.md`, extending
+  ADR-0006's auditability requirements — no dedicated new ADR was
+  authored for this milestone. Design only.
+- **Sprint 02, Milestone 8 (AI-Provider Data-Boundary & Multi-Provider
+  Compatibility Architecture):**
+  `docs/architecture/ai-provider-boundary.md` and
+  [ADR-0013](docs/decisions/ADR-0013-ai-provider-abstraction-and-multi-provider-compatibility.md)
+  — **Proposed**, not Accepted: cannot advance until at least one
+  candidate provider's contract terms clear legal review (ADR-0006
+  §26). No provider selected, evaluated comparatively, or contracted;
+  no SDK integration, API call, or credential exists.
+- **Sprint 02, Milestone 9 (India-First Deployment & Data-Residency
+  Architecture):** `docs/architecture/deployment-india.md` — no
+  dedicated new ADR; the region/data-residency decision itself remains
+  gated on India DPDP data-localization confirmation (see Known Risks).
+  Design only — no infrastructure provisioned.
+- **Sprint 02, Milestone 10 (Admin/Website Stack Formalization, ADR
+  only):**
+  [ADR-0014](docs/decisions/ADR-0014-adopt-nextjs-for-admin-and-website-applications.md)
+  (Accepted). Records the already-locked Next.js decision; does **not**
+  authorize scaffolding `apps/admin` or `apps/website` — that requires
+  separate founder approval in a future sprint.
+- **Sprint 02, Milestone 11 (Design-Phase Close-Out & Governance
+  Sync):** this `PROJECT.md` update — corrected Current
+  Development Phase/Current Sprint/Sprint Goal/Current Milestone,
+  added the Sprint 02 Milestone Status table to Current Status, added
+  ADR-0008–ADR-0015 to the ADR Index, corrected the stale "Sprint 02
+  has no approved Sprint Document" claim in Pending Tasks, added
+  Sprint 02-specific Known Risks, updated Repository Structure/
+  Repository Health/Major Decisions/Last Decision, and appended this
+  Change Log entry. Per `docs/sprints/sprint-02.md`, §3, M11's own
+  scope, only `PROJECT.md` was modified — no architecture, ADR,
+  Constitution, `docs/sprints/sprint-02.md`, or implementation source
+  touched. See Change Log for the full entry.
 
 ## Blockers
 
@@ -955,7 +1173,20 @@ ADR-0007; legal validation and founder ratification of target audience
 remain open (see Known Risks). Known Risk #3 (AI governance) remains
 open by design. Known Risk #4 (ASPOVO Constitution placeholder) is
 re-evaluated this session and classified as **not a Sprint 02 blocker**
-(see Known Risks). Awaiting user approval before Sprint 02 begins.
+(see Known Risks).
+
+**Sprint 02 (correction, 2026-08-12):** the line above previously read
+"Awaiting user approval before Sprint 02 begins" — stale. Sprint 02 was
+approved and Milestones 1–10 are complete and merged into `main`; no
+blocker exists for the design/documentation work itself. **For any
+future implementation of a Sprint 02 design specifically** (not a
+blocker to M11's documentation-only close-out): Known Risks #12–#15
+below (India DPDP consent-mechanism legal validation, AI-provider
+contract-terms review, India data-localization confirmation, and
+breach-notification obligations affecting ADR-0015 §13.3's provisional
+audit-log-retention period) are the live gates, mirroring the same
+Legal-Validation-Required pattern Known Risk #10 already established
+for ADR-0006/ADR-0007.
 
 ## Known Risks
 
@@ -1088,6 +1319,43 @@ Top risks (full register: [docs/sprints/sprint-01.md](docs/sprints/sprint-01.md)
     entry. Sprint 01 (Milestones 0–12) is now permanently merged into
     `main` via this mechanism (merge commit `87de72d`), with all 5 CI
     checks green and no bypass of any kind.
+12. **Compliance/Legal — OPEN (Sprint 02 M5)** — consent-architecture
+    design (`docs/architecture/consent-architecture.md`,
+    [ADR-0011](docs/decisions/ADR-0011-consent-architecture.md)) is
+    complete at the framework level, and a non-binding
+    consent-verification mechanism shortlist has been produced with
+    founder direction recorded 2026-08-06. **Not resolved**: no specific
+    mechanism has been finally selected, and India DPDP Act legal
+    sufficiency of that mechanism has not been validated (ADR-0007
+    §C.3/§C.6). ADR-0011 is deliberately kept at **Proposed**, not
+    Accepted, until both occur — no consent-capture code, UI, or real
+    consent record may be built against this design until then.
+13. **Compliance/Legal — OPEN (Sprint 02 M8)** — AI-provider boundary
+    architecture (`docs/architecture/ai-provider-boundary.md`,
+    [ADR-0013](docs/decisions/ADR-0013-ai-provider-abstraction-and-multi-provider-compatibility.md))
+    establishes a provider-agnostic abstraction, but **no AI/LLM provider
+    has been selected, contracted, or had its data-handling/training-use
+    terms legally reviewed** (ADR-0006 §26). ADR-0013 is kept at
+    **Proposed**, not Accepted, until a candidate provider's contract
+    terms clear legal review. No SDK integration, API call, model-routing
+    code, or provider credential is authorized by this ADR.
+14. **Compliance/Legal — OPEN (Sprint 02 M9)** — India-first deployment/
+    data-residency design (`docs/architecture/deployment-india.md`) names
+    a candidate region, but India DPDP Act data-localization confirmation
+    for that region has **not** been performed. This design does not
+    authorize any real infrastructure/region decision (ADR-0007 §D.3).
+15. **Compliance/Legal — PARTIALLY OPEN (Sprint 02 M4/M7)** — the Sprint
+    02 M4 governance gap (retention/deletion/export/backup-purge windows)
+    is now closed via
+    [ADR-0015](docs/decisions/ADR-0015-child-data-lifecycle-architecture.md)
+    (Accepted — Implementation Deferred, founder-approved 2026-08-05,
+    ADR authored 2026-08-11). **One value within it is not final**:
+    ADR-0015 §13.3's Tier-5 audit/security-log retention period (3 years,
+    APPROVED PROVISIONALLY) remains subject to change pending India DPDP
+    Act legal review of regulatory breach-notification/record-keeping
+    obligations (ADR-0006 §30) — referenced by M7's auditability design,
+    not resolved by it. Do not treat this period as final until that
+    legal review completes.
 
 ## Repository Health
 
@@ -1107,10 +1375,33 @@ partially resolved (ADR-0006/ADR-0007 accepted 2026-08-03; legal
 validation and founder ratification of target audience remain open —
 see Known Risk #10); #3 open by design; #4 re-evaluated and classified
 as not a Sprint 02 blocker; #11 resolved-with-condition (temporary,
-reversible). No operational blocker remains.
+reversible). No operational blocker remains for Sprint 01.
+
+**Sprint 02 (Architecture & Compliance Design Layer) — Milestones 1–10
+of 11 complete and merged into `main`; Milestone 11 (this update) in
+progress.** No new application code, schema, or infrastructure was added
+by Sprint 02 — it is a documentation/design layer only, adding 8 new
+ADRs (ADR-0008–ADR-0015), 8 new architecture documents, and 2 new module
+documents (see Repository Structure). Of those, 6 ADRs are **Accepted —
+Implementation Deferred** (0008, 0009, 0010, 0012, 0014, 0015) and 2
+remain **Proposed** (0011, consent mechanism; 0013, AI-provider
+selection) pending the legal/founder gates in Known Risks #12–#15. The
+Sprint 02 M4 governance gap (retention/deletion/export/backup-purge
+windows) is closed via ADR-0015; its one provisional value (§13.3
+audit-log retention) is not yet final. No Sprint 02 design authorizes
+implementation — that remains gated behind the open items in Known
+Risks #10 and #12–#15 for any future implementation sprint.
 
 ## Major Decisions
 
+- [ADR-0015](docs/decisions/ADR-0015-child-data-lifecycle-architecture.md) — Child-Data Lifecycle Architecture (Sprint 02 M4) — Accepted, Implementation Deferred; founder-approved 2026-08-05, closes the M4 governance gap; §13.3 audit-log retention Approved Provisionally, pending India DPDP legal review
+- [ADR-0014](docs/decisions/ADR-0014-adopt-nextjs-for-admin-and-website-applications.md) — Adopt Next.js for Admin & Website Applications (Sprint 02 M10) — Accepted; scaffolding not authorized
+- [ADR-0013](docs/decisions/ADR-0013-ai-provider-abstraction-and-multi-provider-compatibility.md) — AI-Provider Abstraction & Multi-Provider Compatibility (Sprint 02 M8) — Proposed, blocked on provider contract-terms legal review
+- [ADR-0012](docs/decisions/ADR-0012-leo-memory-and-conversation-isolation-design.md) — Leo Memory & Conversation Isolation Design (Sprint 02 M6) — Accepted, Implementation Deferred
+- [ADR-0011](docs/decisions/ADR-0011-consent-architecture.md) — Consent Architecture, Framework-Level (Sprint 02 M5) — Proposed, blocked on mechanism selection + India DPDP legal validation
+- [ADR-0010](docs/decisions/ADR-0010-encryption-and-tenant-isolation-design.md) — Encryption & Tenant-Isolation Implementation Design (Sprint 02 M3) — Accepted, Implementation Deferred
+- [ADR-0009](docs/decisions/ADR-0009-authorization-and-session-architecture.md) — Authorization & Session Architecture (Sprint 02 M2) — Accepted, Implementation Deferred
+- [ADR-0008](docs/decisions/ADR-0008-core-data-model-parent-family-child.md) — Core Data Model — Parent/Family/Child Entities (Sprint 02 M1) — Accepted, Implementation Deferred
 - [ADR-0007](docs/decisions/ADR-0007-target-audience-interim-posture.md) — Interim Target-Audience Engineering Compliance Posture — Accepted, Target Market/Age Range Founder-Ratified (India, ages 4–10), India DPDP Legal Validation Required
 - [ADR-0006](docs/decisions/ADR-0006-data-privacy-compliance.md) — Data Privacy & Compliance Engineering Requirements — Accepted, Legal Validation Required
 - [ADR-0005](docs/decisions/ADR-0005-authentication.md) — Adopt Supabase Auth — Decision Recorded, Implementation Deferred
@@ -1121,6 +1412,57 @@ reversible). No operational blocker remains.
 
 ## Change Log
 
+- **2026-08-12** — Sprint 02, Milestone 11 (Design-Phase Close-Out &
+  Governance Sync): per `docs/sprints/sprint-02.md`, §3, M11's explicit
+  scope ("`PROJECT.md` Current Status/Milestone/Pending Tasks/Known
+  Risks/ADR Index/Change Log updates only"), read `PROJECT.md`, all
+  eight new Sprint 02 ADRs (ADR-0008–ADR-0015) and their exact status
+  lines, `docs/sprints/sprint-02.md`'s committed (HEAD) content and its
+  Milestone Breakdown (§3)/Founder Decisions Required (§7)/Legal-
+  Privacy Validation Required (§8), `docs/architecture/data-lifecycle.md`
+  §13's founder-decision record, `docs/modules/README.md`'s module
+  table, and `docs/decisions/decision-log.md`, before making any change,
+  per the AI Engineering Rule — rather than assuming the resume request's
+  own claims about repository state. Verified directly via `git log`/
+  `git diff` that Sprint 02 Milestones 1–10 are each merged into `main`
+  through their own PR (PR #2 governance close-out, PR #3 planning, PR #4
+  M1–M4 docs, PR #5–#10 M5–M10, PR #11 the M4 governance-gap closure),
+  that `origin/main` is at merge commit `87f8cb5`, and that this session's
+  own branch (`docs/sprint02-m4-child-data-lifecycle-adr`) is what PR #11
+  merged — i.e. already fully contained in `main`. Confirmed
+  [ADR-0015](docs/decisions/ADR-0015-child-data-lifecycle-architecture.md)
+  is Accepted — Implementation Deferred (Last Updated 2026-08-11),
+  closing the Milestone 4 child-data lifecycle governance gap, with its
+  §13.3 audit/security-log retention value correctly APPROVED
+  PROVISIONALLY, not final. Confirmed ADR-0011 (M5, consent) and ADR-0013
+  (M8, AI-provider) remain Proposed, not Accepted, and did not represent
+  either as resolved. Found this file frozen at its 2026-08-04
+  Sprint-01-close-out state — unedited since, per `git diff HEAD
+origin/main -- PROJECT.md` returning empty — causing several stale/
+  false statements: "Sprint 02 has no approved Sprint Document yet"
+  (false — it exists, approved, 10 of 11 milestones executed), an ADR
+  Index stopping at ADR-0007 (missing ADR-0008–ADR-0015 entirely), a
+  Repository Structure tree missing every Sprint 02 file, and a Current
+  Sprint/Milestone/Development Phase still describing Sprint 01. Updated
+  exactly those fields plus Last Decision, Pending Tasks, Blockers,
+  Known Risks (added items #12–#15 for the still-open Sprint 02 legal/
+  founder gates: ADR-0011's consent-mechanism selection + DPDP legal
+  validation, ADR-0013's provider contract-terms review, M9's India
+  data-localization confirmation, and ADR-0015 §13.3's provisional
+  audit-log retention), Repository Health, Major Decisions, and this
+  Change Log entry — per M11's scope, no other file was touched.
+  Explicitly did not mark any of Known Risks #10, #12–#15 as resolved,
+  did not invent a legal-validation outcome, did not expand ADR-0015's
+  actual Decision/Consequences text or scope, and did not edit
+  `docs/sprints/sprint-02.md`, any ADR, any Constitution,
+  `docs/decisions/decision-log.md`, `docs/modules/README.md`, `apps/`,
+  `packages/`, or `infrastructure/` — confirmed via `git status`/`git
+diff` after editing that the working tree's only changes are in this
+  file, and that `docs/sprints/sprint-02.md`'s pre-existing uncommitted
+  working-tree modification (present before this session, unrelated to
+  M11) is byte-for-byte unchanged. Not staged, not committed, not
+  pushed — pending founder review before commit, per explicit
+  instruction. — AI agent (Claude Code), pending founder review.
 - **2026-08-04** — Post-Sprint-01 Remediation, Governance Close-Out:
   reviewed [ADR-0006](docs/decisions/ADR-0006-data-privacy-compliance.md)
   one final time against the Child Privacy & Safety Constitution, the
