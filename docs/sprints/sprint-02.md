@@ -1,12 +1,32 @@
 # Sprint 02 — Architecture & Compliance Design Layer
 
-**Version:** 1.0.0
-**Status:** Proposed — awaiting founder review and approval. Not yet
-approved for execution. This document is a PLANNING DOCUMENT ONLY; it
-authorizes no implementation by itself.
+**Version:** 1.1.0
+**Status:** Approved for execution. Sprint 02 proceeded through
+Milestones 1–4 (Identity & Family, Authorization & Sessions, Data
+Classification/Encryption/Isolation, Data Lifecycle), each reviewed and
+founder-approved at its own stop-and-report checkpoint — see
+[ADR-0008](../decisions/ADR-0008-core-data-model-parent-family-child.md),
+[ADR-0009](../decisions/ADR-0009-authorization-and-session-architecture.md),
+and
+[ADR-0010](../decisions/ADR-0010-encryption-and-tenant-isolation-design.md)'s
+own "Accepted — Implementation Deferred" status lines, and
+`docs/architecture/data-lifecycle.md` §13's founder-decision record
+(2026-08-05), for the actual approval evidence. **This document's own
+Status line was not updated at each milestone as it happened — a
+documentation gap, corrected here 2026-08-06, not a claim that approval
+happened on this date.** Milestone 5 (Consent Architecture) is now
+underway — see `docs/architecture/consent-architecture.md` and
+[ADR-0011](../decisions/ADR-0011-consent-architecture.md). Of the
+Founder Decisions in §7: item 2 (retention windows, M4) is resolved
+(`docs/architecture/data-lifecycle.md` §13); item 3 (consent-mechanism
+direction) remains open — M5 exists to produce the shortlist that item
+requires, per §3's own M5 text, so it is not a start-blocker for M5;
+item 4 (M10 sequencing) remains open and unrelated to M5. Execution
+continues one milestone at a time, stop-and-report, per §3's preamble.
 **Owner:** Product Owner
-**Last Updated:** 2026-08-04
-**Phase:** Post-governance-close-out, pre-implementation design layer.
+**Last Updated:** 2026-08-06
+**Phase:** Post-governance-close-out, Sprint 02 execution in progress —
+Milestones 1–4 complete and merged, Milestone 5 in progress.
 
 ## Context
 
@@ -604,9 +624,13 @@ GDPR, DPDP, or other regulatory compliance.
 
 ## Next Step
 
-This document is Proposed, not Approved. On explicit founder approval —
-including answers to the Founder Decisions in §7 that block specific
-milestones (M4, M10) — Sprint 02 execution begins with M1 (Identity &
-Family Architecture), following the same one-milestone-at-a-time,
-stop-and-report cadence Sprint 01 used, unless the founder directs
-otherwise.
+**Approved for execution (see Status header).** M1–M4 are complete and
+merged. M5 (Consent Architecture) has been executed — see
+`docs/architecture/consent-architecture.md` and
+[ADR-0011](../decisions/ADR-0011-consent-architecture.md) — and awaits
+founder/product-owner review at this milestone's stop-and-report
+checkpoint before M6 begins. M4 and M10 remain blocked on their
+respective founder decisions (§7, items 2 and 4) — item 2 is now
+resolved (see Status header); item 4 (M10 sequencing) is still open.
+Execution continues one milestone at a time, stop-and-report, per §3's
+preamble, unless the founder directs otherwise.
