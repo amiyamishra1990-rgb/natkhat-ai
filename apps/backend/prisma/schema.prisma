@@ -1,0 +1,11 @@
+// M13 — Backend & Environment Foundation (docs/sprints/sprint-03.md, §4).
+// Configures Prisma against local PostgreSQL (Decision J.5) only.
+// No models: the data model is M14 scope (ADR-0008, ADR-0010).
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}

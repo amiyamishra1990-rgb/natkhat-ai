@@ -35,6 +35,11 @@ jobs:
   typecheck:
     name: typecheck
     runs-on: ubuntu-latest
+    # `prisma generate` requires DATABASE_URL to be present to validate
+    # the schema, even though it never connects — this job does not
+    # need a real Postgres instance, only this placeholder.
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/natkhat_ci
     steps:
       - uses: actions/checkout@v4
         with:
@@ -47,11 +52,33 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter backend exec prisma generate
       - run: pnpm exec turbo run typecheck --filter="...[${{ github.event.pull_request.base.sha }}]"
 
   test:
     name: test
     runs-on: ubuntu-latest
+    # Postgres service container added at Sprint 03, Milestone 13
+    # (docs/sprints/sprint-03.md, §4, Decision J.5/J.1) so the local-DB
+    # connectivity integration test (apps/backend/src/db-connectivity.spec.ts)
+    # has a real, non-production Postgres instance to connect to. No
+    # Supabase, GCP, or production database is used.
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: natkhat_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/natkhat_test
     steps:
       - uses: actions/checkout@v4
         with:
@@ -64,11 +91,18 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter backend exec prisma generate
       - run: pnpm exec turbo run test --filter="...[${{ github.event.pull_request.base.sha }}]"
+      - name: check-env black-box spec (Milestone 13, Decision E.5)
+        run: pnpm exec tsx scripts/check-env.spec.ts
 
   build:
     name: build
     runs-on: ubuntu-latest
+    # See the typecheck job's comment: `prisma generate` needs
+    # DATABASE_URL present for schema validation only, no real DB.
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/natkhat_ci
     steps:
       - uses: actions/checkout@v4
         with:
@@ -81,6 +115,7 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter backend exec prisma generate
       - run: pnpm exec turbo run build --filter="...[${{ github.event.pull_request.base.sha }}]"
 
   # Flutter checks, gated on apps/mobile/** changes (§16). apps/mobile
