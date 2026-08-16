@@ -210,11 +210,23 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON
 -- misconfiguration where an application's database role is also the
 -- table owner and therefore silently exempt from its own policies.
 --
--- Every policy uses `current_setting(..., true)` (missing_ok = true):
--- an absent/invalid session claim evaluates to NULL, so the predicate
--- is unsatisfied and the row is excluded -- fail-closed, matching the
--- exact behavior data-classification-and-isolation.md, §8, Scenario 2
--- specifies ("returns zero rows by default"), not a thrown error.
+-- Every policy compares its partition/principal column to the claim
+-- as TEXT (`column::text = current_setting(..., true)`), never by
+-- casting the claim itself to uuid. This is a deliberate fix (found
+-- via a live-Postgres CI integration run, not a hypothetical): a
+-- pooled/reused connection's custom GUC placeholder (app.current_*)
+-- resets to '' -- not NULL -- once any earlier transaction on that
+-- same connection has set it, even under SET LOCAL/set_config(...,
+-- true) scoping. Casting an absent/invalid claim to uuid
+-- (`current_setting(...)::uuid`) then throws `invalid input syntax
+-- for type uuid`, turning "no valid claim" into a hard error instead
+-- of the required zero-row result. Text comparison never throws for
+-- any input -- NULL, '', or garbage text all simply fail to equal a
+-- real row's id/family_id/parent_id (all NOT NULL UUID columns, so
+-- '' can never legitimately match) -- so an absent/invalid claim
+-- fails closed with zero rows, exactly matching
+-- data-classification-and-isolation.md, §8, Scenario 2's specified
+-- behavior ("returns zero rows by default"), not a thrown error.
 --
 -- `app.current_principal_id` / `app.current_family_id` are the two
 -- session-scoped claims this design consumes. §7.3 names
@@ -257,8 +269,8 @@ ALTER TABLE "session" FORCE ROW LEVEL SECURITY;
 -- the direct, minimal translation of that stated intent.
 CREATE POLICY "self_row_access" ON "parent"
   FOR ALL
-  USING ("id" = current_setting('app.current_principal_id', true)::uuid)
-  WITH CHECK ("id" = current_setting('app.current_principal_id', true)::uuid);
+  USING ("id"::text = current_setting('app.current_principal_id', true))
+  WITH CHECK ("id"::text = current_setting('app.current_principal_id', true));
 
 -- `family`: §7.2 -- owner OR an active co-parent assignment for this
 -- family. WITH CHECK is owner-only: family creation/ownership mutation
@@ -267,21 +279,21 @@ CREATE POLICY "self_row_access" ON "parent"
 CREATE POLICY "family_tenant_isolation" ON "family"
   FOR ALL
   USING (
-    "owning_parent_id" = current_setting('app.current_principal_id', true)::uuid
+    "owning_parent_id"::text = current_setting('app.current_principal_id', true)
     OR EXISTS (
       SELECT 1 FROM "co_parent_assignment" cpa
       WHERE cpa."family_id" = "family"."id"
-        AND cpa."parent_id" = current_setting('app.current_principal_id', true)::uuid
+        AND cpa."parent_id"::text = current_setting('app.current_principal_id', true)
         AND cpa."status" = 'active'
     )
   )
-  WITH CHECK ("owning_parent_id" = current_setting('app.current_principal_id', true)::uuid);
+  WITH CHECK ("owning_parent_id"::text = current_setting('app.current_principal_id', true));
 
 -- `child`: §7.2's own worked/illustrative example, applied verbatim.
 CREATE POLICY "family_tenant_isolation" ON "child"
   FOR ALL
-  USING ("family_id" = current_setting('app.current_family_id', true)::uuid)
-  WITH CHECK ("family_id" = current_setting('app.current_family_id', true)::uuid);
+  USING ("family_id"::text = current_setting('app.current_family_id', true))
+  WITH CHECK ("family_id"::text = current_setting('app.current_family_id', true));
 
 -- `co_parent_assignment`: §7.2 -- family_id = current_family_claim.
 -- Fine-grained "can this co-parent see other co-parents' rows" is
@@ -289,23 +301,23 @@ CREATE POLICY "family_tenant_isolation" ON "child"
 -- (§7.1) -- not filtered further here.
 CREATE POLICY "family_tenant_isolation" ON "co_parent_assignment"
   FOR ALL
-  USING ("family_id" = current_setting('app.current_family_id', true)::uuid)
-  WITH CHECK ("family_id" = current_setting('app.current_family_id', true)::uuid);
+  USING ("family_id"::text = current_setting('app.current_family_id', true))
+  WITH CHECK ("family_id"::text = current_setting('app.current_family_id', true));
 
 -- `device`: §6.1 -- Parent-scoped, not Family-scoped (module doc, §3.6:
 -- "a co-parent's device list is theirs to manage, not shared inventory").
 CREATE POLICY "parent_scoped_isolation" ON "device"
   FOR ALL
-  USING ("parent_id" = current_setting('app.current_principal_id', true)::uuid)
-  WITH CHECK ("parent_id" = current_setting('app.current_principal_id', true)::uuid);
+  USING ("parent_id"::text = current_setting('app.current_principal_id', true))
+  WITH CHECK ("parent_id"::text = current_setting('app.current_principal_id', true));
 
 -- `session`: §6.1 -- row *visibility* is Parent-scoped via principal_id,
 -- not family_id, even though family_id remains present as a plain
 -- column for the future M15 authorization check to consume (§7.2).
 CREATE POLICY "principal_scoped_isolation" ON "session"
   FOR ALL
-  USING ("principal_id" = current_setting('app.current_principal_id', true)::uuid)
-  WITH CHECK ("principal_id" = current_setting('app.current_principal_id', true)::uuid);
+  USING ("principal_id"::text = current_setting('app.current_principal_id', true))
+  WITH CHECK ("principal_id"::text = current_setting('app.current_principal_id', true));
 
 -- Every table above has exactly one FOR ALL policy, so SELECT/INSERT/
 -- UPDATE/DELETE are all covered (§7.4) -- no command is left to the
