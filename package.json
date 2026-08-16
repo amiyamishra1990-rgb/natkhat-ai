@@ -16,6 +16,7 @@
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
     "check-env": "tsx scripts/check-env.ts",
+    "test:check-env": "tsx scripts/check-env.spec.ts",
     "prepare": "husky"
   },
   "devDependencies": {
