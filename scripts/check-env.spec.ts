@@ -13,6 +13,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, '..');
 
 const VALID_DATABASE_URL = 'postgresql://postgres:postgres@localhost:5432/natkhat_dev';
+const VALID_APP_DATABASE_URL =
+  'postgresql://natkhat_app_role:natkhat_app_role@localhost:5432/natkhat_dev';
 
 function runCheckEnv(env: NodeJS.ProcessEnv) {
   // A single command string (not a separate args array) avoids
@@ -43,23 +45,41 @@ test('valid environment exits successfully', () => {
   const result = runCheckEnv({
     ...process.env,
     DATABASE_URL: VALID_DATABASE_URL,
+    APP_DATABASE_URL: VALID_APP_DATABASE_URL,
   });
   assert.equal(result.status, 0, `expected exit 0, got ${result.status}`);
   assert.match(result.stdout, /Environment OK\./);
 });
 
 test('missing DATABASE_URL fails with an explanatory error', () => {
-  const env = { ...process.env, DATABASE_URL: VALID_DATABASE_URL };
+  const env = {
+    ...process.env,
+    DATABASE_URL: VALID_DATABASE_URL,
+    APP_DATABASE_URL: VALID_APP_DATABASE_URL,
+  };
   delete env.DATABASE_URL;
   const result = runCheckEnv(env);
   assert.notEqual(result.status, 0, 'expected a non-zero exit status');
   assert.match(result.stderr, /DATABASE_URL is not set/);
 });
 
+test('missing APP_DATABASE_URL fails with an explanatory error (M14, ADR-0010 §7.4)', () => {
+  const env = {
+    ...process.env,
+    DATABASE_URL: VALID_DATABASE_URL,
+    APP_DATABASE_URL: VALID_APP_DATABASE_URL,
+  };
+  delete env.APP_DATABASE_URL;
+  const result = runCheckEnv(env);
+  assert.notEqual(result.status, 0, 'expected a non-zero exit status');
+  assert.match(result.stderr, /APP_DATABASE_URL is not set/);
+});
+
 test('reports detected Node and pnpm versions', () => {
   const result = runCheckEnv({
     ...process.env,
     DATABASE_URL: VALID_DATABASE_URL,
+    APP_DATABASE_URL: VALID_APP_DATABASE_URL,
   });
   assert.match(result.stdout, /Node: v/);
   assert.match(result.stdout, /pnpm: /);
