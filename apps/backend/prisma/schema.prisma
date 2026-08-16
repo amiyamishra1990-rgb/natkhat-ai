@@ -1,6 +1,18 @@
-// M13 — Backend & Environment Foundation (docs/sprints/sprint-03.md, §4).
-// Configures Prisma against local PostgreSQL (Decision J.5) only.
-// No models: the data model is M14 scope (ADR-0008, ADR-0010).
+// M14 — Identity, Family & Tenant-Isolation Implementation
+// (docs/sprints/sprint-03.md, §4; ADR-0008; ADR-0010;
+// docs/modules/identity-family/README.md, §3).
+//
+// Six entities, fields, and relationships exactly per the module
+// document's field tables. Row-Level Security policies (ADR-0010, §7)
+// are not expressible in Prisma schema language and are applied via
+// raw SQL in this schema's migration (see prisma/migrations/).
+//
+// Fields whose allowed value set is not enumerated by the approved
+// documents (Device.deviceType, Device.status, Session.endReason,
+// CoParentAssignment.permissionScope — module doc, §3.5/§3.6, gives
+// only illustrative examples, not a closed set) are modeled as plain
+// String, not a Prisma enum, to avoid inventing a bounded set the
+// governing documents do not themselves fix.
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,4 +20,157 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+// Parent.status, Family.status — module doc, §3.2/§3.3: active | suspended | deleted.
+enum ParentStatus {
+  active
+  suspended
+  deleted
+}
+
+enum FamilyStatus {
+  active
+  suspended
+  deleted
+}
+
+// Child.status — module doc, §3.4: active | deleted (no "suspended" listed for Child).
+enum ChildStatus {
+  active
+  deleted
+}
+
+// CoParentAssignment.status — module doc, §3.5: active | revoked.
+enum CoParentAssignmentStatus {
+  active
+  revoked
+}
+
+// Session.principal_type — module doc, §3.6: Parent | Child (Child reserved, not activated).
+enum SessionPrincipalType {
+  Parent
+  Child
+}
+
+model Parent {
+  id              String       @id @default(uuid()) @db.Uuid
+  authIdentityRef String       @map("auth_identity_ref")
+  displayName     String       @map("display_name")
+  contactEmail    String       @map("contact_email")
+  createdAt       DateTime     @default(now()) @map("created_at") @db.Timestamptz
+  status          ParentStatus @default(active)
+
+  ownedFamilies              Family[]             @relation("FamilyOwningParent")
+  createdChildren            Child[]              @relation("ChildCreatedByParent")
+  coParentGrants             CoParentAssignment[] @relation("CoParentAssignmentParent")
+  invitedCoParentAssignments CoParentAssignment[] @relation("CoParentAssignmentInvitedBy")
+  revokedCoParentAssignments CoParentAssignment[] @relation("CoParentAssignmentRevokedBy")
+  devices                    Device[]
+
+  @@map("parent")
+}
+
+model Family {
+  id             String       @id @default(uuid()) @db.Uuid
+  owningParentId String       @map("owning_parent_id") @db.Uuid
+  displayName    String       @map("display_name")
+  createdAt      DateTime     @default(now()) @map("created_at") @db.Timestamptz
+  status         FamilyStatus @default(active)
+
+  owningParent        Parent               @relation("FamilyOwningParent", fields: [owningParentId], references: [id])
+  children            Child[]
+  coParentAssignments CoParentAssignment[]
+  sessions            Session[]
+
+  @@index([owningParentId])
+  @@map("family")
+}
+
+model Child {
+  id                String      @id @default(uuid()) @db.Uuid
+  familyId          String      @map("family_id") @db.Uuid
+  firstName         String      @map("first_name")
+  dateOfBirth       DateTime    @map("date_of_birth") @db.Date
+  avatarRef         String?     @map("avatar_ref")
+  createdByParentId String      @map("created_by_parent_id") @db.Uuid
+  createdAt         DateTime    @default(now()) @map("created_at") @db.Timestamptz
+  status            ChildStatus @default(active)
+
+  family          Family @relation(fields: [familyId], references: [id])
+  createdByParent Parent @relation("ChildCreatedByParent", fields: [createdByParentId], references: [id])
+
+  @@index([familyId])
+  @@map("child")
+}
+
+model CoParentAssignment {
+  id                String                   @id @default(uuid()) @db.Uuid
+  familyId          String                   @map("family_id") @db.Uuid
+  parentId          String                   @map("parent_id") @db.Uuid
+  invitedByParentId String                   @map("invited_by_parent_id") @db.Uuid
+  // Bounded enum set per module doc §3.5 (e.g. view_child_profile,
+  // manage_child_profile) — the doc gives illustrative examples only,
+  // not a closed list. Left as String; the concrete bounded set is
+  // M15's enforcement-design concern (module doc §3.5: "Milestone 2
+  // designs the actual enforcement check; this field only defines the
+  // shape").
+  permissionScope   String                   @map("permission_scope")
+  status            CoParentAssignmentStatus @default(active)
+  revokedAt         DateTime?                @map("revoked_at") @db.Timestamptz
+  revokedByParentId String?                  @map("revoked_by_parent_id") @db.Uuid
+  createdAt         DateTime                 @default(now()) @map("created_at") @db.Timestamptz
+
+  family          Family  @relation(fields: [familyId], references: [id])
+  parent          Parent  @relation("CoParentAssignmentParent", fields: [parentId], references: [id])
+  invitedByParent Parent  @relation("CoParentAssignmentInvitedBy", fields: [invitedByParentId], references: [id])
+  revokedByParent Parent? @relation("CoParentAssignmentRevokedBy", fields: [revokedByParentId], references: [id])
+
+  @@index([familyId])
+  @@index([parentId])
+  @@map("co_parent_assignment")
+}
+
+model Device {
+  id          String   @id @default(uuid()) @db.Uuid
+  parentId    String   @map("parent_id") @db.Uuid
+  deviceLabel String   @map("device_label")
+  // deviceType, status: module doc §3.6 names these fields but gives no
+  // enumerated value set — left as String, not a Prisma enum.
+  deviceType  String   @map("device_type")
+  firstSeenAt DateTime @default(now()) @map("first_seen_at") @db.Timestamptz
+  lastSeenAt  DateTime @default(now()) @map("last_seen_at") @db.Timestamptz
+  status      String
+
+  parent   Parent    @relation(fields: [parentId], references: [id])
+  sessions Session[]
+
+  @@index([parentId])
+  @@map("device")
+}
+
+model Session {
+  id            String               @id @default(uuid()) @db.Uuid
+  // principal_id is polymorphic (Parent | Child per principalType,
+  // module doc §3.6) — Prisma has no native polymorphic relation, and
+  // Child-principal sessions are explicitly reserved/not activated
+  // (module doc §3.4). Modeled as a plain column, not a Prisma
+  // relation, rather than inventing a two-column discriminated-FK
+  // workaround the source documents do not specify.
+  principalId   String               @map("principal_id") @db.Uuid
+  principalType SessionPrincipalType @map("principal_type")
+  familyId      String               @map("family_id") @db.Uuid
+  deviceId      String               @map("device_id") @db.Uuid
+  startedAt     DateTime             @default(now()) @map("started_at") @db.Timestamptz
+  lastActiveAt  DateTime             @default(now()) @map("last_active_at") @db.Timestamptz
+  endedAt       DateTime?            @map("ended_at") @db.Timestamptz
+  // endReason: module doc §3.6 names the field, no enumerated value set given.
+  endReason     String?              @map("end_reason")
+
+  family Family @relation(fields: [familyId], references: [id])
+  device Device @relation(fields: [deviceId], references: [id])
+
+  @@index([principalId])
+  @@index([familyId])
+  @@map("session")
 }

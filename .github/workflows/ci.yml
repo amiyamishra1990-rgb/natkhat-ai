@@ -79,6 +79,12 @@ jobs:
           --health-retries 5
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/natkhat_test
+      # M14 (docs/sprints/sprint-03.md, §4; ADR-0010 §7.4): the
+      # non-superuser, non-BYPASSRLS request-serving role the M14
+      # migration creates. RLS enforcement can only be proven against
+      # this role -- PostgreSQL superusers (DATABASE_URL above) always
+      # bypass RLS regardless of FORCE ROW LEVEL SECURITY.
+      APP_DATABASE_URL: postgresql://natkhat_app_role:natkhat_app_role@localhost:5432/natkhat_test
     steps:
       - uses: actions/checkout@v4
         with:
@@ -92,6 +98,8 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter backend exec prisma generate
+      - name: Apply M14 migration (schema + RLS policies + app role)
+        run: pnpm --filter backend exec prisma migrate deploy
       - run: pnpm exec turbo run test --filter="...[${{ github.event.pull_request.base.sha }}]"
       - name: check-env black-box spec (Milestone 13, Decision E.5)
         run: pnpm exec tsx scripts/check-env.spec.ts
