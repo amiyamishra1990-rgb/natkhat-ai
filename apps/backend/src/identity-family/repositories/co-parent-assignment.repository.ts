@@ -25,4 +25,36 @@ export class CoParentAssignmentRepository {
   findMany(): Promise<CoParentAssignment[]> {
     return this.prisma.coParentAssignment.findMany();
   }
+
+  // M15 (docs/sprints/sprint-03.md, §4; ADR-0009 §4 step 1) — resolves
+  // the "co_parent" half of a Parent's authorized-family set. Only
+  // `active` assignments count: ADR-0009, Decision item 6 requires the
+  // tenant-scope gate to "re-resolve the authorized family set from
+  // current CoParentAssignment.status on every request," so a revoked
+  // assignment must never be returned here regardless of cache/timing.
+  findActiveByParentId(parentId: string): Promise<CoParentAssignment[]> {
+    return this.prisma.coParentAssignment.findMany({
+      where: { parentId, status: 'active' },
+    });
+  }
+
+  findActiveByFamilyAndParentId(
+    familyId: string,
+    parentId: string,
+  ): Promise<CoParentAssignment | null> {
+    return this.prisma.coParentAssignment.findFirst({
+      where: { familyId, parentId, status: 'active' },
+    });
+  }
+
+  // ADR-0009, Decision item 6 — revoking an assignment is the trigger
+  // for the session-revocation cascade (session-lifecycle.service.ts).
+  // Setting status alone does not end sessions; the cascade is a
+  // separate, explicit step the caller must also perform.
+  revoke(id: string, revokedByParentId: string): Promise<CoParentAssignment> {
+    return this.prisma.coParentAssignment.update({
+      where: { id },
+      data: { status: 'revoked', revokedAt: new Date(), revokedByParentId },
+    });
+  }
 }
