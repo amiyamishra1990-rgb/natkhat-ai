@@ -44,19 +44,21 @@ export type Action = (typeof ACTIONS)[number];
  * them; this is a design invariant, not a default that a future
  * scope value could override."
  *
- * NOTE — flagged ambiguity, not silently resolved: the architecture
- * document's own §5 table additionally marks `invite_revoke_co_parent`
- * as "No — owner-only, unconditional" for the co_parent column, but
- * ADR-0009's Decision item 3 text names only five actions and does
- * not include co-parent invite/revoke in "exactly ADR-0006 §6's named
- * list" (ADR-0006 §6 itself names only: billing, account deletion,
- * data export, sharing, consent changes). This constant conservatively
- * treats `invite_revoke_co_parent` as owner-only-unconditional too —
- * consistent with the architecture doc's table and with the
- * Trust-Above-All / fail-closed posture — rather than allowing a
- * co-parent to manage other co-parents' access by omission. This
- * conservative reading should be confirmed with the founder; it is
- * not a silent amendment of ADR-0009 or the architecture document.
+ * RESOLVED — was flagged as an ambiguity, now founder-confirmed
+ * (2026-08-18): the architecture document's own §5 table additionally
+ * marked `invite_revoke_co_parent` as "No — owner-only, unconditional"
+ * for the co_parent column, which conflicted with ADR-0009's Decision
+ * item 3 text naming only five actions (ADR-0006 §6 itself names
+ * only: billing, account deletion, data export, sharing, consent
+ * changes — not co-parent invite/revoke). The founder confirmed the
+ * literal ADR-0009 reading: `invite_revoke_co_parent` is NOT one of
+ * the five hard-invariant owner-only actions and MAY be granted to a
+ * co-parent via `permissionScope`, same as any other co-parent-
+ * eligible action. This constant now matches ADR-0009's Decision item
+ * 3 exactly. See docs/architecture/authorization-and-sessions.md §5's
+ * table, corrected with a footnote recording this same confirmation —
+ * not a silent edit, the table's original "No" is preserved with a
+ * dated correction note beside it.
  */
 export const OWNER_ONLY_ACTIONS: ReadonlySet<Action> = new Set<Action>([
   'billing_management',
@@ -64,7 +66,6 @@ export const OWNER_ONLY_ACTIONS: ReadonlySet<Action> = new Set<Action>([
   'data_export',
   'share_link_management',
   'consent_of_record_changes',
-  'invite_revoke_co_parent',
 ]);
 
 /** Actions a co-parent's `permissionScope` may legally grant. */

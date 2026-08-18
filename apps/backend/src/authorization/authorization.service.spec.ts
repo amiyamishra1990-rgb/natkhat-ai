@@ -93,6 +93,53 @@ describe('AuthorizationService', () => {
       principalId: CO_PARENT,
       principalType: 'Parent',
       requestedFamilyId: FAMILY_A,
+      // family_account_deletion is one of the five hard-invariant
+      // owner-only actions (ADR-0009, Decision item 3) — always denied
+      // to a co-parent regardless of permissionScope contents.
+      requestedAction: 'family_account_deletion',
+    });
+
+    expect(result).toEqual({ allowed: false, reason: 'action_not_permitted' });
+  });
+
+  it('founder-confirmed (2026-08-18): allows a co-parent invite_revoke_co_parent when explicitly granted via permissionScope', async () => {
+    const service = buildService({
+      ownedFamilies: [{ id: FAMILY_A, owningParentId: OWNER_PARENT }],
+      activeAssignments: [
+        {
+          familyId: FAMILY_A,
+          parentId: CO_PARENT,
+          permissionScope: serializePermissionScope(['invite_revoke_co_parent']),
+        },
+      ],
+    });
+
+    const result = await service.authorize({
+      principalId: CO_PARENT,
+      principalType: 'Parent',
+      requestedFamilyId: FAMILY_A,
+      requestedAction: 'invite_revoke_co_parent',
+    });
+
+    expect(result).toEqual({ allowed: true, role: 'co_parent' });
+  });
+
+  it('denies invite_revoke_co_parent to a co-parent whose permissionScope does not include it', async () => {
+    const service = buildService({
+      ownedFamilies: [{ id: FAMILY_A, owningParentId: OWNER_PARENT }],
+      activeAssignments: [
+        {
+          familyId: FAMILY_A,
+          parentId: CO_PARENT,
+          permissionScope: serializePermissionScope(['view_child_profile']),
+        },
+      ],
+    });
+
+    const result = await service.authorize({
+      principalId: CO_PARENT,
+      principalType: 'Parent',
+      requestedFamilyId: FAMILY_A,
       requestedAction: 'invite_revoke_co_parent',
     });
 

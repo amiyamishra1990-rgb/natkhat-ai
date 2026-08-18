@@ -3,7 +3,7 @@
 **Version:** 1.0.0
 **Status:** Living — append-only, updated as new minor decisions are recorded
 **Owner:** Engineering
-**Last Updated:** 2026-07-28
+**Last Updated:** 2026-08-18
 
 Append-only. Each entry: date, one-line decision, one-line rationale,
 author. Small implementation decisions that don't warrant a full ADR
@@ -35,3 +35,20 @@ original entry; the entry itself is never deleted or rewritten.
   to the repository. Tracked in `PROJECT.md`'s Known Risks as a
   temporary one-person-repository governance condition. Author: Amiya
   (product owner, approved explicitly), recorded by AI agent.
+- **2026-08-18** — Decision: `invite_revoke_co_parent` is a
+  co-parent-eligible action grantable via `permission_scope`, not one
+  of the five hard-invariant owner-only actions. Rationale: ADR-0009's
+  Decision item 3 names exactly five owner-only-unconditional actions
+  (billing, family/account deletion, data export, share-link
+  management, consent-of-record changes) — co-parent invite/revoke is
+  not among them. The M15 implementation (`authorization.types.ts`)
+  and the architecture doc's §5 table had conservatively treated it as
+  a sixth owner-only action, which this session's review confirmed
+  contradicts the ADR's literal text; corrected code, tests, and doc
+  to match ADR-0009 as written, with dated footnotes in
+  `docs/architecture/authorization-and-sessions.md` preserving the
+  original wording rather than silently rewriting it. This is an
+  alignment fix to the existing ADR, not a new architectural decision —
+  ADR-0009 itself is unchanged. Author: Amiya (product owner),
+  reviewed and approved applying this change in session; recorded by
+  AI agent.

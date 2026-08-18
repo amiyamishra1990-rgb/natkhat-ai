@@ -133,7 +133,7 @@ principle (§2) and safe-sharing requirements (§4):
 | View child profile / growth reports                          |                               Yes                                |   Only if in `permission_scope`    |         No         |
 | Update child profile (name, avatar, DOB)                     |                               Yes                                |   Only if in `permission_scope`    |         No         |
 | Create a Child record within the Family                      |                               Yes                                |   Only if in `permission_scope`    |         No         |
-| Invite / revoke a Co-Parent                                  |                               Yes                                | **No — owner-only, unconditional** |         No         |
+| Invite / revoke a Co-Parent [^1]                             |                               Yes                                |   Only if in `permission_scope`    |         No         |
 | Billing / subscription changes                               |                               Yes                                | **No — owner-only, unconditional** |         No         |
 | Family/account deletion                                      |                               Yes                                | **No — owner-only, unconditional** |         No         |
 | Data export (Constitution §10)                               |                               Yes                                | **No — owner-only, unconditional** |         No         |
@@ -141,6 +141,22 @@ principle (§2) and safe-sharing requirements (§4):
 | Consent-of-record changes (ADR-0006 §5, Milestone 5's scope) |                               Yes                                | **No — owner-only, unconditional** |         No         |
 | View own device list / end own sessions (Constitution §9)    |                        Yes (own devices)                         |         Yes (own devices)          |         No         |
 | View/remove _another_ principal's devices or sessions        | No — no principal ever manages another's device inventory (§6.4) |                 No                 |         No         |
+
+[^1]:
+    **Correction, founder-confirmed 2026-08-18 (Sprint 03, M15):**
+    this row originally read "No — owner-only, unconditional," which
+    conflicted with the prose immediately below the table naming
+    exactly _five_ owner-only-unconditional rows (ADR-0006 §6's named
+    list, which does not include co-parent invite/revoke) and with
+    ADR-0009's Decision item 3, which likewise names only five. The
+    founder confirmed the literal ADR-0009 reading during M15
+    implementation: inviting/revoking a co-parent is a co-parent-
+    eligible action, grantable via `permission_scope` like any other
+    non-owner-only action, not a sixth hard invariant. Corrected here
+    rather than silently left inconsistent; the original wording is
+    preserved in this footnote for traceability, not deleted from
+    history. See `apps/backend/src/authorization/authorization.types.ts`
+    for the implementation this now matches.
 
 The five rows marked **owner-only, unconditional** are exactly
 ADR-0006 §6's named list ("billing, account deletion, data export,
@@ -226,16 +242,25 @@ maliciously modified request or a copied/replayed session artifact).
 
 **Scenario C — a co-parent attempting an owner-only action within
 their own authorized family.** A Parent holds `co_parent` for Family A
-(passes the tenant-scope gate) and requests `revoke co-parent access`
-— an owner-only action (§5).
+(passes the tenant-scope gate) and requests `family/account deletion`
+[^2] — an owner-only action (§5).
 
 - Tenant-scope gate (step 2): passes — Family A is in their authorized
   set.
-- Action-permission gate (step 4): `revoke co-parent access` is not in
-  `permission_scope` by construction (§5, M1 §3.5) — **denied**, even
-  though the requester is legitimately scoped to the family. This
-  demonstrates the two gates are independent: passing tenant-scope
-  does not imply passing action-permission.
+- Action-permission gate (step 4): `family/account deletion` is
+  excluded from `permission_scope` by construction (§5, M1 §3.5) —
+  **denied**, even though the requester is legitimately scoped to the
+  family. This demonstrates the two gates are independent: passing
+  tenant-scope does not imply passing action-permission.
+
+[^2]:
+    **Correction, founder-confirmed 2026-08-18 (Sprint 03, M15):**
+    this example originally used `revoke co-parent access` as the
+    illustrative owner-only action — no longer accurate after the §5
+    table correction ([^1]) reclassified co-parent invite/revoke as
+    `permission_scope`-eligible, not owner-only. Replaced with an
+    action still genuinely on the five-item owner-only list so this
+    walkthrough continues to demonstrate the two gates correctly.
 
 All three scenarios resolve to the correct deny outcome using the same
 two-gate check from §4 — satisfying M2's acceptance criterion of
