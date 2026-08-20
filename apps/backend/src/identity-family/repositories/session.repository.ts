@@ -62,4 +62,23 @@ export class SessionRepository {
     });
     return result.count;
   }
+
+  // M16 (docs/sprints/sprint-03.md, §4; ADR-0015 §7.2) — the
+  // family-delete cascade's "every active Session currently pinned to
+  // that family_id (ended)" step — every principal's session for the
+  // family, not one specific principal, unlike the method above.
+  async endActiveSessionsForFamily(familyId: string, endReason: string): Promise<number> {
+    const result = await this.prisma.session.updateMany({
+      where: { familyId, endedAt: null },
+      data: { endedAt: new Date(), endReason },
+    });
+    return result.count;
+  }
+
+  // M16 (ADR-0015 §8 — "their own Session/login history" as part of
+  // export completeness) — every session ever recorded for this
+  // principal, active or ended, unlike findActiveByPrincipalId above.
+  findByPrincipalId(principalId: string): Promise<Session[]> {
+    return this.prisma.session.findMany({ where: { principalId } });
+  }
 }

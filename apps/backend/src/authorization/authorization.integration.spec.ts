@@ -3,6 +3,9 @@ import { PrismaClient } from '@prisma/client';
 import { FamilyRepository } from '../identity-family/repositories/family.repository';
 import { CoParentAssignmentRepository } from '../identity-family/repositories/co-parent-assignment.repository';
 import { SessionRepository } from '../identity-family/repositories/session.repository';
+import { AuditEventRepository } from '../audit/repositories/audit-event.repository';
+import { AuditService } from '../audit/audit.service';
+import { loadAuditConfig } from '../audit/audit.config';
 import { AuthorizationService } from './authorization.service';
 import { SessionLifecycleService } from './session-lifecycle.service';
 import { serializePermissionScope } from './permission-scope';
@@ -25,6 +28,8 @@ describe('AuthorizationService / SessionLifecycleService — M15', () => {
   const familyRepository = new FamilyRepository(admin);
   const coParentAssignmentRepository = new CoParentAssignmentRepository(admin);
   const sessionRepository = new SessionRepository(admin);
+  const auditEventRepository = new AuditEventRepository(admin);
+  const auditService = new AuditService(auditEventRepository, loadAuditConfig());
   const authorizationService = new AuthorizationService(
     familyRepository,
     coParentAssignmentRepository,
@@ -33,6 +38,7 @@ describe('AuthorizationService / SessionLifecycleService — M15', () => {
     authorizationService,
     sessionRepository,
     coParentAssignmentRepository,
+    auditService,
   );
 
   const familyA = { id: randomUUID() };
@@ -106,6 +112,12 @@ describe('AuthorizationService / SessionLifecycleService — M15', () => {
   });
 
   afterAll(async () => {
+    // M16 — family_switch/coparent_revoked now write audit_event rows
+    // (session-lifecycle.service.ts); cleaned up like every other
+    // fixture this test creates, even though the FKs themselves would
+    // tolerate the parent/family rows disappearing first (ON DELETE
+    // SET NULL).
+    await admin.auditEvent.deleteMany({ where: { familyId: { in: [familyA.id, familyB.id] } } });
     await admin.session.deleteMany({ where: { familyId: { in: [familyA.id, familyB.id] } } });
     await admin.device.deleteMany({
       where: { parentId: { in: [ownerA.id, ownerB.id, coParent.id] } },

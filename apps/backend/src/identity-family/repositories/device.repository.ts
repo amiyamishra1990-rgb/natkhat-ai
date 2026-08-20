@@ -24,4 +24,20 @@ export class DeviceRepository {
   findMany(): Promise<Device[]> {
     return this.prisma.device.findMany();
   }
+
+  // M16 (docs/sprints/sprint-03.md, §4; ADR-0015 §7.3) — account
+  // deletion's "this Parent's own Device inventory — soft-deleted/
+  // removed entirely" step.
+  findByParentId(parentId: string): Promise<Device[]> {
+    return this.prisma.device.findMany({ where: { parentId } });
+  }
+
+  // Device.status is a plain string (schema.prisma's own comment — no
+  // enumerated value set given by the module doc), so this sets the
+  // same 'deleted' convention Parent/Family/Child's status enums
+  // already use, rather than inventing a different value for this one
+  // table.
+  markDeleted(id: string): Promise<Device> {
+    return this.prisma.device.update({ where: { id }, data: { status: 'deleted' } });
+  }
 }

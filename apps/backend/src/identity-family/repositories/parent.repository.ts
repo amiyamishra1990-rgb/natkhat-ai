@@ -31,4 +31,38 @@ export class ParentRepository {
   findByAuthIdentityRef(authIdentityRef: string): Promise<Parent | null> {
     return this.prisma.parent.findUnique({ where: { authIdentityRef } });
   }
+
+  // M16 (docs/sprints/sprint-03.md, §4; ADR-0015 §5–§6/§7.3) — same
+  // soft-delete/tombstone mechanism as child.repository.ts.
+  softDelete(id: string): Promise<Parent> {
+    return this.prisma.parent.update({
+      where: { id },
+      data: { status: 'deleted', deletedAt: new Date() },
+    });
+  }
+
+  // authIdentityRef is scrubbed to a per-row, still-unique tombstone
+  // marker (not a shared fixed string) because the column carries a
+  // UNIQUE constraint (M15) — a literal shared marker across every
+  // tombstoned Parent would violate it. This still satisfies §6's
+  // "fixed erasure marker" intent: the value is deterministic,
+  // content-free, and never resolves back to the real external
+  // identity Supabase Auth issued.
+  tombstone(id: string): Promise<Parent> {
+    return this.prisma.parent.update({
+      where: { id },
+      data: {
+        displayName: '[deleted]',
+        contactEmail: 'deleted@tombstoned.invalid',
+        authIdentityRef: `tombstoned:${id}`,
+        hardDeletedAt: new Date(),
+      },
+    });
+  }
+
+  findEligibleForHardDelete(cutoff: Date): Promise<Parent[]> {
+    return this.prisma.parent.findMany({
+      where: { deletedAt: { not: null, lte: cutoff }, hardDeletedAt: null },
+    });
+  }
 }
