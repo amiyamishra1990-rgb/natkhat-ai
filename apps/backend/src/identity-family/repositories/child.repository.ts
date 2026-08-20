@@ -30,4 +30,51 @@ export class ChildRepository {
   findMany(): Promise<Child[]> {
     return this.prisma.child.findMany();
   }
+
+  // M16 (docs/sprints/sprint-03.md, §4; ADR-0015 §7.2) — the
+  // family-delete cascade's "every Child in that Family (soft-deleted)"
+  // step needs the still-active children, not every child ever created.
+  findActiveByFamilyId(familyId: string): Promise<Child[]> {
+    return this.prisma.child.findMany({ where: { familyId, status: 'active' } });
+  }
+
+  // ADR-0015 §5 — soft-delete: status -> deleted, deletedAt recorded
+  // (the timestamp §4 flagged as missing from M14's schema).
+  softDelete(id: string): Promise<Child> {
+    return this.prisma.child.update({
+      where: { id },
+      data: { status: 'deleted', deletedAt: new Date() },
+    });
+  }
+
+  // ADR-0015 §6 — hard-delete via tombstone, not physical row removal:
+  // Child has no other table's FK pointing at it yet in this schema,
+  // but AuditEvent.childId does (a nullable, non-restricting FK) and
+  // Tier 3/4 content will (M18+) — tombstoning now avoids revisiting
+  // this choice once those references exist. Content/PII fields are
+  // scrubbed with a fixed erasure marker; dateOfBirth is NOT NULL in
+  // the M14 schema, so it is set to a fixed sentinel date rather than
+  // left holding the real value — this is a real, minimal PII fact
+  // about the child, not exempt from §6's "every content/PII field is
+  // scrubbed."
+  tombstone(id: string): Promise<Child> {
+    return this.prisma.child.update({
+      where: { id },
+      data: {
+        firstName: '[deleted]',
+        dateOfBirth: new Date('1970-01-01'),
+        avatarRef: null,
+        hardDeletedAt: new Date(),
+      },
+    });
+  }
+
+  // Scan for soft-deleted rows whose hard-delete window (ADR-0015
+  // §13.1) has elapsed and which have not already been tombstoned —
+  // consumed by lifecycle.service.ts's hard-delete sweep.
+  findEligibleForHardDelete(cutoff: Date): Promise<Child[]> {
+    return this.prisma.child.findMany({
+      where: { deletedAt: { not: null, lte: cutoff }, hardDeletedAt: null },
+    });
+  }
 }

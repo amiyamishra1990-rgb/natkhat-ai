@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { SessionPrincipalType } from '@prisma/client';
 import { SessionRepository } from '../identity-family/repositories/session.repository';
 import { CoParentAssignmentRepository } from '../identity-family/repositories/co-parent-assignment.repository';
+import { AuditService } from '../audit/audit.service';
 import { AuthorizationService } from './authorization.service';
 import { PrincipalType } from './authorization.types';
 
@@ -27,6 +28,13 @@ export class SessionLifecycleService {
     private readonly authorizationService: AuthorizationService,
     private readonly sessionRepository: SessionRepository,
     private readonly coParentAssignmentRepository: CoParentAssignmentRepository,
+    // M16 (docs/sprints/sprint-03.md, §4) — wires the two real,
+    // already-anticipated audit events this class's own M15 comments
+    // named ("a distinct auditable event a Milestone 16 audit log can
+    // pick up... without this service depending on that log existing
+    // yet"). That dependency is added now, additively — neither
+    // method's own mutation logic changes.
+    private readonly auditService: AuditService,
   ) {}
 
   /**
@@ -71,6 +79,25 @@ export class SessionLifecycleService {
       deviceId: params.deviceId,
     });
 
+    // `target_type` has no dedicated "Session" value (audit-logging.md
+    // §3's closed set) — `Family` is the closest fit, since what this
+    // event actually records is which family the principal's context
+    // switched into; the affected session ids are in metadata instead.
+    // `actorRoleAtTime` is left null: this method has already run the
+    // tenant-scope gate but never resolves *which* role (owner vs.
+    // co_parent) the principal holds there, and adding that lookup
+    // here solely to populate one audit field would be new API surface
+    // authorization.service.ts does not otherwise expose.
+    await this.auditService.record({
+      eventType: 'family_switch',
+      actorPrincipalId: params.principalId,
+      actorPrincipalType: params.principalType as SessionPrincipalType,
+      familyId: params.targetFamilyId,
+      targetType: 'Family',
+      targetId: params.targetFamilyId,
+      metadata: { endedSessionIds, newSessionId: newSession.id, deviceId: params.deviceId },
+    });
+
     return { endedSessionIds, newSessionId: newSession.id };
   }
 
@@ -107,6 +134,21 @@ export class SessionLifecycleService {
       assignment.familyId,
       'access_revoked',
     );
+
+    // `actorRoleAtTime` is 'owner' unconditionally: this method's own
+    // doc comment already states the caller must have authorized the
+    // *requester* as owner via `invite_revoke_co_parent` before
+    // calling it — only an owner ever reaches this line.
+    await this.auditService.record({
+      eventType: 'coparent_revoked',
+      actorPrincipalId: params.revokedByParentId,
+      actorPrincipalType: 'Parent',
+      actorRoleAtTime: 'owner',
+      familyId: assignment.familyId,
+      targetType: 'CoParentAssignment',
+      targetId: assignment.id,
+      metadata: { revokedParentId: assignment.parentId, endedSessionCount },
+    });
 
     return { endedSessionCount };
   }

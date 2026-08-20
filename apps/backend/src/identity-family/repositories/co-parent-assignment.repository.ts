@@ -38,6 +38,16 @@ export class CoParentAssignmentRepository {
     });
   }
 
+  // M16 (docs/sprints/sprint-03.md, §4; ADR-0015 §7.2) — the
+  // family-delete cascade's "every CoParentAssignment for that Family
+  // (revoked)" step needs every currently-active assignment for the
+  // family, not one specific (family, parent) pair.
+  findActiveByFamilyId(familyId: string): Promise<CoParentAssignment[]> {
+    return this.prisma.coParentAssignment.findMany({
+      where: { familyId, status: 'active' },
+    });
+  }
+
   findActiveByFamilyAndParentId(
     familyId: string,
     parentId: string,

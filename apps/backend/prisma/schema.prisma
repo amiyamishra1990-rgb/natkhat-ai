@@ -67,6 +67,21 @@ model Parent {
   contactEmail    String       @map("contact_email")
   createdAt       DateTime     @default(now()) @map("created_at") @db.Timestamptz
   status          ParentStatus @default(active)
+  // M16 (docs/sprints/sprint-03.md, §4; ADR-0015 §4/§6) — the
+  // deleted_at/status-transition timestamp ADR-0015 §4 explicitly
+  // flagged as missing from every M1 entity ("a real, necessary
+  // addition for a future ADR-0004 implementation"). deletedAt is set
+  // when status transitions to `deleted` (soft-delete); hardDeletedAt
+  // is set separately when the 90-day window (ADR-0015 §13.1) elapses
+  // and the row is tombstoned (§6) — content fields scrubbed, id and
+  // status retained so FK-referencing rows (Family.owningParentId,
+  // Child.createdByParentId, CoParentAssignment actor fields,
+  // AuditEvent.actorPrincipalId) keep resolving. Two separate nullable
+  // columns, not a third status-enum value, so the existing
+  // ParentStatus enum (and every place that already reads it) is
+  // unchanged.
+  deletedAt       DateTime?    @map("deleted_at") @db.Timestamptz
+  hardDeletedAt   DateTime?    @map("hard_deleted_at") @db.Timestamptz
 
   ownedFamilies              Family[]             @relation("FamilyOwningParent")
   createdChildren            Child[]              @relation("ChildCreatedByParent")
@@ -74,6 +89,7 @@ model Parent {
   invitedCoParentAssignments CoParentAssignment[] @relation("CoParentAssignmentInvitedBy")
   revokedCoParentAssignments CoParentAssignment[] @relation("CoParentAssignmentRevokedBy")
   devices                    Device[]
+  auditEvents                AuditEvent[]
 
   @@map("parent")
 }
@@ -84,11 +100,15 @@ model Family {
   displayName    String       @map("display_name")
   createdAt      DateTime     @default(now()) @map("created_at") @db.Timestamptz
   status         FamilyStatus @default(active)
+  // M16 — see Parent.deletedAt/hardDeletedAt's comment; same mechanism.
+  deletedAt      DateTime?    @map("deleted_at") @db.Timestamptz
+  hardDeletedAt  DateTime?    @map("hard_deleted_at") @db.Timestamptz
 
   owningParent        Parent               @relation("FamilyOwningParent", fields: [owningParentId], references: [id])
   children            Child[]
   coParentAssignments CoParentAssignment[]
   sessions            Session[]
+  auditEvents         AuditEvent[]
 
   @@index([owningParentId])
   @@map("family")
@@ -103,9 +123,13 @@ model Child {
   createdByParentId String      @map("created_by_parent_id") @db.Uuid
   createdAt         DateTime    @default(now()) @map("created_at") @db.Timestamptz
   status            ChildStatus @default(active)
+  // M16 — see Parent.deletedAt/hardDeletedAt's comment; same mechanism.
+  deletedAt         DateTime?   @map("deleted_at") @db.Timestamptz
+  hardDeletedAt     DateTime?   @map("hard_deleted_at") @db.Timestamptz
 
-  family          Family @relation(fields: [familyId], references: [id])
-  createdByParent Parent @relation("ChildCreatedByParent", fields: [createdByParentId], references: [id])
+  family          Family       @relation(fields: [familyId], references: [id])
+  createdByParent Parent       @relation("ChildCreatedByParent", fields: [createdByParentId], references: [id])
+  auditEvents     AuditEvent[]
 
   @@index([familyId])
   @@map("child")
@@ -180,4 +204,111 @@ model Session {
   @@index([principalId])
   @@index([familyId])
   @@map("session")
+}
+
+// M16 — Data Lifecycle & Auditability Implementation
+// (docs/sprints/sprint-03.md, §4; docs/architecture/audit-logging.md
+// §3-§4). Tier 5 (System/Operational, ADR-0006 §7) — append-only,
+// never parent-deletable (ADR-0006 §22; data-lifecycle.md §11).
+//
+// event_type is a closed enum per audit-logging.md §3 ("no free-text
+// event descriptions — every value traces to §4"). Every one of the
+// 14 cataloged types is modeled even though only a subset is emitted
+// by any code that exists in this repository today — child_deleted,
+// family_deleted, account_deleted, deletion_completed,
+// data_export_requested, family_switch, coparent_revoked (this
+// milestone's real, wired events). The remaining values
+// (conversation_message_accessed, leo_memory_viewed/corrected/
+// vaulted/deleted, conversation_deleted, share_link_created/revoked/
+// accessed, coparent_invited) have no backing entity or orchestrating
+// service yet (Conversation/LeoMemory/ShareLink land in M17+/M18; no
+// "invite a co-parent" service exists yet, only the repository — see
+// audit/audit.service.ts and lifecycle/lifecycle.service.ts for which
+// events are actually emitted). Modeling the full closed set now,
+// rather than a partial enum extended later, avoids a breaking enum
+// migration once those entities exist.
+enum AuditEventType {
+  conversation_message_accessed
+  leo_memory_viewed
+  leo_memory_corrected
+  leo_memory_vaulted
+  leo_memory_deleted
+  conversation_deleted
+  data_export_requested
+  child_deleted
+  family_deleted
+  account_deleted
+  deletion_completed
+  coparent_invited
+  coparent_revoked
+  family_switch
+  share_link_created
+  share_link_revoked
+  share_link_accessed
+}
+
+// audit-logging.md §3's actor_role_at_time — a snapshot of the M15
+// authorization.types.ts `Role` type at write time, not a live
+// reference to current role (roles can change after the fact, e.g. a
+// co-parent is later revoked).
+enum AuditActorRole {
+  owner
+  co_parent
+  child
+}
+
+// audit-logging.md §3's target_type — which kind of record the action
+// concerned. ShareLink/Conversation/Message/LeoMemory are prospective
+// (no such entity exists in this schema yet — audit-logging.md §7
+// itself flags ShareLink as not modeled by M1-M6); included for the
+// same closed-set-now reason as AuditEventType above.
+enum AuditTargetType {
+  Conversation
+  Message
+  LeoMemory
+  Child
+  Family
+  Parent
+  CoParentAssignment
+  ShareLink
+  Export
+}
+
+model AuditEvent {
+  id                 String                @id @default(uuid()) @db.Uuid
+  occurredAt         DateTime              @default(now()) @map("occurred_at") @db.Timestamptz
+  eventType          AuditEventType        @map("event_type")
+  // actor_principal_type reuses SessionPrincipalType (Parent/Child) —
+  // audit-logging.md §3 says this "mirrors M1 §3.1/M2 §3's existing
+  // principal typing... not a new type introduced here"; Session
+  // already defined the concrete enum for that same concept, so this
+  // reuses it rather than declaring a second, parallel enum.
+  actorPrincipalId   String?               @map("actor_principal_id") @db.Uuid
+  actorPrincipalType SessionPrincipalType? @map("actor_principal_type")
+  actorRoleAtTime    AuditActorRole?       @map("actor_role_at_time")
+  familyId           String?               @map("family_id") @db.Uuid
+  childId            String?               @map("child_id") @db.Uuid
+  targetType         AuditTargetType       @map("target_type")
+  // target_id is deliberately a plain, unconstrained column, not a
+  // foreign key — audit-logging.md §3 calls it an "opaque identifier"
+  // precisely because it can reference any of several tables depending
+  // on target_type, the same polymorphic-reference problem
+  // Session.principalId already solved the same way (see that field's
+  // comment above) — no per-type FK, no discriminated-FK workaround.
+  targetId           String?               @map("target_id") @db.Uuid
+  // metadata: content-free structured detail only (audit-logging.md
+  // §3, §10 — "never contains Tier 3 content, message text, memory
+  // text, or any child-identifying free text"). Enforced by convention
+  // at the call site (audit/audit.service.ts), not by a database
+  // constraint — Postgres cannot validate "this JSON contains no PII."
+  metadata           Json?
+
+  actorPrincipal Parent? @relation(fields: [actorPrincipalId], references: [id])
+  family         Family? @relation(fields: [familyId], references: [id])
+  child          Child?  @relation(fields: [childId], references: [id])
+
+  @@index([familyId])
+  @@index([actorPrincipalId])
+  @@index([occurredAt])
+  @@map("audit_event")
 }
