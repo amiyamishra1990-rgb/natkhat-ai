@@ -24,4 +24,42 @@ export class SessionRepository {
   findMany(): Promise<Session[]> {
     return this.prisma.session.findMany();
   }
+
+  // M15 (docs/sprints/sprint-03.md, §4;
+  // authorization-and-sessions.md §6.4/§6.5) — session-lifecycle
+  // support. Still no API surface; consumed by
+  // session-lifecycle.service.ts and tests only.
+
+  findActiveByPrincipalId(principalId: string): Promise<Session[]> {
+    return this.prisma.session.findMany({ where: { principalId, endedAt: null } });
+  }
+
+  findActiveByPrincipalInFamily(principalId: string, familyId: string): Promise<Session[]> {
+    return this.prisma.session.findMany({
+      where: { principalId, familyId, endedAt: null },
+    });
+  }
+
+  endSession(id: string, endReason: string): Promise<Session> {
+    return this.prisma.session.update({
+      where: { id },
+      data: { endedAt: new Date(), endReason },
+    });
+  }
+
+  // authorization-and-sessions.md §6.4, row 3 — the co-parent-
+  // revocation cascade. Ends every active session for the given
+  // (revoked co-parent, family) pair. Returns the count ended, not
+  // the rows, since callers only need to know the cascade ran.
+  async endActiveSessionsForPrincipalInFamily(
+    principalId: string,
+    familyId: string,
+    endReason: string,
+  ): Promise<number> {
+    const result = await this.prisma.session.updateMany({
+      where: { principalId, familyId, endedAt: null },
+      data: { endedAt: new Date(), endReason },
+    });
+    return result.count;
+  }
 }

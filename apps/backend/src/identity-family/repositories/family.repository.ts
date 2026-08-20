@@ -20,4 +20,12 @@ export class FamilyRepository {
   findMany(): Promise<Family[]> {
     return this.prisma.family.findMany();
   }
+
+  // M15 (docs/sprints/sprint-03.md, §4; ADR-0009 §4 step 1) — resolves
+  // the "owner" half of a Parent's authorized-family set. A Parent is
+  // not restricted to owning a single Family by anything in the M14
+  // schema, so this returns every Family they own, not just one.
+  findByOwningParentId(owningParentId: string): Promise<Family[]> {
+    return this.prisma.family.findMany({ where: { owningParentId } });
+  }
 }

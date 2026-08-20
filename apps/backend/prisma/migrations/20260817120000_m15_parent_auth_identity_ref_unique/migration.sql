@@ -1,0 +1,17 @@
+-- M15 — Authorization & Session Implementation
+-- (docs/sprints/sprint-03.md, §4).
+--
+-- Adds a unique constraint on parent.auth_identity_ref. The M14
+-- migration created the column without a uniqueness guarantee (the
+-- module doc names the field but does not state a uniqueness
+-- requirement explicitly). M15's Supabase Auth lookup
+-- (ParentRepository.findByAuthIdentityRef, used by
+-- auth/supabase-auth.service.ts) requires a verified external
+-- identity to resolve to exactly one Parent record — without this
+-- constraint, two Parent rows could carry the same auth_identity_ref
+-- and the lookup would silently return an arbitrary match, which is
+-- an authentication-integrity gap, not merely a data-quality one.
+--
+-- No other M14 column, table, or RLS policy is touched by this
+-- migration.
+ALTER TABLE "parent" ADD CONSTRAINT "parent_auth_identity_ref_key" UNIQUE ("auth_identity_ref");

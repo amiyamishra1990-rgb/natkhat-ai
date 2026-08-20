@@ -55,7 +55,14 @@ enum SessionPrincipalType {
 
 model Parent {
   id              String       @id @default(uuid()) @db.Uuid
-  authIdentityRef String       @map("auth_identity_ref")
+  // M15 (docs/sprints/sprint-03.md, §4) adds the unique constraint the
+  // Supabase Auth lookup (auth/supabase-auth.service.ts) depends on —
+  // a verified external identity must resolve to exactly one Parent,
+  // never an ambiguous match. The column itself is unchanged from M14
+  // (docs/modules/identity-family/README.md, §3.2); this is the
+  // minimal additive constraint M15's own scope ("wire Supabase Auth")
+  // requires, not a redesign of the Parent entity.
+  authIdentityRef String       @unique @map("auth_identity_ref")
   displayName     String       @map("display_name")
   contactEmail    String       @map("contact_email")
   createdAt       DateTime     @default(now()) @map("created_at") @db.Timestamptz
