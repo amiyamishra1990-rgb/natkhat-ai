@@ -90,6 +90,7 @@ model Parent {
   revokedCoParentAssignments CoParentAssignment[] @relation("CoParentAssignmentRevokedBy")
   devices                    Device[]
   auditEvents                AuditEvent[]
+  consentEvents              ConsentEvent[]
 
   @@map("parent")
 }
@@ -109,6 +110,7 @@ model Family {
   coParentAssignments CoParentAssignment[]
   sessions            Session[]
   auditEvents         AuditEvent[]
+  consentEvents       ConsentEvent[]
 
   @@index([owningParentId])
   @@map("family")
@@ -127,9 +129,10 @@ model Child {
   deletedAt         DateTime?   @map("deleted_at") @db.Timestamptz
   hardDeletedAt     DateTime?   @map("hard_deleted_at") @db.Timestamptz
 
-  family          Family       @relation(fields: [familyId], references: [id])
-  createdByParent Parent       @relation("ChildCreatedByParent", fields: [createdByParentId], references: [id])
+  family          Family         @relation(fields: [familyId], references: [id])
+  createdByParent Parent         @relation("ChildCreatedByParent", fields: [createdByParentId], references: [id])
   auditEvents     AuditEvent[]
+  consentEvents   ConsentEvent[]
 
   @@index([familyId])
   @@map("child")
@@ -311,4 +314,70 @@ model AuditEvent {
   @@index([actorPrincipalId])
   @@index([occurredAt])
   @@map("audit_event")
+}
+
+// M17 — Consent & Privacy Gate (docs/sprints/sprint-03.md, §4;
+// ADR-0011; docs/architecture/consent-architecture.md §3-§7). Track A
+// scaffold only — see consent/consent.config.ts for the off-by-default
+// flag gating every write path below (Sprint 03's own rule that
+// legally-gated functionality must never be enabled by default).
+enum ConsentType {
+  child_account_creation
+  ai_companion_interaction
+  privacy_terms_update
+}
+
+enum ConsentAction {
+  granted
+  withdrawn
+  renewed
+}
+
+model ConsentEvent {
+  id                    String        @id @default(uuid()) @db.Uuid
+  // family_id is the RLS partition key (consent-architecture.md
+  // §6.2 — "no new isolation model is introduced"), same pattern as
+  // Child/CoParentAssignment.
+  familyId              String        @map("family_id") @db.Uuid
+  // Nullable per §3: "the very first consent event for a not-yet-
+  // created Child cannot reference a Child.id that doesn't exist yet"
+  // — in this milestone's atomic co-creation path (consent.service.ts)
+  // it is always populated, generated together with the Child row in
+  // the same transaction, but the column stays nullable for
+  // consent_type values that are family/account-scoped rather than
+  // tied to one child (e.g. privacy_terms_update).
+  childId               String?       @map("child_id") @db.Uuid
+  // The actor-of-record — consent-architecture.md §3: "must resolve to
+  // the Family's owning_parent_id for any owner-only consent type,
+  // enforced by M2's authorization model, not redesigned here."
+  consentingParentId    String        @map("consenting_parent_id") @db.Uuid
+  consentType           ConsentType   @map("consent_type")
+  action                ConsentAction
+  // Free-text version identifier (semver or content hash per §3) — no
+  // enumerated value set exists, same "not yet a closed set" reasoning
+  // schema.prisma's own header comment already applies to
+  // Device.deviceType/CoParentAssignment.permissionScope.
+  privacyTermsVersion   String        @map("privacy_terms_version")
+  // §3: "a bounded enum, values TBD from §8's shortlist... Left as a
+  // placeholder... no value is populated until the founder/legal
+  // process selects one." §8 only records a non-binding shortlist
+  // *direction* (signed form primary, payment-card fallback) — no
+  // value is founder-selected or legally validated yet, so this is
+  // modeled as a plain nullable string, not a Prisma enum with
+  // fabricated member values; every Track-A code path in this
+  // milestone leaves it unset.
+  verificationMethod    String?       @map("verification_method")
+  // Opaque external pointer only — never a raw evidentiary artifact
+  // (§6.3). No code path in this milestone populates this either.
+  verificationReference String?       @map("verification_reference")
+  createdAt             DateTime      @default(now()) @map("created_at") @db.Timestamptz
+  ipAddressHash         String?       @map("ip_address_hash")
+
+  family           Family @relation(fields: [familyId], references: [id])
+  child            Child? @relation(fields: [childId], references: [id])
+  consentingParent Parent @relation(fields: [consentingParentId], references: [id])
+
+  @@index([familyId])
+  @@index([childId])
+  @@map("consent_event")
 }
