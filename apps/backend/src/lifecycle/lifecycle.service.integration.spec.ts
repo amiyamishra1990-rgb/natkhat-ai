@@ -9,6 +9,11 @@ import { SessionRepository } from '../identity-family/repositories/session.repos
 import { AuditEventRepository } from '../audit/repositories/audit-event.repository';
 import { AuditService } from '../audit/audit.service';
 import { serializePermissionScope } from '../authorization/permission-scope';
+import { ConversationRepository } from '../leo/repositories/conversation.repository';
+import { MessageRepository } from '../leo/repositories/message.repository';
+import { LeoMemoryRepository } from '../leo/repositories/leo-memory.repository';
+import { FamilyEncryptionKeyRepository } from '../leo/repositories/family-encryption-key.repository';
+import { LeoLifecycleService } from '../leo/leo-lifecycle.service';
 import { LifecycleService } from './lifecycle.service';
 
 // M16 — Integration (docs/sprints/sprint-03.md, §4; ADR-0015 §7, §12,
@@ -24,6 +29,13 @@ describe('LifecycleService — M16', () => {
   const sessionRepository = new SessionRepository(admin);
   const auditEventRepository = new AuditEventRepository(admin);
   const auditService = new AuditService(auditEventRepository, { tier5RetentionYears: 3 });
+  const leoLifecycleService = new LeoLifecycleService(
+    { memoryKek: null, versionHistoryRetentionDays: 90 },
+    new ConversationRepository(admin),
+    new MessageRepository(admin),
+    new LeoMemoryRepository(admin),
+    new FamilyEncryptionKeyRepository(admin),
+  );
   const lifecycleService = new LifecycleService(
     childRepository,
     familyRepository,
@@ -32,6 +44,7 @@ describe('LifecycleService — M16', () => {
     deviceRepository,
     sessionRepository,
     auditService,
+    leoLifecycleService,
     { softToHardDeleteDays: 90, backupPurgeDays: 90 },
   );
 
@@ -44,6 +57,13 @@ describe('LifecycleService — M16', () => {
   const ownerDevice = { id: randomUUID() };
   const coParentDevice = { id: randomUUID() };
   let assignmentId: string;
+  let childTwoConversationId: string;
+  let childTwoMessageId: string;
+  let childTwoMemoryId: string;
+  let childOneConversationId: string;
+  let childOneMessageId: string;
+  let childOneMemoryId: string;
+  let versionHistoryMemoryId: string;
 
   const allParentIds = () => [owner.id, coParent.id];
   const allFamilyIds = () => [family.id, coParentOwnFamily.id];
@@ -120,9 +140,95 @@ describe('LifecycleService — M16', () => {
         status: 'active',
       },
     });
+
+    // M18 fixtures — inserted directly via the admin client (this is a
+    // LifecycleService test; it exercises the cascade at the
+    // repository/DB level, the same convention this file already
+    // follows for Child/CoParentAssignment/Session, not a LeoService
+    // round-trip). `content` is fictional ciphertext-shaped bytes, not
+    // real encrypted content — this file never touches
+    // LeoEncryptionService.
+    const childTwoConversation = await admin.conversation.create({
+      data: { familyId: family.id, childId: childTwo.id },
+    });
+    childTwoConversationId = childTwoConversation.id;
+    const childTwoMessage = await admin.message.create({
+      data: {
+        conversationId: childTwoConversationId,
+        familyId: family.id,
+        childId: childTwo.id,
+        sender: 'child',
+        content: Buffer.from('fictional-ciphertext-child-two'),
+      },
+    });
+    childTwoMessageId = childTwoMessage.id;
+    const childTwoMemory = await admin.leoMemory.create({
+      data: {
+        familyId: family.id,
+        childId: childTwo.id,
+        memoryClass: 'active_relationship',
+        content: Buffer.from('fictional-memory-ciphertext-child-two'),
+      },
+    });
+    childTwoMemoryId = childTwoMemory.id;
+
+    const childOneConversation = await admin.conversation.create({
+      data: { familyId: family.id, childId: childOne.id },
+    });
+    childOneConversationId = childOneConversation.id;
+    const childOneMessage = await admin.message.create({
+      data: {
+        conversationId: childOneConversationId,
+        familyId: family.id,
+        childId: childOne.id,
+        sender: 'child',
+        content: Buffer.from('fictional-ciphertext-child-one'),
+      },
+    });
+    childOneMessageId = childOneMessage.id;
+    const childOneMemory = await admin.leoMemory.create({
+      data: {
+        familyId: family.id,
+        childId: childOne.id,
+        memoryClass: 'active_relationship',
+        content: Buffer.from('fictional-memory-ciphertext-child-one'),
+      },
+    });
+    childOneMemoryId = childOneMemory.id;
+
+    // §5.4 — a version_history row, backdated past the
+    // configured 90-day version-history retention window so
+    // runHardDeleteSweep's independent expiry sweep has something
+    // eligible to find, distinct from the generic soft-delete cascade
+    // above (this row is never soft-deleted by any cascade — it ages
+    // out purely from its own createdAt).
+    const versionHistoryMemory = await admin.leoMemory.create({
+      data: {
+        familyId: family.id,
+        childId: childOne.id,
+        memoryClass: 'version_history',
+        content: Buffer.from('fictional-aged-out-version-history-ciphertext'),
+        createdAt: new Date(Date.now() - 91 * 24 * 60 * 60 * 1000),
+      },
+    });
+    versionHistoryMemoryId = versionHistoryMemory.id;
+
+    // A FamilyEncryptionKey row for `family` — no real KEK is
+    // configured in this test file (leoLifecycleService above is
+    // constructed with memoryKek: null), so this is a fictional
+    // wrapped-DEK blob inserted directly, existing solely to prove
+    // runHardDeleteSweep's crypto-shredding step (§7.5) deletes it
+    // when `family` itself completes hard-delete.
+    await admin.familyEncryptionKey.create({
+      data: { familyId: family.id, wrappedDek: Buffer.from('fictional-wrapped-dek') },
+    });
   });
 
   afterAll(async () => {
+    await admin.leoMemory.deleteMany({ where: { familyId: { in: allFamilyIds() } } });
+    await admin.message.deleteMany({ where: { familyId: { in: allFamilyIds() } } });
+    await admin.conversation.deleteMany({ where: { familyId: { in: allFamilyIds() } } });
+    await admin.familyEncryptionKey.deleteMany({ where: { familyId: { in: allFamilyIds() } } });
     await admin.auditEvent.deleteMany({ where: { familyId: { in: allFamilyIds() } } });
     await admin.auditEvent.deleteMany({ where: { actorPrincipalId: { in: allParentIds() } } });
     await admin.session.deleteMany({ where: { familyId: { in: allFamilyIds() } } });
@@ -152,6 +258,26 @@ describe('LifecycleService — M16', () => {
     expect(events).toHaveLength(1);
     expect(events[0]?.familyId).toBe(family.id);
     expect(events[0]?.actorRoleAtTime).toBe('owner');
+
+    // M18, ai-memory-isolation.md §5.3 — softDeleteChild's cascade
+    // reaches Conversation/Message/LeoMemory for that Child.
+    const cascadedConversation = await admin.conversation.findUnique({
+      where: { id: childTwoConversationId },
+    });
+    const cascadedMessage = await admin.message.findUnique({ where: { id: childTwoMessageId } });
+    const cascadedMemory = await admin.leoMemory.findUnique({ where: { id: childTwoMemoryId } });
+    expect(cascadedConversation?.status).toBe('deleted');
+    expect(cascadedConversation?.deletedAt).not.toBeNull();
+    expect(cascadedMessage?.status).toBe('deleted');
+    expect(cascadedMemory?.status).toBe('deleted');
+
+    // childOne's own Leo rows are untouched — the cascade is scoped to
+    // childTwo only, same isolation this test's sibling-Child
+    // assertion above already proves at the Child-row level.
+    const untouchedConversation = await admin.conversation.findUnique({
+      where: { id: childOneConversationId },
+    });
+    expect(untouchedConversation?.status).toBe('active');
   });
 
   it('softDeleteFamily (§7.2) cascades to remaining active Children, active CoParentAssignments, and pinned Sessions, and does not touch Device', async () => {
@@ -207,18 +333,51 @@ describe('LifecycleService — M16', () => {
       where: { eventType: 'family_deleted', targetId: family.id },
     });
     expect(events).toHaveLength(1);
+    // childTwo's Leo rows were already soft-deleted by the prior
+    // test's per-child cascade — this family-wide cascade catches only
+    // childOne's still-active Conversation/Message/LeoMemory (1 each),
+    // plus the still-active version_history row created in beforeAll
+    // (also family-scoped, so it counts as a fourth LeoMemory row).
     expect(events[0]?.metadata).toEqual({
       childrenSoftDeleted: 1,
       coParentAssignmentsRevoked: 1,
       sessionsEnded: 2,
+      leoConversationsSoftDeleted: 1,
+      leoMessagesSoftDeleted: 1,
+      leoMemoriesSoftDeleted: 2,
     });
 
     // No redundant per-child child_deleted event for the cascaded
     // child, beyond the one already asserted for childTwo above.
+    // Scoped to this file's own families — unscoped would also catch
+    // child_deleted events from other test files' fixtures running in
+    // a parallel Jest worker against the same shared dev database
+    // (e.g. consent.service.integration.spec.ts's withdrawConsent
+    // test, which triggers softDeleteChild too).
     const childDeletedEvents = await admin.auditEvent.findMany({
-      where: { eventType: 'child_deleted' },
+      where: { eventType: 'child_deleted', familyId: { in: allFamilyIds() } },
     });
     expect(childDeletedEvents).toHaveLength(1);
+
+    // M18 — the family-wide cascade reaches childOne's Conversation/
+    // Message/LeoMemory too (childTwo's were already soft-deleted by
+    // the previous test's per-child cascade, not re-touched here).
+    const childOneConversationAfter = await admin.conversation.findUnique({
+      where: { id: childOneConversationId },
+    });
+    const childOneMessageAfter = await admin.message.findUnique({
+      where: { id: childOneMessageId },
+    });
+    const childOneMemoryAfter = await admin.leoMemory.findUnique({
+      where: { id: childOneMemoryId },
+    });
+    const versionHistoryMemoryAfter = await admin.leoMemory.findUnique({
+      where: { id: versionHistoryMemoryId },
+    });
+    expect(childOneConversationAfter?.status).toBe('deleted');
+    expect(childOneMessageAfter?.status).toBe('deleted');
+    expect(childOneMemoryAfter?.status).toBe('deleted');
+    expect(versionHistoryMemoryAfter?.status).toBe('deleted');
   });
 
   it('softDeleteAccount (§7.3) distinguishes owned Families (cascaded) from co-parent Families (assignment revoked only), and ends the account', async () => {
@@ -281,19 +440,39 @@ describe('LifecycleService — M16', () => {
     expect(events[0]?.actorRoleAtTime).toBeNull();
   });
 
-  it('runHardDeleteSweep (§6, §12, §13.1) tombstones only rows whose window has elapsed, and records deletion_completed', async () => {
-    // childOne was soft-deleted by the family-delete cascade above —
-    // backdate its deletedAt past the 90-day window to make it
-    // eligible, without changing the service's own config.
-    await admin.child.update({
-      where: { id: childOne.id },
-      data: { deletedAt: new Date(Date.now() - 91 * 24 * 60 * 60 * 1000) },
+  it('runHardDeleteSweep (§6, §12, §13.1; M18 §5.3/§5.4/§7.5) tombstones only rows whose window has elapsed, destroys the Family DEK, expires aged-out version_history, and records deletion_completed', async () => {
+    // childOne and `family` were both soft-deleted by the family-
+    // delete cascade above — backdate both past the 90-day window to
+    // make them eligible, without changing the service's own config.
+    // childOne's own Leo rows (soft-deleted in the same cascade) are
+    // backdated too, so the generic Leo hard-delete sweep below has
+    // something eligible to find.
+    const ninetyOneDaysAgo = new Date(Date.now() - 91 * 24 * 60 * 60 * 1000);
+    await admin.child.update({ where: { id: childOne.id }, data: { deletedAt: ninetyOneDaysAgo } });
+    await admin.family.update({ where: { id: family.id }, data: { deletedAt: ninetyOneDaysAgo } });
+    await admin.conversation.update({
+      where: { id: childOneConversationId },
+      data: { deletedAt: ninetyOneDaysAgo },
+    });
+    await admin.message.update({
+      where: { id: childOneMessageId },
+      data: { deletedAt: ninetyOneDaysAgo },
+    });
+    await admin.leoMemory.update({
+      where: { id: childOneMemoryId },
+      data: { deletedAt: ninetyOneDaysAgo },
     });
     // childTwo was soft-deleted directly in the first test — leave its
     // deletedAt at "now" so it is provably NOT swept yet.
 
     const result = await lifecycleService.runHardDeleteSweep();
     expect(result.tombstonedChildren).toBeGreaterThanOrEqual(1);
+    expect(result.tombstonedFamilies).toBeGreaterThanOrEqual(1);
+    expect(result.leoTombstonedConversations).toBeGreaterThanOrEqual(1);
+    expect(result.leoTombstonedMessages).toBeGreaterThanOrEqual(1);
+    expect(result.leoTombstonedMemories).toBeGreaterThanOrEqual(1);
+    expect(result.leoVersionHistoryExpired).toBeGreaterThanOrEqual(1);
+    expect(result.familyDeksDestroyed).toBeGreaterThanOrEqual(1);
 
     const tombstonedChild = await admin.child.findUnique({ where: { id: childOne.id } });
     expect(tombstonedChild?.hardDeletedAt).not.toBeNull();
@@ -304,11 +483,48 @@ describe('LifecycleService — M16', () => {
     expect(notYetEligibleChild?.hardDeletedAt).toBeNull();
     expect(notYetEligibleChild?.firstName).toBe('Fictional Child Two');
 
-    const events = await admin.auditEvent.findMany({
+    // M18 §7.5 — the Family completing hard-delete destroys its
+    // FamilyEncryptionKey row, the real crypto-shred.
+    const familyKeyAfter = await admin.familyEncryptionKey.findUnique({
+      where: { familyId: family.id },
+    });
+    expect(familyKeyAfter).toBeNull();
+
+    // The generic 90-day sweep tombstoned childOne's Conversation/
+    // Message/LeoMemory — content scrubbed, same fixed-erasure-marker
+    // pattern as Child.
+    const tombstonedMessage = await admin.message.findUnique({ where: { id: childOneMessageId } });
+    expect(tombstonedMessage?.hardDeletedAt).not.toBeNull();
+    expect(tombstonedMessage?.content.length).toBe(0);
+    const tombstonedMemory = await admin.leoMemory.findUnique({ where: { id: childOneMemoryId } });
+    expect(tombstonedMemory?.hardDeletedAt).not.toBeNull();
+    expect(tombstonedMemory?.content.length).toBe(0);
+
+    // §5.4 — the version_history row ages out independently, on its
+    // own 90-day-from-createdAt window, regardless of soft-delete
+    // status (this row was never soft-deleted by any cascade).
+    const expiredVersionHistory = await admin.leoMemory.findUnique({
+      where: { id: versionHistoryMemoryId },
+    });
+    expect(expiredVersionHistory?.hardDeletedAt).not.toBeNull();
+    expect(expiredVersionHistory?.content.length).toBe(0);
+
+    const childEvents = await admin.auditEvent.findMany({
       where: { eventType: 'deletion_completed', targetId: childOne.id },
     });
-    expect(events).toHaveLength(1);
-    const metadata = events[0]?.metadata as { cascadeTargets?: { tier3CryptoShredding?: string } };
-    expect(metadata.cascadeTargets?.tier3CryptoShredding).toContain('not_applicable');
+    expect(childEvents).toHaveLength(1);
+    const childMetadata = childEvents[0]?.metadata as {
+      cascadeTargets?: { tier3CryptoShredding?: string };
+    };
+    expect(childMetadata.cascadeTargets?.tier3CryptoShredding).toContain('not_applicable');
+
+    const familyEvents = await admin.auditEvent.findMany({
+      where: { eventType: 'deletion_completed', targetId: family.id },
+    });
+    expect(familyEvents).toHaveLength(1);
+    const familyMetadata = familyEvents[0]?.metadata as {
+      cascadeTargets?: { tier3CryptoShredding?: string };
+    };
+    expect(familyMetadata.cascadeTargets?.tier3CryptoShredding).toContain('destroyed');
   });
 });

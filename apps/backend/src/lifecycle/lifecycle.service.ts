@@ -7,6 +7,7 @@ import { CoParentAssignmentRepository } from '../identity-family/repositories/co
 import { DeviceRepository } from '../identity-family/repositories/device.repository';
 import { SessionRepository } from '../identity-family/repositories/session.repository';
 import { AuditService } from '../audit/audit.service';
+import { LeoLifecycleService } from '../leo/leo-lifecycle.service';
 import { LIFECYCLE_CONFIG } from './lifecycle.config.provider';
 import type { LifecycleConfig } from './lifecycle.config';
 import { Role } from '../authorization/authorization.types';
@@ -39,16 +40,24 @@ export class LifecycleService {
     private readonly deviceRepository: DeviceRepository,
     private readonly sessionRepository: SessionRepository,
     private readonly auditService: AuditService,
+    private readonly leoLifecycleService: LeoLifecycleService,
     @Inject(LIFECYCLE_CONFIG) private readonly config: LifecycleConfig,
   ) {}
 
-  /** ADR-0015 §7.1 — soft-deletes only the one Child row. */
+  /**
+   * ADR-0015 §7.1 — soft-deletes the one Child row, plus (M18,
+   * ai-memory-isolation.md §5.3) every Conversation/Message/LeoMemory
+   * row for that Child — the cascade step §5.3's own table names for
+   * "Parent deletes one Child profile," filled in now that those
+   * entities exist.
+   */
   async softDeleteChild(params: {
     childId: string;
     actorParentId: string;
     actorRole: Role;
   }): Promise<Child> {
     const child = await this.childRepository.softDelete(params.childId);
+    await this.leoLifecycleService.cascadeSoftDeleteForChild(child.id);
     await this.auditService.record({
       eventType: 'child_deleted',
       actorPrincipalId: params.actorParentId,
@@ -88,6 +97,9 @@ export class LifecycleService {
     childrenSoftDeleted: number;
     coParentAssignmentsRevoked: number;
     sessionsEnded: number;
+    leoConversationsSoftDeleted: number;
+    leoMessagesSoftDeleted: number;
+    leoMemoriesSoftDeleted: number;
   }> {
     const family = await this.familyRepository.softDelete(params.familyId);
 
@@ -108,6 +120,14 @@ export class LifecycleService {
       'family_deleted',
     );
 
+    // M18, ai-memory-isolation.md §5.3 — "every Conversation/Message
+    // with that family_id... every LeoMemory row (all three classes,
+    // including permanent_vault) with that family_id." One
+    // family-scoped call, not one per Child — mirrors this method's
+    // own existing per-family (not per-child) sessionsEnded call just
+    // above.
+    const leoCascade = await this.leoLifecycleService.cascadeSoftDeleteForFamily(family.id);
+
     await this.auditService.record({
       eventType: 'family_deleted',
       actorPrincipalId: params.actorParentId,
@@ -120,11 +140,17 @@ export class LifecycleService {
         childrenSoftDeleted: children.length,
         coParentAssignmentsRevoked: activeAssignments.length,
         sessionsEnded,
+        leoConversationsSoftDeleted: leoCascade.conversations,
+        leoMessagesSoftDeleted: leoCascade.messages,
+        leoMemoriesSoftDeleted: leoCascade.memories,
       },
     });
 
     return {
       familyId: family.id,
+      leoConversationsSoftDeleted: leoCascade.conversations,
+      leoMessagesSoftDeleted: leoCascade.messages,
+      leoMemoriesSoftDeleted: leoCascade.memories,
       childrenSoftDeleted: children.length,
       coParentAssignmentsRevoked: activeAssignments.length,
       sessionsEnded,
@@ -226,17 +252,15 @@ export class LifecycleService {
    * 'deletion-completion' audit event referencing... the timestamp
    * each target completed."
    *
-   * Crypto-shredding (§10, ADR-0015 Decision item 2) is the other
-   * named hard-delete mechanism for Tier-3 content specifically — this
-   * repository has no per-Family Data Encryption Key, no Tier-3/4
-   * entity, and no field-level encryption code at all yet (ADR-0010's
-   * design has not reached implementation; that is M18/Leo territory).
-   * There is nothing real to crypto-shred today. Rather than fabricate
-   * a placeholder key-destruction call, each `deletion_completed`
-   * event's metadata records this honestly — see
-   * `deletionCompletedMetadata` below — so a future M18 implementation
-   * has a clear, truthful marker of what this milestone did and did
-   * not cover, not a silently-faked "done."
+   * Crypto-shredding (§10, ADR-0015 Decision item 2; M18,
+   * ai-memory-isolation.md §7.5) is the other named hard-delete
+   * mechanism for Tier-3 content specifically — as of M18, a real
+   * per-Family DEK exists (leo/leo-encryption.service.ts's dev-only
+   * stopgap), so destroying that Family's FamilyEncryptionKey row here
+   * (in the same loop as its Family tombstone, below) is now the real
+   * mechanism, not a recorded gap. `recordDeletionCompleted`'s
+   * `tier3CryptoShredding` metadata field is updated accordingly, per
+   * this Family, in the loop below.
    *
    * `actorPrincipalId` is left null on every `deletion_completed`
    * event: this sweep is system-triggered (a scheduled/testable job),
@@ -250,6 +274,11 @@ export class LifecycleService {
     tombstonedChildren: number;
     tombstonedFamilies: number;
     tombstonedParents: number;
+    leoTombstonedConversations: number;
+    leoTombstonedMessages: number;
+    leoTombstonedMemories: number;
+    leoVersionHistoryExpired: number;
+    familyDeksDestroyed: number;
   }> {
     const cutoff = new Date();
     cutoff.setUTCDate(cutoff.getUTCDate() - this.config.softToHardDeleteDays);
@@ -267,15 +296,31 @@ export class LifecycleService {
         childId: child.id,
         targetType: 'Child',
         targetId: child.id,
+        tier3CryptoShredding:
+          'not_applicable — Child itself has no per-Child DEK (Family-scoped, §5.2)',
       });
     }
 
+    let familyDeksDestroyed = 0;
     for (const family of eligibleFamilies) {
       await this.familyRepository.tombstone(family.id);
+      // M18, ai-memory-isolation.md §7.5 — this Family completing
+      // hard-delete is the named trigger for destroying its DEK,
+      // irreversibly destroying every Conversation/Message/LeoMemory
+      // row (including permanent_vault) still encrypted under it,
+      // regardless of whether each of those rows has itself been
+      // individually tombstoned yet.
+      const dekDestroyed = await this.leoLifecycleService.destroyFamilyDek(family.id);
+      if (dekDestroyed) {
+        familyDeksDestroyed += 1;
+      }
       await this.recordDeletionCompleted({
         familyId: family.id,
         targetType: 'Family',
         targetId: family.id,
+        tier3CryptoShredding: dekDestroyed
+          ? 'destroyed — FamilyEncryptionKey row deleted, per §7.5'
+          : 'not_applicable — no FamilyEncryptionKey row existed for this Family (no Tier-3 content was ever written)',
       });
     }
 
@@ -284,13 +329,29 @@ export class LifecycleService {
       await this.recordDeletionCompleted({
         targetType: 'Parent',
         targetId: parent.id,
+        tier3CryptoShredding:
+          'not_applicable — Parent itself has no per-Parent DEK (Family-scoped, §5.2)',
       });
     }
+
+    // M18, ai-memory-isolation.md §5.2/§6 — the same 90-day window,
+    // applied to Conversation/Message/LeoMemory rows individually
+    // (independent of whether their owning Family has itself reached
+    // hard-delete yet).
+    const leoSweep = await this.leoLifecycleService.runHardDeleteSweep(cutoff);
+    // §5.4 — version_history's own independent aging, on its own
+    // configurable window, not the generic 90-day one above.
+    const versionHistorySweep = await this.leoLifecycleService.runVersionHistoryExpirySweep();
 
     return {
       tombstonedChildren: eligibleChildren.length,
       tombstonedFamilies: eligibleFamilies.length,
       tombstonedParents: eligibleParents.length,
+      leoTombstonedConversations: leoSweep.tombstonedConversations,
+      leoTombstonedMessages: leoSweep.tombstonedMessages,
+      leoTombstonedMemories: leoSweep.tombstonedMemories,
+      leoVersionHistoryExpired: versionHistorySweep.expired,
+      familyDeksDestroyed,
     };
   }
 
@@ -299,6 +360,7 @@ export class LifecycleService {
     childId?: string;
     targetType: 'Child' | 'Family' | 'Parent';
     targetId: string;
+    tier3CryptoShredding: string;
   }): Promise<void> {
     await this.auditService.record({
       eventType: 'deletion_completed',
@@ -310,8 +372,7 @@ export class LifecycleService {
         tombstonedAt: new Date().toISOString(),
         cascadeTargets: {
           contentFieldsScrubbed: true,
-          tier3CryptoShredding:
-            'not_applicable — no per-Family DEK or Tier-3 content exists in this codebase yet (ADR-0010/M18 dependency)',
+          tier3CryptoShredding: target.tier3CryptoShredding,
         },
       },
     });
