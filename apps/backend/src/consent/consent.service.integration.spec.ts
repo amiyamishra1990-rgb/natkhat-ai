@@ -9,6 +9,11 @@ import { SessionRepository } from '../identity-family/repositories/session.repos
 import { AuditEventRepository } from '../audit/repositories/audit-event.repository';
 import { AuditService } from '../audit/audit.service';
 import { LifecycleService } from '../lifecycle/lifecycle.service';
+import { ConversationRepository } from '../leo/repositories/conversation.repository';
+import { MessageRepository } from '../leo/repositories/message.repository';
+import { LeoMemoryRepository } from '../leo/repositories/leo-memory.repository';
+import { FamilyEncryptionKeyRepository } from '../leo/repositories/family-encryption-key.repository';
+import { LeoLifecycleService } from '../leo/leo-lifecycle.service';
 import { ConsentEventRepository } from './repositories/consent-event.repository';
 import { ConsentService, ConsentTrackADisabledError } from './consent.service';
 
@@ -27,6 +32,13 @@ describe('ConsentService — M17', () => {
   const sessionRepository = new SessionRepository(admin);
   const auditEventRepository = new AuditEventRepository(admin);
   const auditService = new AuditService(auditEventRepository, { tier5RetentionYears: 3 });
+  const leoLifecycleService = new LeoLifecycleService(
+    { memoryKek: null, versionHistoryRetentionDays: 90 },
+    new ConversationRepository(admin),
+    new MessageRepository(admin),
+    new LeoMemoryRepository(admin),
+    new FamilyEncryptionKeyRepository(admin),
+  );
   const lifecycleService = new LifecycleService(
     childRepository,
     familyRepository,
@@ -35,6 +47,7 @@ describe('ConsentService — M17', () => {
     deviceRepository,
     sessionRepository,
     auditService,
+    leoLifecycleService,
     { softToHardDeleteDays: 90, backupPurgeDays: 90 },
   );
   const consentEventRepository = new ConsentEventRepository(admin);

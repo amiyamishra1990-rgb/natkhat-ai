@@ -91,6 +91,7 @@ model Parent {
   devices                    Device[]
   auditEvents                AuditEvent[]
   consentEvents              ConsentEvent[]
+  vaultedLeoMemories         LeoMemory[]
 
   @@map("parent")
 }
@@ -111,6 +112,10 @@ model Family {
   sessions            Session[]
   auditEvents         AuditEvent[]
   consentEvents       ConsentEvent[]
+  encryptionKey       FamilyEncryptionKey?
+  conversations       Conversation[]
+  messages            Message[]
+  leoMemories         LeoMemory[]
 
   @@index([owningParentId])
   @@map("family")
@@ -133,6 +138,9 @@ model Child {
   createdByParent Parent         @relation("ChildCreatedByParent", fields: [createdByParentId], references: [id])
   auditEvents     AuditEvent[]
   consentEvents   ConsentEvent[]
+  conversations   Conversation[]
+  messages        Message[]
+  leoMemories     LeoMemory[]
 
   @@index([familyId])
   @@map("child")
@@ -380,4 +388,182 @@ model ConsentEvent {
   @@index([familyId])
   @@index([childId])
   @@map("consent_event")
+}
+
+// M18 — Leo Foundation & Memory Isolation (docs/sprints/sprint-03.md,
+// §4; ADR-0012; docs/architecture/ai-memory-isolation.md §3-§8). No
+// AI/LLM integration, no embedding pipeline, no real conversation
+// content — see leo/leo.service.ts's module header for the full scope
+// note. Tier 3 — Sensitive Child Content (ADR-0006 §7-9): `content`
+// columns below are envelope-encrypted application-side before the
+// write reaches Postgres (leo/leo-encryption.service.ts), never
+// encrypted/decrypted inside the database engine itself, per
+// ai-memory-isolation.md §7.1.
+enum MessageSender {
+  child
+  leo
+}
+
+// ai-memory-isolation.md §3.3 — discriminates the three independent,
+// founder-already-approved memory classes (data-lifecycle.md §13.4).
+enum LeoMemoryClass {
+  active_relationship
+  version_history
+  permanent_vault
+}
+
+// Conversation.status / Message.status / LeoMemory.status — §3.1-§3.3:
+// same active|deleted soft-delete flag as ChildStatus, reused as three
+// separate enums (not ChildStatus itself) to keep each entity's status
+// domain independently evolvable, matching this schema's existing
+// one-enum-per-entity convention.
+enum ConversationStatus {
+  active
+  deleted
+}
+
+enum MessageStatus {
+  active
+  deleted
+}
+
+enum LeoMemoryStatus {
+  active
+  deleted
+}
+
+// Per-Family Data Encryption Key envelope (data-classification-and-
+// isolation.md §5.2: "each Family has exactly one active DEK... a
+// design-level association only"). This table is that association,
+// filled in for the first time by M18 since no Tier-3 entity existed
+// before it. `wrappedDek` is the DEK ciphertext (random IV + GCM auth
+// tag + ciphertext, concatenated — see leo-encryption.service.ts),
+// wrapped by LEO_MEMORY_KEK — an explicit, dev-only stopgap standing
+// in for the not-yet-selected production KMS (§5.3/§11 leave KMS
+// product, key-rotation policy, and DEK-caching strategy undecided;
+// see leo.config.ts's header for the full non-production disclaimer).
+// No grant is issued to natkhat_app_role on this table at all (see
+// this schema's migration, Part 2) — only this module's own
+// admin-role Prisma client ever touches key material, keeping it
+// structurally out of reach of the RLS-bounded request-serving role
+// regardless of any application bug.
+model FamilyEncryptionKey {
+  id         String   @id @default(uuid()) @db.Uuid
+  familyId   String   @unique @map("family_id") @db.Uuid
+  wrappedDek Bytes    @map("wrapped_dek")
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  family Family @relation(fields: [familyId], references: [id])
+
+  @@map("family_encryption_key")
+}
+
+// §3.1 / §4 — unlike ConsentEvent.childId (nullable, a consent event
+// can precede its Child), a Conversation cannot exist before its Child
+// does, so childId is NOT NULL here.
+model Conversation {
+  id            String             @id @default(uuid()) @db.Uuid
+  familyId      String             @map("family_id") @db.Uuid
+  childId       String             @map("child_id") @db.Uuid
+  startedAt     DateTime           @default(now()) @map("started_at") @db.Timestamptz
+  // Denormalized read-optimization field (§3.1) — Message rows remain
+  // the source of truth for content/timing; this is updated
+  // alongside each appended Message, not an independent fact.
+  lastMessageAt DateTime           @default(now()) @map("last_message_at") @db.Timestamptz
+  status        ConversationStatus @default(active)
+  // Same soft-delete -> 90-day-hard-delete mechanism as Parent/Family/
+  // Child (M16) — see those models' deletedAt/hardDeletedAt comments;
+  // §5.2 reuses that already-approved window verbatim for this entity.
+  deletedAt     DateTime?          @map("deleted_at") @db.Timestamptz
+  hardDeletedAt DateTime?          @map("hard_deleted_at") @db.Timestamptz
+
+  family   Family    @relation(fields: [familyId], references: [id])
+  child    Child     @relation(fields: [childId], references: [id])
+  messages Message[]
+
+  @@index([familyId])
+  @@index([childId])
+  @@map("conversation")
+}
+
+// §3.2 — family_id/child_id are carried directly on Message
+// (denormalized from Conversation), not derived only via a join: RLS
+// must be able to partition this table on its own column (§3.2's
+// stated rationale), and §7.4's cross-child application-layer check
+// needs child_id directly on the row for the same reason.
+model Message {
+  id             String        @id @default(uuid()) @db.Uuid
+  conversationId String        @map("conversation_id") @db.Uuid
+  familyId       String        @map("family_id") @db.Uuid
+  childId        String        @map("child_id") @db.Uuid
+  sender         MessageSender
+  // Tier 3, encrypted (see this section's header comment). Immutable
+  // once written (§5.1) — no code path in this module ever updates
+  // this column after INSERT, only status (soft-delete, §3.2) and, at
+  // hard-delete, the scrub-on-tombstone step.
+  content        Bytes
+  createdAt      DateTime      @default(now()) @map("created_at") @db.Timestamptz
+  status         MessageStatus @default(active)
+  deletedAt      DateTime?     @map("deleted_at") @db.Timestamptz
+  hardDeletedAt  DateTime?     @map("hard_deleted_at") @db.Timestamptz
+
+  conversation Conversation @relation(fields: [conversationId], references: [id])
+  family       Family       @relation(fields: [familyId], references: [id])
+  child        Child        @relation(fields: [childId], references: [id])
+
+  @@index([conversationId])
+  @@index([familyId])
+  @@index([childId])
+  @@map("message")
+}
+
+// §3.3 — implements data-lifecycle.md §13.4's three already-approved
+// memory classes; this table supplies the entity shape only, it does
+// not redecide the classes, retention rules, or no-automatic-
+// promotion business rule (see this schema section's header comment).
+model LeoMemory {
+  id                  String          @id @default(uuid()) @db.Uuid
+  familyId            String          @map("family_id") @db.Uuid
+  childId             String          @map("child_id") @db.Uuid
+  memoryClass         LeoMemoryClass  @map("memory_class")
+  // Tier 3, encrypted — distilled memory content, never a verbatim
+  // Message copy (§3.4's minimization answer).
+  content             Bytes
+  createdAt           DateTime        @default(now()) @map("created_at") @db.Timestamptz
+  // §3.3/§5.1 — correction is always a NEW row; this points the new
+  // Class-1 row at the prior row, whose own memoryClass is reassigned
+  // to version_history in the same operation (leo.service.ts's
+  // correctMemory) — never an in-place content mutation. onDelete:
+  // SetNull so the (rare, config-driven) version-history expiry sweep
+  // physically purging an old row never blocks on, or is blocked by,
+  // a newer row's provenance pointer — provenance is informational,
+  // not load-bearing for correctness once its target is gone.
+  supersedesMemoryId  String?         @map("supersedes_memory_id") @db.Uuid
+  // §3.3 — populated only when memoryClass = permanent_vault; points
+  // at the Class 1/2 row a parent chose to preserve. A Vault row is
+  // always a new row (never an existing row's memoryClass flipped to
+  // permanent_vault in place), per §6.3/data-lifecycle.md §13.4's
+  // no-automatic-promotion rule.
+  vaultedFromMemoryId String?         @map("vaulted_from_memory_id") @db.Uuid
+  // Populated only for permanent_vault rows. Founder decision
+  // 2026-08-08 (§6.3): vaultedByParentId must resolve to the Family's
+  // owning_parent_id — enforced in leo.service.ts's addToVault, not
+  // merely documented here.
+  vaultedAt           DateTime?       @map("vaulted_at") @db.Timestamptz
+  vaultedByParentId   String?         @map("vaulted_by_parent_id") @db.Uuid
+  status              LeoMemoryStatus @default(active)
+  deletedAt           DateTime?       @map("deleted_at") @db.Timestamptz
+  hardDeletedAt       DateTime?       @map("hard_deleted_at") @db.Timestamptz
+
+  family           Family      @relation(fields: [familyId], references: [id])
+  child            Child       @relation(fields: [childId], references: [id])
+  vaultedByParent  Parent?     @relation(fields: [vaultedByParentId], references: [id])
+  supersedes       LeoMemory?  @relation("MemorySupersession", fields: [supersedesMemoryId], references: [id], onDelete: SetNull, onUpdate: NoAction)
+  supersededBy     LeoMemory[] @relation("MemorySupersession")
+  vaultedFrom      LeoMemory?  @relation("MemoryVaultSource", fields: [vaultedFromMemoryId], references: [id], onDelete: SetNull, onUpdate: NoAction)
+  vaultedInstances LeoMemory[] @relation("MemoryVaultSource")
+
+  @@index([familyId])
+  @@index([childId])
+  @@map("leo_memory")
 }
