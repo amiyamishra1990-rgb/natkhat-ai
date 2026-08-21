@@ -349,8 +349,13 @@ describe('LifecycleService — M16', () => {
 
     // No redundant per-child child_deleted event for the cascaded
     // child, beyond the one already asserted for childTwo above.
+    // Scoped to this file's own families — unscoped would also catch
+    // child_deleted events from other test files' fixtures running in
+    // a parallel Jest worker against the same shared dev database
+    // (e.g. consent.service.integration.spec.ts's withdrawConsent
+    // test, which triggers softDeleteChild too).
     const childDeletedEvents = await admin.auditEvent.findMany({
-      where: { eventType: 'child_deleted' },
+      where: { eventType: 'child_deleted', familyId: { in: allFamilyIds() } },
     });
     expect(childDeletedEvents).toHaveLength(1);
 
