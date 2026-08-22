@@ -3,7 +3,7 @@
 **Version:** 1.0.0
 **Status:** Living — append-only, updated as new minor decisions are recorded
 **Owner:** Engineering
-**Last Updated:** 2026-08-18
+**Last Updated:** 2026-08-22
 
 Append-only. Each entry: date, one-line decision, one-line rationale,
 author. Small implementation decisions that don't warrant a full ADR
@@ -52,3 +52,27 @@ original entry; the entry itself is never deleted or rewritten.
   ADR-0009 itself is unchanged. Author: Amiya (product owner),
   reviewed and approved applying this change in session; recorded by
   AI agent.
+- **2026-08-22** — Decision: Sprint 03 Milestone 20 (first end-to-end
+  vertical slice) deliberately leaves Leo-chat interaction ungated at
+  the authorization layer, and this is recorded as a known, open gap
+  rather than silently accepted. No `Action` exists in
+  `authorization.types.ts`'s bounded set (M15) for "interact with Leo
+  for a given child," and `leo/leo.service.ts` (M18) never calls
+  `AuthorizationService.authorize(...)` anywhere — the only isolation
+  Leo's module currently enforces is the family/child scoping proven
+  by M14's RLS and M18's own application-layer cross-child checks, not
+  a permission check on _which_ parent (owner vs. co-parent, or a
+  future child-session principal) may open or send messages in a given
+  child's Leo conversation. M20's vertical-slice integration test
+  (`apps/backend/test/vertical-slice.e2e-spec.ts`) exercises this
+  exactly as M18 shipped it, rather than introducing a new `Action`
+  into the already-closed M15 authorization file to paper over the
+  gap. Rationale: adding real authorization to Leo interactions is a
+  substantive M15/M18-scope change (new bounded Action, a decision on
+  whether/how a co-parent's `permission_scope` should gate it, and
+  possibly the reserved child-principal question ADR-0009 Decision
+  item 7 already deferred) — not something to bolt on incidentally
+  inside an integration-test milestone. Flagged here explicitly for a
+  future milestone to design and close, not left to be rediscovered.
+  Author: Amiya (product owner), directed this exact scoping and
+  disclosure in session; recorded by AI agent.
