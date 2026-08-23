@@ -790,19 +790,19 @@ yet authored).
 
 ## Approved Tech Stack
 
-| Layer                   | Technology                  | ADR                                                      |
-| ----------------------- | --------------------------- | -------------------------------------------------------- |
-| Monorepo tooling        | Turborepo + pnpm workspaces | ADR-0001                                                 |
-| Mobile                  | Flutter                     | ADR-0002                                                 |
-| Backend                 | NestJS                      | ADR-0003                                                 |
-| Admin (Sprint 02 M10)   | Next.js                     | ADR-0014 (decision recorded; scaffolding not authorized) |
-| Website (Sprint 02 M10) | Next.js                     | ADR-0014 (decision recorded; scaffolding not authorized) |
+| Layer                   | Technology                   | ADR                                                             |
+| ----------------------- | ---------------------------- | --------------------------------------------------------------- |
+| Monorepo tooling        | Turborepo + pnpm workspaces  | ADR-0001                                                        |
+| Mobile                  | Flutter                      | ADR-0002                                                        |
+| Backend                 | NestJS                       | ADR-0003                                                        |
+| Admin (Sprint 02 M10)   | Next.js                      | ADR-0014 (decision recorded; scaffolding not authorized)        |
+| Website (Sprint 02 M10) | Next.js                      | ADR-0014 (decision recorded; scaffolding not authorized)        |
 | Database                | PostgreSQL, via Google Cloud | ADR-0004 (implementation deferred; hosting amended by ADR-0016) |
-| ORM                     | Prisma                      | ADR-0004 (implementation deferred)                       |
-| Auth                    | Firebase Authentication     | ADR-0016 (supersedes ADR-0005's auth clause)             |
-| Storage                 | Supabase Storage            | ADR-0005 (implementation deferred; unaffected by ADR-0016) |
-| Cloud                   | Google Cloud (GCP)          | ADR-0016                                                 |
-| CI/CD                   | GitHub Actions              | Not yet recorded                                         |
+| ORM                     | Prisma                       | ADR-0004 (implementation deferred)                              |
+| Auth                    | Firebase Authentication      | ADR-0016 (supersedes ADR-0005's auth clause)                    |
+| Storage                 | Supabase Storage             | ADR-0005 (implementation deferred; unaffected by ADR-0016)      |
+| Cloud                   | Google Cloud (GCP)           | ADR-0016                                                        |
+| CI/CD                   | GitHub Actions               | Not yet recorded                                                |
 
 Full detail: `docs/constitution/product/natkhat-ai-constitution.md`.
 
@@ -823,7 +823,7 @@ Full detail: `docs/constitution/product/natkhat-ai-constitution.md`.
 | [ADR-0002](docs/decisions/ADR-0002-flutter.md)                                                  | Adopt Flutter for the Mobile Application                                                  | Accepted                                                                                                                                                                                              |
 | [ADR-0003](docs/decisions/ADR-0003-backend.md)                                                  | Adopt NestJS for the Backend Application                                                  | Accepted                                                                                                                                                                                              |
 | [ADR-0004](docs/decisions/ADR-0004-database.md)                                                 | Adopt PostgreSQL (via Supabase) with Prisma — Decision Recorded, Implementation Deferred  | Accepted — Implementation Deferred (hosting clause amended 2026-08-23 by ADR-0016)                                                                                                                    |
-| [ADR-0005](docs/decisions/ADR-0005-authentication.md)                                           | Adopt Supabase Auth — Decision Recorded, Implementation Deferred                          | Accepted — Implementation Deferred (authentication clause superseded 2026-08-23 by ADR-0016; Storage clause unaffected)                                                                              |
+| [ADR-0005](docs/decisions/ADR-0005-authentication.md)                                           | Adopt Supabase Auth — Decision Recorded, Implementation Deferred                          | Accepted — Implementation Deferred (authentication clause superseded 2026-08-23 by ADR-0016; Storage clause unaffected)                                                                               |
 | [ADR-0006](docs/decisions/ADR-0006-data-privacy-compliance.md)                                  | Data Privacy & Compliance Engineering Requirements                                        | Accepted — Engineering Requirements Ratified; Legal Validation Required                                                                                                                               |
 | [ADR-0007](docs/decisions/ADR-0007-target-audience-interim-posture.md)                          | Interim Target-Audience Engineering Compliance Posture                                    | Accepted — Target Market/Age Range Founder-Ratified (India, ages 4–10); India DPDP Legal Validation Required                                                                                          |
 | [ADR-0008](docs/decisions/ADR-0008-core-data-model-parent-family-child.md)                      | Core Data Model — Parent/Family/Child Entities (Sprint 02 M1)                             | Accepted — Implementation Deferred                                                                                                                                                                    |

@@ -79,19 +79,19 @@ The following technology choices are locked for Natkhat AI. Each is
 recorded formally in its corresponding ADR; implementation status
 varies per ADR.
 
-| Layer                          | Technology                  | Recorded in                                           |
-| ------------------------------ | --------------------------- | ----------------------------------------------------- |
-| Monorepo tooling               | Turborepo + pnpm workspaces | ADR-0001                                              |
-| Mobile application             | Flutter                     | ADR-0002                                              |
-| Backend application            | NestJS                      | ADR-0003                                              |
-| Admin application (Sprint 02+) | Next.js                     | Not yet recorded                                      |
-| Marketing website (Sprint 02+) | Next.js                     | Not yet recorded                                      |
-| Database                       | PostgreSQL, via Google Cloud | ADR-0004 (implementation deferred; hosting amended by ADR-0016) |
-| ORM                            | Prisma                      | ADR-0004 (decision recorded, implementation deferred) |
-| Authentication                 | Firebase Authentication     | ADR-0016 (supersedes ADR-0005's authentication clause) |
-| Storage                        | Supabase Storage            | ADR-0005 (decision recorded, implementation deferred; unaffected by ADR-0016 — see ADR-0016, Decision item 4) |
-| Cloud provider                 | Google Cloud (GCP)          | ADR-0016                                              |
-| CI/CD                          | GitHub Actions              | Not yet recorded                                      |
+| Layer                          | Technology                   | Recorded in                                                                                                   |
+| ------------------------------ | ---------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Monorepo tooling               | Turborepo + pnpm workspaces  | ADR-0001                                                                                                      |
+| Mobile application             | Flutter                      | ADR-0002                                                                                                      |
+| Backend application            | NestJS                       | ADR-0003                                                                                                      |
+| Admin application (Sprint 02+) | Next.js                      | Not yet recorded                                                                                              |
+| Marketing website (Sprint 02+) | Next.js                      | Not yet recorded                                                                                              |
+| Database                       | PostgreSQL, via Google Cloud | ADR-0004 (implementation deferred; hosting amended by ADR-0016)                                               |
+| ORM                            | Prisma                       | ADR-0004 (decision recorded, implementation deferred)                                                         |
+| Authentication                 | Firebase Authentication      | ADR-0016 (supersedes ADR-0005's authentication clause)                                                        |
+| Storage                        | Supabase Storage             | ADR-0005 (decision recorded, implementation deferred; unaffected by ADR-0016 — see ADR-0016, Decision item 4) |
+| Cloud provider                 | Google Cloud (GCP)           | ADR-0016                                                                                                      |
+| CI/CD                          | GitHub Actions               | Not yet recorded                                                                                              |
 
 No rationale beyond "locked" has been recorded for stack choices that
 predate the ADR process; ADR-0001 through ADR-0005 supply rationale

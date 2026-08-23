@@ -53,7 +53,7 @@ the relevant consoles before this ADR was authored:
 
 1. **Authentication: Firebase Authentication supersedes Supabase Auth.**
    This supersedes ADR-0005's authentication decision only — see item
-   4 below for what this ADR does *not* decide. Firebase project
+   4 below for what this ADR does _not_ decide. Firebase project
    `natkhat-ai-dev` (Blaze plan) is the real, non-production dev target
    for Sprint 03's M15 code going forward, replacing Decision J.5's
    "real, non-production dev Supabase project" for authentication.
