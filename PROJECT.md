@@ -797,11 +797,11 @@ yet authored).
 | Backend                 | NestJS                      | ADR-0003                                                 |
 | Admin (Sprint 02 M10)   | Next.js                     | ADR-0014 (decision recorded; scaffolding not authorized) |
 | Website (Sprint 02 M10) | Next.js                     | ADR-0014 (decision recorded; scaffolding not authorized) |
-| Database                | PostgreSQL, via Supabase    | ADR-0004 (implementation deferred)                       |
+| Database                | PostgreSQL, via Google Cloud | ADR-0004 (implementation deferred; hosting amended by ADR-0016) |
 | ORM                     | Prisma                      | ADR-0004 (implementation deferred)                       |
-| Auth                    | Supabase Auth               | ADR-0005 (implementation deferred)                       |
-| Storage                 | Supabase Storage            | ADR-0005 (implementation deferred)                       |
-| Cloud                   | Google Cloud (GCP)          | Not yet recorded                                         |
+| Auth                    | Firebase Authentication     | ADR-0016 (supersedes ADR-0005's auth clause)             |
+| Storage                 | Supabase Storage            | ADR-0005 (implementation deferred; unaffected by ADR-0016) |
+| Cloud                   | Google Cloud (GCP)          | ADR-0016                                                 |
 | CI/CD                   | GitHub Actions              | Not yet recorded                                         |
 
 Full detail: `docs/constitution/product/natkhat-ai-constitution.md`.
@@ -822,8 +822,8 @@ Full detail: `docs/constitution/product/natkhat-ai-constitution.md`.
 | [ADR-0001](docs/decisions/ADR-0001-monorepo.md)                                                 | Adopt a Single Monorepo (Turborepo + pnpm Workspaces)                                     | Accepted                                                                                                                                                                                              |
 | [ADR-0002](docs/decisions/ADR-0002-flutter.md)                                                  | Adopt Flutter for the Mobile Application                                                  | Accepted                                                                                                                                                                                              |
 | [ADR-0003](docs/decisions/ADR-0003-backend.md)                                                  | Adopt NestJS for the Backend Application                                                  | Accepted                                                                                                                                                                                              |
-| [ADR-0004](docs/decisions/ADR-0004-database.md)                                                 | Adopt PostgreSQL (via Supabase) with Prisma — Decision Recorded, Implementation Deferred  | Accepted — Implementation Deferred                                                                                                                                                                    |
-| [ADR-0005](docs/decisions/ADR-0005-authentication.md)                                           | Adopt Supabase Auth — Decision Recorded, Implementation Deferred                          | Accepted — Implementation Deferred                                                                                                                                                                    |
+| [ADR-0004](docs/decisions/ADR-0004-database.md)                                                 | Adopt PostgreSQL (via Supabase) with Prisma — Decision Recorded, Implementation Deferred  | Accepted — Implementation Deferred (hosting clause amended 2026-08-23 by ADR-0016)                                                                                                                    |
+| [ADR-0005](docs/decisions/ADR-0005-authentication.md)                                           | Adopt Supabase Auth — Decision Recorded, Implementation Deferred                          | Accepted — Implementation Deferred (authentication clause superseded 2026-08-23 by ADR-0016; Storage clause unaffected)                                                                              |
 | [ADR-0006](docs/decisions/ADR-0006-data-privacy-compliance.md)                                  | Data Privacy & Compliance Engineering Requirements                                        | Accepted — Engineering Requirements Ratified; Legal Validation Required                                                                                                                               |
 | [ADR-0007](docs/decisions/ADR-0007-target-audience-interim-posture.md)                          | Interim Target-Audience Engineering Compliance Posture                                    | Accepted — Target Market/Age Range Founder-Ratified (India, ages 4–10); India DPDP Legal Validation Required                                                                                          |
 | [ADR-0008](docs/decisions/ADR-0008-core-data-model-parent-family-child.md)                      | Core Data Model — Parent/Family/Child Entities (Sprint 02 M1)                             | Accepted — Implementation Deferred                                                                                                                                                                    |
@@ -834,6 +834,7 @@ Full detail: `docs/constitution/product/natkhat-ai-constitution.md`.
 | [ADR-0013](docs/decisions/ADR-0013-ai-provider-abstraction-and-multi-provider-compatibility.md) | AI-Provider Abstraction & Multi-Provider Compatibility (Sprint 02 M8)                     | **Proposed** — cannot reach Accepted until at least one candidate provider's contract terms clear legal review (ADR-0006 §26)                                                                         |
 | [ADR-0014](docs/decisions/ADR-0014-adopt-nextjs-for-admin-and-website-applications.md)          | Adopt Next.js for Admin & Website Applications (Sprint 02 M10)                            | Accepted (records the already-locked choice; does not authorize scaffolding)                                                                                                                          |
 | [ADR-0015](docs/decisions/ADR-0015-child-data-lifecycle-architecture.md)                        | Child-Data Lifecycle Architecture — Retention/Deletion/Export/Backup-Purge (Sprint 02 M4) | Accepted — Implementation Deferred (founder-approved 2026-08-05; closes the M4 governance gap; §13.3 audit/security-log retention remains APPROVED PROVISIONALLY, pending India DPDP legal review)    |
+| [ADR-0016](docs/decisions/ADR-0016-firebase-auth-and-google-cloud-migration.md)                 | Migrate Off Supabase — Firebase Authentication and Google Cloud (founder-directed)        | Accepted — Founder-Authorized, Effective Immediately (2026-08-23; supersedes ADR-0005's authentication clause; amends ADR-0004's hosting clause; Storage explicitly out of scope)                     |
 
 All ADRs above are additionally governed by the
 [Child Privacy & Safety Constitution](docs/constitution/product/child-privacy-and-safety-constitution.md)
@@ -1394,6 +1395,7 @@ Risks #10 and #12–#15 for any future implementation sprint.
 
 ## Major Decisions
 
+- [ADR-0016](docs/decisions/ADR-0016-firebase-auth-and-google-cloud-migration.md) — Migrate Off Supabase — Firebase Authentication and Google Cloud (founder-directed) — Accepted, Founder-Authorized, Effective Immediately (2026-08-23); supersedes ADR-0005's authentication clause, amends ADR-0004's hosting clause; Storage explicitly out of scope
 - [ADR-0015](docs/decisions/ADR-0015-child-data-lifecycle-architecture.md) — Child-Data Lifecycle Architecture (Sprint 02 M4) — Accepted, Implementation Deferred; founder-approved 2026-08-05, closes the M4 governance gap; §13.3 audit-log retention Approved Provisionally, pending India DPDP legal review
 - [ADR-0014](docs/decisions/ADR-0014-adopt-nextjs-for-admin-and-website-applications.md) — Adopt Next.js for Admin & Website Applications (Sprint 02 M10) — Accepted; scaffolding not authorized
 - [ADR-0013](docs/decisions/ADR-0013-ai-provider-abstraction-and-multi-provider-compatibility.md) — AI-Provider Abstraction & Multi-Provider Compatibility (Sprint 02 M8) — Proposed, blocked on provider contract-terms legal review
@@ -1404,14 +1406,38 @@ Risks #10 and #12–#15 for any future implementation sprint.
 - [ADR-0008](docs/decisions/ADR-0008-core-data-model-parent-family-child.md) — Core Data Model — Parent/Family/Child Entities (Sprint 02 M1) — Accepted, Implementation Deferred
 - [ADR-0007](docs/decisions/ADR-0007-target-audience-interim-posture.md) — Interim Target-Audience Engineering Compliance Posture — Accepted, Target Market/Age Range Founder-Ratified (India, ages 4–10), India DPDP Legal Validation Required
 - [ADR-0006](docs/decisions/ADR-0006-data-privacy-compliance.md) — Data Privacy & Compliance Engineering Requirements — Accepted, Legal Validation Required
-- [ADR-0005](docs/decisions/ADR-0005-authentication.md) — Adopt Supabase Auth — Decision Recorded, Implementation Deferred
-- [ADR-0004](docs/decisions/ADR-0004-database.md) — Adopt PostgreSQL (via Supabase) with Prisma — Decision Recorded, Implementation Deferred
+- [ADR-0005](docs/decisions/ADR-0005-authentication.md) — Adopt Supabase Auth — Decision Recorded, Implementation Deferred (authentication clause superseded 2026-08-23 by ADR-0016; Storage clause unaffected)
+- [ADR-0004](docs/decisions/ADR-0004-database.md) — Adopt PostgreSQL (via Supabase) with Prisma — Decision Recorded, Implementation Deferred (hosting clause amended 2026-08-23 by ADR-0016)
 - [ADR-0003](docs/decisions/ADR-0003-backend.md) — Adopt NestJS for the Backend Application
 - [ADR-0002](docs/decisions/ADR-0002-flutter.md) — Adopt Flutter for the Mobile Application
 - [ADR-0001](docs/decisions/ADR-0001-monorepo.md) — Adopt a Single Monorepo (Turborepo + pnpm Workspaces)
 
 ## Change Log
 
+- **2026-08-23** — Founder-directed migration off Supabase onto Google
+  Cloud, recorded as
+  [ADR-0016](docs/decisions/ADR-0016-firebase-auth-and-google-cloud-migration.md):
+  Firebase Authentication supersedes Supabase Auth (ADR-0005's
+  authentication clause); PostgreSQL hosting moves from Supabase to
+  Google Cloud, Cloud SQL for PostgreSQL as the dev-instance candidate
+  (amends ADR-0004's hosting clause; engine/ORM unchanged); Google
+  Cloud (GCP) formally recorded as Cloud provider. Storage explicitly
+  out of scope, remains Supabase Storage pending a separate founder
+  decision. Rebuilt M15 authentication code
+  (`apps/backend/src/auth/`) against the Firebase Admin SDK, using
+  Application Default Credentials (never a downloaded service-account
+  key file — the founder's org enforces
+  `iam.managed.disableServiceAccountApiKeyCreation`), preserving the
+  same lazy-provider, fail-closed, `describeIfConfigured`-skip test
+  pattern the Supabase implementation established.
+  `ParentRepository.findByAuthIdentityRef` required no change.
+  Constitutional Amendment recorded in
+  `docs/constitution/product/natkhat-ai-constitution.md` (v1.2.0),
+  amending the Locked Technology Stack table per its own Amendment
+  clause. Decision Log entry added. Sprint 03 remains synthetic-data-
+  only, non-production; PR #21 (M20 vertical slice) was not touched by
+  this session — see PR #21's own status. — AI agent (Claude Code),
+  pending user review before merge.
 - **2026-08-12** — Sprint 02, Milestone 11 (Design-Phase Close-Out &
   Governance Sync): per `docs/sprints/sprint-02.md`, §3, M11's explicit
   scope ("`PROJECT.md` Current Status/Milestone/Pending Tasks/Known

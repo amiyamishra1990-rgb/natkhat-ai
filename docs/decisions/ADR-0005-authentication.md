@@ -1,7 +1,12 @@
 # ADR-0005: Adopt Supabase Auth — Decision Recorded, Implementation Deferred
 
 **Version:** 1.0.0
-**Status:** Accepted — Implementation Deferred
+**Status:** Accepted — Implementation Deferred. **Authentication clause
+superseded 2026-08-23 by [ADR-0016](./ADR-0016-firebase-auth-and-google-cloud-migration.md)
+(Supabase Auth → Firebase Authentication, founder-directed).** The
+Storage clause below is unaffected and remains as originally recorded
+— see ADR-0016, Decision item 4. This ADR is left otherwise unedited
+as the historical record.
 **Owner:** Engineering
 **Last Updated:** 2026-07-28
 

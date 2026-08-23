@@ -52,3 +52,19 @@ original entry; the entry itself is never deleted or rewritten.
   ADR-0009 itself is unchanged. Author: Amiya (product owner),
   reviewed and approved applying this change in session; recorded by
   AI agent.
+- **2026-08-23** — Decision: migrate off Supabase entirely onto Google
+  Cloud — Firebase Authentication replaces Supabase Auth, and
+  PostgreSQL hosting moves from Supabase to Google Cloud (Cloud SQL for
+  PostgreSQL as the dev-instance candidate); recorded formally as
+  [ADR-0016](./ADR-0016-firebase-auth-and-google-cloud-migration.md),
+  which supersedes ADR-0005's authentication clause and amends
+  ADR-0004's hosting clause. Rationale: founder already holds a Google
+  Cloud billing subscription and wants to consolidate spend there — a
+  founder-level technology-decision change, not an engineering
+  recommendation. Storage (ADR-0005's other clause) is explicitly not
+  part of this decision and remains open. Sprint 03 Decision J.5's dev
+  Supabase project is superseded by a real, non-production dev Firebase
+  project (`natkhat-ai-dev`) for authentication; M13/M14's dev Postgres
+  target moves toward a dev-only Cloud SQL instance per the same ADR.
+  Author: Amiya (product owner/founder, decided directly), recorded by
+  AI agent.

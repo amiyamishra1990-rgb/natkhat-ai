@@ -22,11 +22,11 @@ export class ParentRepository {
     return this.prisma.parent.findUnique({ where: { id } });
   }
 
-  // M15 (docs/sprints/sprint-03.md, §4) — resolves the Parent record
-  // matching the identity Supabase Auth issued, per M1 §3.2's
+  // M15 (docs/sprints/sprint-03.md, §4; ADR-0016) — resolves the Parent
+  // record matching the identity Firebase Auth issued, per M1 §3.2's
   // `authIdentityRef` placeholder link (ADR-0009 §8: "already the
-  // placeholder link for that"). Used by auth/supabase-auth.service.ts
-  // after a Supabase-issued token is verified; never used to bypass
+  // placeholder link for that"). Used by auth/firebase-auth.service.ts
+  // after a Firebase-issued token is verified; never used to bypass
   // verification, only to look up the already-verified identity.
   findByAuthIdentityRef(authIdentityRef: string): Promise<Parent | null> {
     return this.prisma.parent.findUnique({ where: { authIdentityRef } });
@@ -47,7 +47,7 @@ export class ParentRepository {
   // tombstoned Parent would violate it. This still satisfies §6's
   // "fixed erasure marker" intent: the value is deterministic,
   // content-free, and never resolves back to the real external
-  // identity Supabase Auth issued.
+  // identity Firebase Auth issued.
   tombstone(id: string): Promise<Parent> {
     return this.prisma.parent.update({
       where: { id },

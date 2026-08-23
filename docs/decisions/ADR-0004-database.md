@@ -1,7 +1,13 @@
 # ADR-0004: Adopt PostgreSQL (via Supabase) with Prisma — Decision Recorded, Implementation Deferred
 
 **Version:** 1.0.0
-**Status:** Accepted — Implementation Deferred
+**Status:** Accepted — Implementation Deferred. **Hosting clause
+amended 2026-08-23 by [ADR-0016](./ADR-0016-firebase-auth-and-google-cloud-migration.md)
+("via Supabase" → Google Cloud, Cloud SQL for PostgreSQL as the
+dev-instance candidate, founder-directed).** The database engine
+(PostgreSQL) and ORM (Prisma) choices below are unchanged and not
+reopened by ADR-0016. This ADR is left otherwise unedited as the
+historical record.
 **Owner:** Engineering
 **Last Updated:** 2026-07-28
 
