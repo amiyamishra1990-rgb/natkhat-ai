@@ -34,11 +34,17 @@ dependency-graph member (ADR-0001, ADR-0002).
 
 ## Data, auth, and storage
 
-PostgreSQL via Supabase with Prisma (ADR-0004) and Supabase Auth /
-Storage (ADR-0005) are both **decision recorded, implementation
-deferred** — no schema, migration, or client code exists yet. A
-dedicated data-privacy/compliance ADR is required before either is
-implemented (see Risk Register, `docs/sprints/sprint-01.md`, §26).
+PostgreSQL with Prisma (ADR-0004) and Firebase Authentication
+([ADR-0016](../decisions/ADR-0016-firebase-auth-and-google-cloud-migration.md),
+2026-08-23, superseding ADR-0005's authentication clause) are the
+locked choices; database hosting and authentication both target Google
+Cloud (Cloud SQL for PostgreSQL; Firebase project `natkhat-ai-dev`).
+Storage remains recorded as Supabase Storage (ADR-0005), unaffected by
+ADR-0016, pending a separate founder decision. As of Sprint 03,
+Milestones 13-19 have implemented schema, migrations, and client code
+against these — this page predates that work and is not the current
+implementation-status source; see `PROJECT.md`'s Current Status and the
+ADR Index for that.
 
 ## Shared packages
 
