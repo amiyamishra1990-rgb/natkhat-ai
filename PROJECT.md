@@ -4,18 +4,21 @@
 
 # Natkhat AI — Project Dashboard
 
-**Version:** 1.15.0
+**Version:** 1.16.0
 **Status:** Living — updated in the same PR as any sprint/milestone/decision change
 **Owner:** Repository maintainers
-**Last Updated:** 2026-08-12 (Sprint 02, Milestone 11 — Design-Phase
-Close-Out & Governance Sync: this file corrected to reflect Sprint 02
-Milestones 1–10 as merged into `main`, and the Milestone 4 child-data
-lifecycle governance gap as closed via
-[ADR-0015](docs/decisions/ADR-0015-child-data-lifecycle-architecture.md)
-(Accepted — Implementation Deferred). This file itself had not been
-updated since 2026-08-04 — the "no Sprint 02 Sprint Document exists"
-and Sprint-01-only ADR Index below were stale; corrected in this pass.
-See Current Status and Change Log for full detail.)
+**Last Updated:** 2026-08-26 (Sprint 04, Milestone 21 — Sprint 03
+Close-Out & Governance Sync: this file corrected to reflect Sprint 03
+Milestones 12–20 as merged into `main`,
+[ADR-0016](docs/decisions/ADR-0016-firebase-auth-and-google-cloud-migration.md)
+(Google Cloud/Firebase migration) as merged, and Milestone 20's first
+end-to-end vertical slice as merged (PR #21). This file had received
+only narrow, ADR-0016-scoped edits since 2026-08-12 — its Current
+Development Phase/Current Sprint/Current Milestone/Repository Structure
+sections still described the Sprint 02 M11 state and were never updated
+for Sprint 03 at all; corrected in this pass, per
+`docs/sprints/sprint-04.md`, §4, M21. See Current Status and Change Log
+for full detail.)
 
 ## Governance Compliance
 
@@ -57,50 +60,72 @@ Source: [docs/constitution/product/natkhat-ai-constitution.md](docs/constitution
 
 Sprint 01 — Repository Foundation — **complete** (all 12 Milestone
 Breakdown entries in `docs/sprints/sprint-01.md`, §15 satisfied) and
-permanently merged into `main`. **Sprint 02 — Architecture & Compliance
-Design Layer is approved and executing**: Milestones 1–10 of 11 are
-complete and merged into `main` (see Current Milestone). Milestone 11
-(Sprint 02 Design-Phase Close-Out & Governance Sync) — this PROJECT.md
-correction pass — is in progress. This section previously stated "no
-Sprint 02 Sprint Document exists yet"; that was stale — see
-[docs/sprints/sprint-02.md](docs/sprints/sprint-02.md), approved and in
-execution since 2026-08-05.
+permanently merged into `main`. Sprint 02 — Architecture & Compliance
+Design Layer — **complete** (all 11 Milestone Breakdown entries in
+`docs/sprints/sprint-02.md` satisfied) and permanently merged into
+`main`. **Sprint 03 — Implementation Plan & Contract (Foundation
+Track) — complete**: all nine Milestone Breakdown entries (M12–M20) in
+`docs/sprints/sprint-03.md` satisfied, including the founder-directed
+Google Cloud/Firebase migration
+([ADR-0016](docs/decisions/ADR-0016-firebase-auth-and-google-cloud-migration.md))
+and M20's first end-to-end vertical slice (PR #21) — permanently merged
+into `main`. **Sprint 04 — Governance Sync, Admin/Website Scaffolding,
+Leo-Chat Authorization is approved and executing**: see
+[docs/sprints/sprint-04.md](docs/sprints/sprint-04.md), Founder
+Decisions F.1–F.6. Milestone 21 (Sprint 03 Close-Out & Governance
+Sync) — this PROJECT.md correction pass — is in progress; Milestones 22
+(Admin & Website Application Scaffolding) and 23 (Leo-Chat Authorization
+Gap) are drafted but **not yet authorized**, pending separate,
+explicit founder go-ahead for each, per this project's standing
+one-milestone-at-a-time discipline.
 
 ## Current Sprint
 
-Sprint 02 — Architecture & Compliance Design Layer. Sprint Document:
-[docs/sprints/sprint-02.md](docs/sprints/sprint-02.md). Sprint 01 —
+Sprint 04 — Governance Sync, Admin/Website Scaffolding, Leo-Chat
+Authorization. Sprint Document:
+[docs/sprints/sprint-04.md](docs/sprints/sprint-04.md). Sprint 03 —
+Implementation Plan & Contract (Foundation Track), Sprint Document
+[docs/sprints/sprint-03.md](docs/sprints/sprint-03.md), Sprint 02 —
+Architecture & Compliance Design Layer, Sprint Document
+[docs/sprints/sprint-02.md](docs/sprints/sprint-02.md), and Sprint 01 —
 Repository Foundation, Sprint Document
-[docs/sprints/sprint-01.md](docs/sprints/sprint-01.md), remains complete
-and permanently merged.
+[docs/sprints/sprint-01.md](docs/sprints/sprint-01.md), all remain
+complete and permanently merged.
 
 ## Sprint Goal
 
-Per `docs/sprints/sprint-02.md`, §0: produce the architecture/design and
-compliance documentation layer for Sprint 02's eleven milestones —
-identity/family, authorization/sessions, data classification/encryption/
-isolation, child-data lifecycle, consent, Leo memory isolation,
-auditability, AI-provider boundary, India deployment, and the admin/
-website tech-stack ADR — **design and documentation only**. No database
-schema, migration, authentication code, API, storage, or business-feature
-implementation is authorized by Sprint 02 itself; each design remains
-"Accepted — Implementation Deferred" (or, where a legal/founder gate is
-still open, "Proposed") until its own future implementation sprint.
+Per `docs/sprints/sprint-04.md`, §4, M21: bring `PROJECT.md` and the
+Product Constitution's stale cross-references back in sync with
+Sprint 03's actual, merged state (M12–M20, ADR-0016, and M20's vertical
+slice) before Sprint 04's admin/website and Leo-chat-authorization scope
+is added on top of a stale baseline — documentation/governance-sync
+only, mirroring the role Sprint 02 Milestone 11 played for Sprint 01→02.
+Sprint 03's own goal, now complete, is recorded for reference: per
+`docs/sprints/sprint-03.md`, §0, move Natkhat AI from "fully designed,
+zero lines of implementation" to a working, non-production,
+feature-flagged technical foundation exercising the Sprint 02 designs
+end-to-end against synthetic data only, without crossing any open
+legal-validation gate and without ever collecting, storing, or exposing
+real parent or child data.
 
 ## Current Milestone
 
-**Sprint 02 Milestones 1–10 of 11 are complete and merged into `main`.**
-Milestone 11 (Sprint 02 Design-Phase Close-Out & Governance Sync) is the
-current, in-progress milestone — this PROJECT.md update is that
-milestone's work, per `docs/sprints/sprint-02.md`, §3, M11 ("update
-`PROJECT.md`, the ADR Index, Known Risks, and this Sprint Document's own
-status to reflect what was actually designed vs. what remains gated").
-See the Sprint 02 Milestone Status table in Current Status for the
-per-milestone breakdown, and Pending Tasks/Known Risks for the legal and
-founder gates that remain genuinely open (M11 does not close them — it
-only reports them accurately). Sprint 01 (Milestones 0–12) remains
-separately complete and permanently merged — see the historical Sprint
-01 Completion Checklist further down in Current Status.
+**Sprint 03 (Milestones 12–20 of 20) is complete and permanently merged
+into `main`.** Sprint 04 Milestone 21 (Sprint 03 Close-Out & Governance
+Sync) is the current, in-progress milestone — this PROJECT.md update is
+that milestone's work, per `docs/sprints/sprint-04.md`, §4, M21 ("bring
+`PROJECT.md` and the Constitution's stale cross-references... back in
+sync with Sprint 03's actual, merged state"). See the Sprint 03
+Milestone Status table in Current Status for the per-milestone
+breakdown, and Pending Tasks/Known Risks for the legal and founder gates
+that remain genuinely open (M21 does not close them — it only reports
+them accurately). Sprint 04 Milestones 22 (Admin & Website Application
+Scaffolding) and 23 (Leo-Chat Authorization Gap) are drafted in
+`docs/sprints/sprint-04.md` but **not yet authorized** — each requires
+its own separate, explicit founder go-ahead. Sprint 01 (Milestones
+0–12) and Sprint 02 (Milestones 1–11) remain separately complete and
+permanently merged — see the historical completion checklists further
+down in Current Status.
 
 ## Current Branch
 
@@ -157,9 +182,40 @@ Current Status.
 
 ## Current Status
 
-**Sprint 02 Milestone Status (current — see Change Log for the
-2026-08-12 M11 entry; the Sprint 01 narrative below this block is
-historical and unchanged):**
+**Sprint 03 Milestone Status (current — see Change Log for the
+2026-08-26 M21 entry; the Sprint 02 and Sprint 01 narratives below this
+block are historical and unchanged):**
+
+| M   | Milestone                                                             | Status                                                                                                                                                       | ADR / doc                                                                                                                                                                                                 |
+| --- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 12  | Implementation Plan & Contract                                        | Complete, merged                                                                                                                                             | `docs/sprints/sprint-03.md` — founder-approved Decisions J.1–J.7                                                                                                                                          |
+| 13  | Backend & Environment Foundation                                      | Complete, merged                                                                                                                                             | Prisma/local-then-Cloud-SQL connectivity, `scripts/check-env.ts`, module skeleton — no dedicated new ADR                                                                                                  |
+| 14  | Identity, Family & Tenant-Isolation Implementation                    | Complete, merged                                                                                                                                             | `apps/backend/src/identity-family/` — implements [ADR-0008](docs/decisions/ADR-0008-core-data-model-parent-family-child.md)/[ADR-0010](docs/decisions/ADR-0010-encryption-and-tenant-isolation-design.md) |
+| 15  | Authorization & Session Implementation                                | Complete, merged                                                                                                                                             | `apps/backend/src/authorization/`, `apps/backend/src/auth/` — implements [ADR-0009](docs/decisions/ADR-0009-authorization-and-session-architecture.md); rebuilt against Firebase Admin SDK by ADR-0016    |
+| 16  | Data Lifecycle & Auditability Implementation                          | Complete, merged                                                                                                                                             | `apps/backend/src/lifecycle/`, `apps/backend/src/audit/` — implements [ADR-0015](docs/decisions/ADR-0015-child-data-lifecycle-architecture.md)                                                            |
+| 17  | Consent & Privacy Gate (Track A scaffold only)                        | Complete, merged — **real mechanism (Track B) remains inactive**                                                                                             | `apps/backend/src/consent/` — implements [ADR-0011](docs/decisions/ADR-0011-consent-architecture.md)'s scaffold; ADR-0011 itself remains Proposed                                                         |
+| 18  | Leo Foundation & Memory Isolation                                     | Complete, merged                                                                                                                                             | `apps/backend/src/leo/` — implements [ADR-0012](docs/decisions/ADR-0012-leo-memory-and-conversation-isolation-design.md)                                                                                  |
+| 19  | AI Provider Boundary & Interface (Track A mock adapter only)          | Complete, merged — **real provider (Track B) remains unselected**                                                                                            | `apps/backend/src/ai-provider/` — implements [ADR-0013](docs/decisions/ADR-0013-ai-provider-abstraction-and-multi-provider-compatibility.md); ADR-0013 itself remains Proposed                            |
+| 20  | First End-to-End Vertical Slice (internal, dev-only, feature-flagged) | Complete, merged (PR #21) — **Leo-chat interaction deliberately left ungated at the authorization layer, see decision-log 2026-08-22 and Known Risks below** | `apps/backend/test/vertical-slice.e2e-spec.ts`                                                                                                                                                            |
+
+No production deployment, real parent/child/family data, real
+consent-verification mechanism, or real AI/LLM provider credential
+exists anywhere as a result of M12–M20 — every Track B item (real
+consent activation, real AI-provider selection, real production
+infrastructure) remains inactive, per `docs/sprints/sprint-03.md`, §2.3
+and §10. The founder-directed Google Cloud/Firebase migration
+([ADR-0016](docs/decisions/ADR-0016-firebase-auth-and-google-cloud-migration.md),
+2026-08-23) superseded Sprint 03 Decision J.5's dev-Supabase target
+after M15 had already implemented against it — M15's authorization/
+session code was rebuilt against the Firebase Admin SDK, per ADR-0016's
+own Change Log entry; no other M13–M20 milestone required rework. See
+Known Risks below for the specific gates each Track B item remains
+blocked on, and Known Risk #16 (new, this update) for the M20 Leo-chat
+authorization gap now assigned to Sprint 04 M23
+(`docs/sprints/sprint-04.md`, §4).
+
+**Sprint 02 Milestone Status (historical — complete as of 2026-08-12,
+unchanged since):**
 
 | M   | Milestone                                    | Status                                                 | ADR / doc                                                                                                                                                                                                                                  |
 | --- | -------------------------------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -173,7 +229,7 @@ historical and unchanged):**
 | 8   | AI-Provider Data-Boundary / Multi-Provider   | Complete, merged — **ADR remains Proposed**            | [ADR-0013](docs/decisions/ADR-0013-ai-provider-abstraction-and-multi-provider-compatibility.md) — Proposed, cannot be Accepted until a candidate provider's contract terms clear legal review; `docs/architecture/ai-provider-boundary.md` |
 | 9   | India-First Deployment & Data-Residency      | Complete, merged                                       | `docs/architecture/deployment-india.md` (no dedicated new ADR — data-residency decision remains gated on DPDP legal validation, see Known Risks)                                                                                           |
 | 10  | Admin/Website Stack Formalization (ADR only) | Complete, merged                                       | [ADR-0014](docs/decisions/ADR-0014-adopt-nextjs-for-admin-and-website-applications.md) — Accepted                                                                                                                                          |
-| 11  | Sprint 02 Design-Phase Close-Out & Gov. Sync | **In progress (this update)**                          | `PROJECT.md` only, per `docs/sprints/sprint-02.md`, §3, M11                                                                                                                                                                                |
+| 11  | Sprint 02 Design-Phase Close-Out & Gov. Sync | Complete, merged                                       | `PROJECT.md` only, per `docs/sprints/sprint-02.md`, §3, M11                                                                                                                                                                                |
 
 No scaffold, schema, migration, authentication code, API, storage, or
 business-feature implementation was created by any of M1–M10 — every
@@ -647,8 +703,18 @@ natkhat-ai/
 │   │   ├── tsconfig.build.json
 │   │   ├── nest-cli.json
 │   │   ├── eslint.config.mjs
-│   │   ├── src/
+│   │   ├── prisma/                    # Sprint 03 M13+ — schema.prisma, migrations/
+│   │   ├── src/                       # Sprint 03 M13–M20 — real implementation, synthetic data only
+│   │   │   ├── identity-family/       # M14 — ADR-0008/ADR-0010 (entities + RLS)
+│   │   │   ├── authorization/         # M15 — ADR-0009 (two-gate authorize(), authorization.types.ts)
+│   │   │   ├── auth/                  # M15 — Firebase Admin SDK (rebuilt per ADR-0016)
+│   │   │   ├── lifecycle/             # M16 — ADR-0015 (retention/deletion/export/backup-purge)
+│   │   │   ├── audit/                 # M16 — audit-logging.md (append-only audit trail)
+│   │   │   ├── consent/               # M17 — ADR-0011 scaffold (Track A only, Track B inactive)
+│   │   │   ├── leo/                   # M18 — ADR-0012 (Conversation/Message/LeoMemory; leo.service.ts is M23's target)
+│   │   │   └── ai-provider/           # M19 — ADR-0013 (Track A mock adapter only, Track B inactive)
 │   │   └── test/
+│   │       └── vertical-slice.e2e-spec.ts   # M20 — first end-to-end vertical slice (PR #21)
 │   └── mobile/                 # Flutter — NOT a pnpm workspace member (ADR-0002)
 │       ├── pubspec.yaml
 │       ├── analysis_options.yaml
@@ -693,6 +759,7 @@ natkhat-ai/
 │   │   ├── ADR-0013-ai-provider-abstraction-and-multi-provider-compatibility.md # Sprint 02 M8 — Proposed
 │   │   ├── ADR-0014-adopt-nextjs-for-admin-and-website-applications.md # Sprint 02 M10
 │   │   ├── ADR-0015-child-data-lifecycle-architecture.md        # Sprint 02 M4
+│   │   ├── ADR-0016-firebase-auth-and-google-cloud-migration.md # Sprint 03, founder-directed
 │   │   └── decision-log.md
 │   ├── architecture/
 │   │   ├── overview.md
@@ -740,8 +807,10 @@ natkhat-ai/
 │   │   ├── developer-onboarding/
 │   │   └── ai-agent-learnings/
 │   └── sprints/
-│       ├── sprint-01.md
-│       └── sprint-02.md   # Approved, Milestones 1–10 executed, M11 in progress
+│       ├── sprint-01.md   # Complete, permanently merged
+│       ├── sprint-02.md   # Complete, permanently merged
+│       ├── sprint-03.md   # Complete, permanently merged — M12–M20
+│       └── sprint-04.md   # F.1–F.6 decided; M21 in progress, M22/M23 not yet authorized
 ├── .ai/
 │   ├── prompts/                  # Milestone 11 — populated
 │   │   ├── README.md
@@ -771,8 +840,15 @@ natkhat-ai/
         └── ci.yml         # Milestone 10 — lint, typecheck, test, build, mobile
 ```
 
-`apps/backend` and `apps/mobile` are scaffolds only (Milestone 8) — no
-business logic, database, auth, storage, APIs, or AI integration.
+`apps/mobile` remains a scaffold only (Milestone 8) — no business
+logic, database, auth, storage, APIs, or AI integration. `apps/backend`
+was a scaffold only through Sprint 02; Sprint 03 (M13–M20) implemented
+real business logic, schema, authentication, and AI-boundary code
+against it — see the Sprint 03 Milestone Status table above — but only
+against synthetic/fictional data in a non-production environment, per
+`docs/sprints/sprint-03.md`, §2.2/§10. `apps/admin` and `apps/website`
+do not exist in the repository (ADR-0014 records the technology choice
+only; scaffolding is Sprint 04 M22, not yet authorized).
 `node_modules/`, `dist/`, `.turbo/`, `.dart_tool/`, `build/`, `.idea/`,
 and other generated/local files under `apps/` are gitignored (nested
 `.gitignore` files for `apps/mobile`, root `.gitignore` for
@@ -783,26 +859,28 @@ helper directory) is self-gitignored via its own generated
 ## Approved Architecture
 
 Single monorepo (`natkhat-ai/`), Turborepo over pnpm workspaces. Only
-the apps, packages, and governance scaffolding needed for Sprint 01
-exist — nothing is built speculatively. Full description:
+the apps, packages, governance scaffolding, and (as of Sprint 03)
+synthetic-data-only backend implementation each milestone actually
+authorized exist — nothing is built speculatively. Full description:
 `docs/sprints/sprint-01.md`, §3 (`docs/architecture/overview.md` not
-yet authored).
+yet authored); Sprint 03's implementation scope is
+`docs/sprints/sprint-03.md`, §2.
 
 ## Approved Tech Stack
 
-| Layer                   | Technology                   | ADR                                                             |
-| ----------------------- | ---------------------------- | --------------------------------------------------------------- |
-| Monorepo tooling        | Turborepo + pnpm workspaces  | ADR-0001                                                        |
-| Mobile                  | Flutter                      | ADR-0002                                                        |
-| Backend                 | NestJS                       | ADR-0003                                                        |
-| Admin (Sprint 02 M10)   | Next.js                      | ADR-0014 (decision recorded; scaffolding not authorized)        |
-| Website (Sprint 02 M10) | Next.js                      | ADR-0014 (decision recorded; scaffolding not authorized)        |
-| Database                | PostgreSQL, via Google Cloud | ADR-0004 (implementation deferred; hosting amended by ADR-0016) |
-| ORM                     | Prisma                       | ADR-0004 (implementation deferred)                              |
-| Auth                    | Firebase Authentication      | ADR-0016 (supersedes ADR-0005's auth clause)                    |
-| Storage                 | Supabase Storage             | ADR-0005 (implementation deferred; unaffected by ADR-0016)      |
-| Cloud                   | Google Cloud (GCP)           | ADR-0016                                                        |
-| CI/CD                   | GitHub Actions               | Not yet recorded                                                |
+| Layer                   | Technology                   | ADR                                                                                         |
+| ----------------------- | ---------------------------- | ------------------------------------------------------------------------------------------- |
+| Monorepo tooling        | Turborepo + pnpm workspaces  | ADR-0001                                                                                    |
+| Mobile                  | Flutter                      | ADR-0002                                                                                    |
+| Backend                 | NestJS                       | ADR-0003                                                                                    |
+| Admin (Sprint 02 M10)   | Next.js                      | ADR-0014 (decision recorded; scaffolding not authorized)                                    |
+| Website (Sprint 02 M10) | Next.js                      | ADR-0014 (decision recorded; scaffolding not authorized)                                    |
+| Database                | PostgreSQL, via Google Cloud | ADR-0004 (implemented, Sprint 03 M13/M14, synthetic data only; hosting amended by ADR-0016) |
+| ORM                     | Prisma                       | ADR-0004 (implemented, Sprint 03 M13/M14)                                                   |
+| Auth                    | Firebase Authentication      | ADR-0016 (implemented, Sprint 03 M15, dev project only; supersedes ADR-0005's auth clause)  |
+| Storage                 | Supabase Storage             | ADR-0005 (implementation deferred; unaffected by ADR-0016)                                  |
+| Cloud                   | Google Cloud (GCP)           | ADR-0016                                                                                    |
+| CI/CD                   | GitHub Actions               | Not yet recorded                                                                            |
 
 Full detail: `docs/constitution/product/natkhat-ai-constitution.md`.
 
@@ -1330,7 +1408,13 @@ Top risks (full register: [docs/sprints/sprint-01.md](docs/sprints/sprint-01.md)
     sufficiency of that mechanism has not been validated (ADR-0007
     §C.3/§C.6). ADR-0011 is deliberately kept at **Proposed**, not
     Accepted, until both occur — no consent-capture code, UI, or real
-    consent record may be built against this design until then.
+    consent record may be built against this design until then. **Update
+    (2026-08-26, Sprint 03 M17):** the `ConsentEvent` schema and the
+    atomic Child-creation-requires-consent invariant are now
+    **implemented as a scaffold** (`apps/backend/src/consent/`) — Track A
+    only, per `docs/sprints/sprint-03.md`, §4, M17. Track B (a real
+    signed-form/payment-card/ID-linked verification flow) remains
+    unbuilt and unactivated; this risk's underlying gate is unchanged.
 13. **Compliance/Legal — OPEN (Sprint 02 M8)** — AI-provider boundary
     architecture (`docs/architecture/ai-provider-boundary.md`,
     [ADR-0013](docs/decisions/ADR-0013-ai-provider-abstraction-and-multi-provider-compatibility.md))
@@ -1339,7 +1423,13 @@ Top risks (full register: [docs/sprints/sprint-01.md](docs/sprints/sprint-01.md)
     terms legally reviewed** (ADR-0006 §26). ADR-0013 is kept at
     **Proposed**, not Accepted, until a candidate provider's contract
     terms clear legal review. No SDK integration, API call, model-routing
-    code, or provider credential is authorized by this ADR.
+    code, or provider credential is authorized by this ADR. **Update
+    (2026-08-26, Sprint 03 M19):** the provider-neutral contract, adapter
+    interface, and a **mock adapter only** are now implemented
+    (`apps/backend/src/ai-provider/`) — Track A only, per
+    `docs/sprints/sprint-03.md`, §4, M19. No real provider SDK,
+    credential, or model call exists; this risk's underlying gate is
+    unchanged.
 14. **Compliance/Legal — OPEN (Sprint 02 M9)** — India-first deployment/
     data-residency design (`docs/architecture/deployment-india.md`) names
     a candidate region, but India DPDP Act data-localization confirmation
@@ -1356,7 +1446,31 @@ Top risks (full register: [docs/sprints/sprint-01.md](docs/sprints/sprint-01.md)
     Act legal review of regulatory breach-notification/record-keeping
     obligations (ADR-0006 §30) — referenced by M7's auditability design,
     not resolved by it. Do not treat this period as final until that
-    legal review completes.
+    legal review completes. **Update (2026-08-26, Sprint 03 M16):** the
+    retention/deletion/export/backup-purge mechanics and the audit-log
+    pipeline are now **implemented**
+    (`apps/backend/src/lifecycle/`, `apps/backend/src/audit/`), with the
+    Tier-5 retention period implemented as a **configuration value**
+    (currently 3 years), not hardcoded, specifically because this legal
+    review is still open — per `docs/sprints/sprint-03.md`, §4, M16.
+    This risk's underlying legal gate is unchanged.
+16. **Governance — OPEN (Sprint 03 M20, flagged 2026-08-22)** — M20's
+    first end-to-end vertical slice
+    (`apps/backend/test/vertical-slice.e2e-spec.ts`) deliberately leaves
+    Leo-chat interaction ungated at the authorization layer: no `Action`
+    exists in `apps/backend/src/authorization/authorization.types.ts`'s
+    bounded set (M15) for "interact with Leo for a given child," and
+    `apps/backend/src/leo/leo.service.ts` (M18) never calls
+    `AuthorizationService.authorize(...)`. Recorded as a known, open gap
+    at the time — see `docs/decisions/decision-log.md`'s 2026-08-22
+    entry for the full rationale (adding real authorization here is a
+    substantive M15/M18-scope change, not something to bolt on inside an
+    integration-test milestone). **Assigned to Sprint 04 Milestone 23**
+    (`docs/sprints/sprint-04.md`, §4, Founder Decision F.6) — **not yet
+    authorized**, pending separate, explicit founder go-ahead. Explicitly
+    narrower than, and not to be conflated with, ADR-0009 Decision item
+    7's child-login/child-session question, which remains out of M23's
+    scope and requires its own separate Change Request.
 
 ## Repository Health
 
@@ -1378,29 +1492,51 @@ see Known Risk #10); #3 open by design; #4 re-evaluated and classified
 as not a Sprint 02 blocker; #11 resolved-with-condition (temporary,
 reversible). No operational blocker remains for Sprint 01.
 
-**Sprint 02 (Architecture & Compliance Design Layer) — Milestones 1–10
-of 11 complete and merged into `main`; Milestone 11 (this update) in
-progress.** No new application code, schema, or infrastructure was added
-by Sprint 02 — it is a documentation/design layer only, adding 8 new
-ADRs (ADR-0008–ADR-0015), 8 new architecture documents, and 2 new module
-documents (see Repository Structure). Of those, 6 ADRs are **Accepted —
-Implementation Deferred** (0008, 0009, 0010, 0012, 0014, 0015) and 2
-remain **Proposed** (0011, consent mechanism; 0013, AI-provider
-selection) pending the legal/founder gates in Known Risks #12–#15. The
-Sprint 02 M4 governance gap (retention/deletion/export/backup-purge
-windows) is closed via ADR-0015; its one provisional value (§13.3
-audit-log retention) is not yet final. No Sprint 02 design authorizes
-implementation — that remains gated behind the open items in Known
-Risks #10 and #12–#15 for any future implementation sprint.
+**Sprint 02 (Architecture & Compliance Design Layer) — all 11 Milestones
+complete and merged into `main`.** No new application code, schema, or
+infrastructure was added by Sprint 02 — it is a documentation/design
+layer only, adding 8 new ADRs (ADR-0008–ADR-0015), 8 new architecture
+documents, and 2 new module documents (see Repository Structure). Of
+those, 6 ADRs are **Accepted — Implementation Deferred** (0008, 0009,
+0010, 0012, 0014, 0015) and 2 remain **Proposed** (0011, consent
+mechanism; 0013, AI-provider selection) pending the legal/founder gates
+in Known Risks #12–#15. The Sprint 02 M4 governance gap (retention/
+deletion/export/backup-purge windows) is closed via ADR-0015; its one
+provisional value (§13.3 audit-log retention) is not yet final.
+
+**Sprint 03 (Implementation Plan & Contract, Foundation Track) — all
+nine Milestones (M12–M20) complete and merged into `main`.** This is
+the first sprint with real application code: schema, RLS-enforced
+tenant isolation, authorization/session logic, data-lifecycle/audit
+pipelines, a consent scaffold, Leo memory isolation, and an AI-provider
+mock-adapter boundary now exist in `apps/backend/src/` — see the
+Sprint 03 Milestone Status table in Current Status and the Repository
+Structure tree above. Every Track B item (real consent activation, real
+AI-provider selection/credential, real production infrastructure)
+remains inactive, per `docs/sprints/sprint-03.md`, §2.2/§10 — this
+distinction (**implementation authorization does not equal production
+authorization**, Decision J.1) is unchanged by Sprint 03's completion.
+Known Risks #12, #13, #15 updated to record each milestone's Track A
+scaffold as implemented while their underlying legal/founder gates
+remain open; Known Risk #16 (new) records the M20 Leo-chat authorization
+gap, now assigned to Sprint 04 M23.
+
+**Sprint 04 (Governance Sync, Admin/Website Scaffolding, Leo-Chat
+Authorization) — Founder Decisions F.1–F.6 recorded; Milestone 21
+(this update) in progress.** No new application code, schema, or
+infrastructure has been added by Sprint 04 to date — M21 is
+documentation/governance-sync only, per `docs/sprints/sprint-04.md`,
+§4. M22 (Admin & Website Application Scaffolding) and M23 (Leo-Chat
+Authorization Gap) remain **not yet authorized**.
 
 ## Major Decisions
 
 - [ADR-0016](docs/decisions/ADR-0016-firebase-auth-and-google-cloud-migration.md) — Migrate Off Supabase — Firebase Authentication and Google Cloud (founder-directed) — Accepted, Founder-Authorized, Effective Immediately (2026-08-23); supersedes ADR-0005's authentication clause, amends ADR-0004's hosting clause; Storage explicitly out of scope
 - [ADR-0015](docs/decisions/ADR-0015-child-data-lifecycle-architecture.md) — Child-Data Lifecycle Architecture (Sprint 02 M4) — Accepted, Implementation Deferred; founder-approved 2026-08-05, closes the M4 governance gap; §13.3 audit-log retention Approved Provisionally, pending India DPDP legal review
 - [ADR-0014](docs/decisions/ADR-0014-adopt-nextjs-for-admin-and-website-applications.md) — Adopt Next.js for Admin & Website Applications (Sprint 02 M10) — Accepted; scaffolding not authorized
-- [ADR-0013](docs/decisions/ADR-0013-ai-provider-abstraction-and-multi-provider-compatibility.md) — AI-Provider Abstraction & Multi-Provider Compatibility (Sprint 02 M8) — Proposed, blocked on provider contract-terms legal review
+- [ADR-0013](docs/decisions/ADR-0013-ai-provider-abstraction-and-multi-provider-compatibility.md) — AI-Provider Abstraction & Multi-Provider Compatibility (Sprint 02 M8) — Proposed, blocked on provider contract-terms legal review; Track A (mock adapter) implemented at Sprint 03 M19
 - [ADR-0012](docs/decisions/ADR-0012-leo-memory-and-conversation-isolation-design.md) — Leo Memory & Conversation Isolation Design (Sprint 02 M6) — Accepted, Implementation Deferred
-- [ADR-0011](docs/decisions/ADR-0011-consent-architecture.md) — Consent Architecture, Framework-Level (Sprint 02 M5) — Proposed, blocked on mechanism selection + India DPDP legal validation
+- [ADR-0011](docs/decisions/ADR-0011-consent-architecture.md) — Consent Architecture, Framework-Level (Sprint 02 M5) — Proposed, blocked on mechanism selection + India DPDP legal validation; Track A (`ConsentEvent` scaffold) implemented at Sprint 03 M17
 - [ADR-0010](docs/decisions/ADR-0010-encryption-and-tenant-isolation-design.md) — Encryption & Tenant-Isolation Implementation Design (Sprint 02 M3) — Accepted, Implementation Deferred
 - [ADR-0009](docs/decisions/ADR-0009-authorization-and-session-architecture.md) — Authorization & Session Architecture (Sprint 02 M2) — Accepted, Implementation Deferred
 - [ADR-0008](docs/decisions/ADR-0008-core-data-model-parent-family-child.md) — Core Data Model — Parent/Family/Child Entities (Sprint 02 M1) — Accepted, Implementation Deferred
@@ -1414,6 +1550,85 @@ Risks #10 and #12–#15 for any future implementation sprint.
 
 ## Change Log
 
+- **2026-08-26** — Sprint 04, Milestone 21 (Sprint 03 Close-Out &
+  Governance Sync): per `docs/sprints/sprint-04.md`, §4, M21's explicit
+  scope ("`PROJECT.md` Current Development Phase/Current Sprint/Current
+  Milestone/Repository Structure/ADR Index/Known Risks updates; the
+  Constitution's Locked Technology Stack table's Admin/Website rows
+  corrected to cite ADR-0014; the Target Audience section's apparent
+  contradiction with ADR-0007 resolved or explicitly reconciled" —
+  documentation/governance-sync only, no new architecture, ADR, or
+  implementation code). Read `PROJECT.md`, `docs/sprints/sprint-03.md`
+  in full (all nine Milestone Breakdown entries, M12–M20), the
+  2026-08-22 `docs/decisions/decision-log.md` entry (M20's Leo-chat
+  authorization gap), ADR-0007 (§D and its Constitution Alignment
+  section), ADR-0014, and the Product Constitution before making any
+  change, per the AI Engineering Rule. Verified directly against the
+  real filesystem (not assumed from prior Change Log entries) that
+  `apps/backend/src/` now contains eight real implementation domains
+  (`identity-family/`, `authorization/`, `auth/`, `lifecycle/`,
+  `audit/`, `consent/`, `leo/`, `ai-provider/`) and that
+  `apps/admin`/`apps/website` do not exist — confirming M22 has not
+  started. This file was found frozen at its 2026-08-12 Sprint-02-M11
+  state for every section except the ADR-0016 migration's own narrow,
+  ADR-scoped edits (2026-08-23) — its Current Development
+  Phase/Current Sprint/Sprint Goal/Current Milestone sections still
+  described Sprint 02 M11 with no mention of Sprint 03 at all, and the
+  Repository Structure tree was still frozen at the Milestone-8-scaffold
+  state, missing every Sprint 03 file. Updated exactly the fields
+  `docs/sprints/sprint-04.md`, §4, M21 names: Current Development Phase,
+  Current Sprint, Sprint Goal, Current Milestone, Current Status (added
+  a Sprint 03 Milestone Status table mirroring the existing Sprint 02
+  table's format; marked the Sprint 02 table historical), Repository
+  Structure (tree now reflects Sprint 03's `apps/backend/src/`
+  domains, `apps/backend/prisma/`, `apps/backend/test/`
+  `vertical-slice.e2e-spec.ts`, `ADR-0016`, `sprint-03.md`,
+  `sprint-04.md`), Approved Architecture/Approved Tech Stack (Database/
+  ORM/Auth rows corrected from "implementation deferred" to
+  "implemented, Sprint 03... synthetic data only" — implementation
+  genuinely occurred at M13–M15, this is not a re-interpretation),
+  Known Risks (#12/#13/#15 annotated with each milestone's Track A
+  scaffold now implemented while their underlying legal/founder gates
+  remain explicitly unchanged and open; new #16 recording the M20
+  Leo-chat authorization gap and its assignment to Sprint 04 M23),
+  Repository Health (added Sprint 03 and Sprint 04 paragraphs; corrected
+  the stale "Milestone 11 (this update) in progress" to "complete" now
+  that Sprint 02 itself is historical), Major Decisions (ADR-0011/
+  ADR-0013 rows annotated with their Track A scaffold status), and this
+  Change Log entry. Also corrected
+  `docs/constitution/product/natkhat-ai-constitution.md` (v1.2.0 →
+  1.3.0): Locked Technology Stack table's Admin application/Marketing
+  website rows corrected from "Not yet recorded" to ADR-0014 (the
+  citation fix ADR-0014's own Consequences clause named as due at
+  Sprint 02 M11, missed until now); added a new "Constitutional
+  Amendment — Target Audience Reconciliation (2026-08-26)" subsection
+  reconciling the Target Audience section's original "Not yet ratified"
+  text with ADR-0007 §D's founder ratification (India, ages 4–10,
+  2026-08-04) — the original text is retained below the amendment as
+  historical context, not deleted, per this repository's append-only
+  discipline; ADR-0007's own Constitution Alignment section already
+  supplied the reconciling logic (the Constitution's wording "is no
+  longer in tension with this ADR now that §D exists"), so this was a
+  citing/formalizing edit, not an invented reconciliation. Did not touch
+  `apps/admin`, `apps/website`,
+  `apps/backend/src/authorization/authorization.types.ts`, or any
+  Leo-chat code (M23's scope, not authorized); did not create any new
+  ADR; did not modify `docs/sprints/sprint-01.md`,
+  `docs/sprints/sprint-02.md`, `docs/sprints/sprint-03.md`, or any
+  already-accepted ADR's own text. `docs/sprints/sprint-04.md` itself
+  was finalized in the same pass — Founder Decisions F.1–F.6 recorded
+  with their actual outcomes (§3), M21 marked authorized, M22
+  finalized with the F.3 (audit-logs-only) and F.4 (static-shell-only)
+  boundaries locked in, and a new M23 entry (Leo-Chat Authorization Gap)
+  added — M22 and M23 both explicitly marked **not yet authorized**.
+  Validated: `pnpm exec prettier --check` initially flagged formatting
+  issues (table-column alignment/whitespace only) in all three touched
+  files (`PROJECT.md`, `docs/sprints/sprint-04.md`,
+  `docs/constitution/product/natkhat-ai-constitution.md`); `pnpm exec
+prettier --write` fixed them (no content change), and a re-run of
+  `--check` passed clean for all three. — AI agent (Claude Code),
+  executing founder-authorized M21 per the founder's Sprint 04 F.1–F.6
+  decisions message; M22/M23 correctly not started.
 - **2026-08-23** — Founder-directed migration off Supabase onto Google
   Cloud, recorded as
   [ADR-0016](docs/decisions/ADR-0016-firebase-auth-and-google-cloud-migration.md):

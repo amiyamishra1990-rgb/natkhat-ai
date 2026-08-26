@@ -1,9 +1,9 @@
 # Natkhat AI — Product Constitution
 
-**Version:** 1.2.0
+**Version:** 1.3.0
 **Status:** Ratified — governs all product-level decisions for Natkhat AI
 **Owner:** Product Owner
-**Last Updated:** 2026-08-23
+**Last Updated:** 2026-08-26
 **Position in Governance Hierarchy:** below the ASPOVO Constitution
 (currently a placeholder — see
 `docs/constitution/company/aspovo-constitution.md`), above the
@@ -64,14 +64,53 @@ of this amendment and remains Supabase Storage as originally locked,
 pending a separate, explicit founder decision — see ADR-0016, Decision
 item 4.
 
+## Constitutional Amendment — Target Audience Reconciliation (2026-08-26)
+
+Founder-directed governance-sync correction, made as part of
+`docs/sprints/sprint-04.md`'s Milestone 21 (Sprint 03 Close-Out &
+Governance Sync). The Target Audience section immediately below still
+reads "Not yet ratified," while
+[ADR-0007](../../decisions/ADR-0007-target-audience-interim-posture.md),
+§D records that the founder has since explicitly ratified an initial
+target market (India, single market at launch) and age range (4–10) for
+engineering-compliance purposes (2026-08-04). ADR-0007's own
+Constitution Alignment section already supplies the reconciling logic:
+this section's wording is left unedited below — not silently
+rewritten — per the Governance Hierarchy (only an explicit amendment at
+this layer may change this section's text; a lower-layer ADR cannot),
+but is no longer in tension with it now that ADR-0007 §D exists. This
+amendment formalizes that reconciliation in the Constitution itself,
+rather than leaving it implicit in ADR-0007 alone.
+
+Two things ADR-0007 §D explicitly is **not**: it is a founder
+business/product decision, **not** a legal certification that Natkhat
+AI's data practices comply with India's Digital Personal Data Protection
+(DPDP) Act or any other regime for the 4–10 age range; and it does not
+by itself authorize collecting real child data. India DPDP Act
+legal-sufficiency review of the actual consent-capture design, and
+selection of the specific verifiable-parental-consent mechanism, remain
+open (ADR-0007 §D.3, §C.3/§C.6) and are unaffected by this amendment.
+
+The original "Not yet ratified" text below is retained, not deleted, as
+historical context for the pre-ADR-0007 gap it originally described —
+per this project's append-only/explicit-reconciliation discipline (see
+`docs/decisions/decision-log.md`'s own append-only rule for the same
+principle applied at that layer).
+
 ## Target Audience
 
-**Not yet ratified.** No age range, demographic, or user classification
-has been formally decided for Natkhat AI's children-facing product.
-This is tracked as an open risk (see `docs/sprints/sprint-01.md`, Risk
-Register — Privacy/Compliance rows) and must be resolved via a
-dedicated ADR before any user data model, authentication, or
-COPPA-relevant feature is designed or implemented.
+**Not yet ratified** as of this section's original text (pre-2026-08-04).
+**Superseded for engineering-compliance purposes by
+[ADR-0007](../../decisions/ADR-0007-target-audience-interim-posture.md),
+§D — see the Constitutional Amendment immediately above.** No age
+range, demographic, or user classification had been formally decided
+for Natkhat AI's children-facing product at the time this section was
+first ratified. This was tracked as an open risk (see
+`docs/sprints/sprint-01.md`, Risk Register — Privacy/Compliance rows)
+and required resolution via a dedicated ADR before any user data model,
+authentication, or COPPA-relevant feature could be designed or
+implemented — ADR-0007 §D now supplies that resolution (India, ages
+4–10), exactly as this section's original text anticipated.
 
 ## Locked Technology Stack
 
@@ -84,8 +123,8 @@ varies per ADR.
 | Monorepo tooling               | Turborepo + pnpm workspaces  | ADR-0001                                                                                                      |
 | Mobile application             | Flutter                      | ADR-0002                                                                                                      |
 | Backend application            | NestJS                       | ADR-0003                                                                                                      |
-| Admin application (Sprint 02+) | Next.js                      | Not yet recorded                                                                                              |
-| Marketing website (Sprint 02+) | Next.js                      | Not yet recorded                                                                                              |
+| Admin application (Sprint 02+) | Next.js                      | ADR-0014                                                                                                      |
+| Marketing website (Sprint 02+) | Next.js                      | ADR-0014                                                                                                      |
 | Database                       | PostgreSQL, via Google Cloud | ADR-0004 (implementation deferred; hosting amended by ADR-0016)                                               |
 | ORM                            | Prisma                       | ADR-0004 (decision recorded, implementation deferred)                                                         |
 | Authentication                 | Firebase Authentication      | ADR-0016 (supersedes ADR-0005's authentication clause)                                                        |
@@ -97,7 +136,15 @@ No rationale beyond "locked" has been recorded for stack choices that
 predate the ADR process; ADR-0001 through ADR-0005 supply rationale
 going forward for the layers they cover. ADR-0016 (2026-08-23) amends
 the Database and Authentication rows and formally records the Cloud
-provider row, per the Constitutional Amendment above.
+provider row, per the Constitutional Amendment above. ADR-0014
+(2026-08-10) formally records the Admin application and Marketing
+website rows, both corrected from "Not yet recorded" to ADR-0014 on
+2026-08-26 as part of `docs/sprints/sprint-04.md`'s Milestone 21
+(Sprint 03 Close-Out & Governance Sync) — this citation fix was
+originally due at Sprint 02 Milestone 11 (ADR-0014's own Consequences
+clause names it) but was missed until now; ADR-0014 itself records the
+decision only and does not authorize scaffolding `apps/admin` or
+`apps/website`.
 
 ## Amendment
 
