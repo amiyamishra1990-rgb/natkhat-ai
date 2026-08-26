@@ -47,6 +47,20 @@ export class AuditService {
   }
 
   /**
+   * M22 (docs/sprints/sprint-04.md, §4) — read path for `apps/admin`'s
+   * audit-log view (Founder Decision F.3: `apps/admin` may read
+   * audit-log data only). Returns raw AuditEvent rows, newest first —
+   * safe to expose as-is because this data is already content-free by
+   * design (docs/architecture/audit-logging.md §3, §10): `metadata`
+   * "never contains Tier 3 content, message text, memory text, or any
+   * child-identifying free text," and `familyId`/`childId` are opaque
+   * UUID references, not the family/child records themselves.
+   */
+  findAll(): Promise<AuditEvent[]> {
+    return this.auditEventRepository.findMany();
+  }
+
+  /**
    * data-lifecycle.md §11 / audit-logging.md §9 — Tier 5's own,
    * independently bounded retention window (ADR-0015 §13.3, currently
    * 3 years, APPROVED PROVISIONALLY). A testable service method, not

@@ -37,7 +37,7 @@ export class AuditEventRepository {
   }
 
   findMany(): Promise<AuditEvent[]> {
-    return this.prisma.auditEvent.findMany();
+    return this.prisma.auditEvent.findMany({ orderBy: { occurredAt: 'desc' } });
   }
 
   // audit-logging.md §7 — "visible to the parent who created it"
