@@ -6,6 +6,9 @@ import { MessageRepository } from './repositories/message.repository';
 import { LeoMemoryRepository } from './repositories/leo-memory.repository';
 import { LeoEncryptionService } from './leo-encryption.service';
 import { LeoConversationNotFoundError, LeoMemoryNotFoundError, LeoService } from './leo.service';
+import { FamilyRepository } from '../identity-family/repositories/family.repository';
+import { CoParentAssignmentRepository } from '../identity-family/repositories/co-parent-assignment.repository';
+import { AuthorizationService } from '../authorization/authorization.service';
 
 // M18 — the milestone's own Definition of Done: "A Leo session scoped
 // to one Child cannot read another Child's rows in the same Family,
@@ -29,6 +32,7 @@ describe('Leo cross-child application-layer isolation (M18, §7.4/§7.6)', () =>
     new ConversationRepository(admin),
     new MessageRepository(admin),
     new LeoMemoryRepository(admin),
+    new AuthorizationService(new FamilyRepository(admin), new CoParentAssignmentRepository(admin)),
   );
 
   const owner = { id: randomUUID() };
@@ -85,6 +89,8 @@ describe('Leo cross-child application-layer isolation (M18, §7.4/§7.6)', () =>
     const conversationB = await leoService.startConversation({
       familyId: family.id,
       childId: childB.id,
+      principalId: owner.id,
+      principalType: 'Parent',
     });
     await leoService.appendMessage({
       conversationId: conversationB.id,
@@ -92,10 +98,15 @@ describe('Leo cross-child application-layer isolation (M18, §7.4/§7.6)', () =>
       childId: childB.id,
       sender: 'child',
       content: 'Fictional: this belongs to Child B only.',
+      principalId: owner.id,
+      principalType: 'Parent',
     });
 
     // Same family_id, wrong childId — must be refused, not silently
-    // scoped down or partially returned.
+    // scoped down or partially returned. owner.id is authorized for
+    // `family` regardless of which child is named, so this exercises
+    // the cross-child application-layer scoping specifically, not the
+    // M23 authorization gate (which passes here).
     await expect(
       leoService.appendMessage({
         conversationId: conversationB.id,
@@ -103,6 +114,8 @@ describe('Leo cross-child application-layer isolation (M18, §7.4/§7.6)', () =>
         childId: childA.id,
         sender: 'child',
         content: 'should never be written under Child A',
+        principalId: owner.id,
+        principalType: 'Parent',
       }),
     ).rejects.toThrow(LeoConversationNotFoundError);
 

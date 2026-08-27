@@ -6,6 +6,8 @@ import { LeoEncryptionService } from './leo-encryption.service';
 import { ConversationRepository } from './repositories/conversation.repository';
 import { MessageRepository } from './repositories/message.repository';
 import { LeoMemoryRepository } from './repositories/leo-memory.repository';
+import { AuthorizationService } from '../authorization/authorization.service';
+import { PrincipalType } from '../authorization/authorization.types';
 
 export class LeoConversationNotFoundError extends Error {
   constructor() {
@@ -31,6 +33,25 @@ export class LeoVaultOwnerOnlyError extends Error {
       'Adding a memory to the Permanent Vault is owner-only, unconditional (ai-memory-isolation.md §6.3, founder decision 2026-08-08) — the acting parent does not own this Family.',
     );
     this.name = 'LeoVaultOwnerOnlyError';
+  }
+}
+
+/**
+ * M23 — Leo-Chat Authorization Gap (docs/sprints/sprint-04.md, §4;
+ * docs/decisions/decision-log.md, 2026-08-22 entry). Thrown when the
+ * M15 two-gate `AuthorizationService.authorize(...)` check denies a
+ * `interact_with_leo` request — either gate: the principal holds no
+ * role in the requested Family, or holds one but was not granted this
+ * action (owner is always granted; a co-parent only if explicitly in
+ * their `permission_scope`).
+ */
+export class LeoChatNotAuthorizedError extends Error {
+  constructor() {
+    super(
+      'The requesting principal is not authorized to interact with Leo for this child ' +
+        '(authorization.types.ts "interact_with_leo" — family-scope or action-permission gate denied).',
+    );
+    this.name = 'LeoChatNotAuthorizedError';
   }
 }
 
@@ -74,6 +95,16 @@ export interface DecryptedMemory {
  * family isolation's two independent layers — a recorded residual
  * risk, not something this milestone closes, since no child-scoped
  * session claim exists in the current M1/M2 session model.
+ *
+ * M23 adds the same defense-in-depth discipline to *who* may open or
+ * continue a Leo conversation: `startConversation` and `appendMessage`
+ * (the chat-start/message-send entry points) each independently call
+ * `AuthorizationService.authorize(...)` for the `interact_with_leo`
+ * Action before doing anything else — the M15 two-gate check (family
+ * scope + action permission), not a new mechanism. This governs which
+ * parent-authenticated principal (owner, or a co-parent explicitly
+ * granted the action) may act; it does not introduce or activate a
+ * Child principal (ADR-0009 Decision item 7 remains untouched).
  */
 @Injectable()
 export class LeoService {
@@ -83,9 +114,38 @@ export class LeoService {
     private readonly conversationRepository: ConversationRepository,
     private readonly messageRepository: MessageRepository,
     private readonly leoMemoryRepository: LeoMemoryRepository,
+    private readonly authorizationService: AuthorizationService,
   ) {}
 
-  async startConversation(params: { familyId: string; childId: string }): Promise<Conversation> {
+  /**
+   * §3.2/M23 — the authorization gate is evaluated first,
+   * unconditionally, before any Conversation/Message row is read or
+   * written.
+   */
+  private async assertLeoChatAuthorized(params: {
+    principalId: string;
+    principalType: PrincipalType;
+    familyId: string;
+  }): Promise<void> {
+    const result = await this.authorizationService.authorize({
+      principalId: params.principalId,
+      principalType: params.principalType,
+      requestedFamilyId: params.familyId,
+      requestedAction: 'interact_with_leo',
+    });
+    if (!result.allowed) {
+      throw new LeoChatNotAuthorizedError();
+    }
+  }
+
+  async startConversation(params: {
+    familyId: string;
+    childId: string;
+    principalId: string;
+    principalType: PrincipalType;
+  }): Promise<Conversation> {
+    await this.assertLeoChatAuthorized(params);
+
     return this.conversationRepository.create({
       id: randomUUID(),
       familyId: params.familyId,
@@ -97,6 +157,7 @@ export class LeoService {
    * §3.2/§7.4 — re-validates the target Conversation belongs to this
    * exact (familyId, childId) pair before ever encrypting or writing a
    * Message, rather than trusting the caller's conversationId alone.
+   * M23's authorization gate (above) runs first.
    */
   async appendMessage(params: {
     conversationId: string;
@@ -104,7 +165,11 @@ export class LeoService {
     childId: string;
     sender: MessageSender;
     content: string;
+    principalId: string;
+    principalType: PrincipalType;
   }): Promise<DecryptedMessage> {
+    await this.assertLeoChatAuthorized(params);
+
     const conversation = await this.conversationRepository.findByIdScoped({
       id: params.conversationId,
       familyId: params.familyId,

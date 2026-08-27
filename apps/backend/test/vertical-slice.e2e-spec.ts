@@ -95,11 +95,13 @@ const hasFirebaseCredentials = Boolean(
  *
  * Deliberately NOT exercised here (out of scope for this milestone,
  * per §4's own exclusions): any real consent-verification mechanism,
- * any real AI/LLM provider, any child-session/child-principal
+ * any real AI/LLM provider, and any child-session/child-principal
  * authorization path (none exists — ADR-0009 Decision item 7 reserves
- * it), and a new `Action` for "interact with Leo" (see this file's
- * final `it` block comment and `docs/decisions/decision-log.md`'s
- * 2026-08-22 entry for why that gap is deliberately left open here).
+ * it). The Leo-chat step (step 5) previously ran ungated at the
+ * authorization layer — `docs/decisions/decision-log.md`'s 2026-08-22
+ * entry recorded that as a deliberate, known gap — and now goes
+ * through the M23 `interact_with_leo` two-gate check like every other
+ * step in this flow (see step 5/step 6 below).
  */
 describeIfEnabled(
   'Sprint 03 M20 — first end-to-end vertical slice (internal, dev-only, feature-flagged)',
@@ -158,6 +160,7 @@ describeIfEnabled(
       new ConversationRepository(admin),
       new MessageRepository(admin),
       new LeoMemoryRepository(admin),
+      authorizationService,
     );
 
     const adapterRegistry = new AdapterRegistry(loadAiProviderConfig());
@@ -340,7 +343,15 @@ describeIfEnabled(
     });
 
     it('step 5 — Leo chat: a child message goes through the M19 mock adapter and back, with no child PII crossing into the AI request', async () => {
-      const conversation = await leoService.startConversation({ familyId: family.id, childId });
+      // M23 — the chat-start entry point now requires the M15 two-gate
+      // authorization check (interact_with_leo); owner.id already
+      // holds the `owner` role in `family` (step 2), so this passes.
+      const conversation = await leoService.startConversation({
+        familyId: family.id,
+        childId,
+        principalId: owner.id,
+        principalType: 'Parent',
+      });
       conversationId = conversation.id;
 
       const childMessage = await leoService.appendMessage({
@@ -349,6 +360,8 @@ describeIfEnabled(
         childId,
         sender: 'child',
         content: 'Fictional: Hi Leo, want to play a game?',
+        principalId: owner.id,
+        principalType: 'Parent',
       });
 
       // §9's Personalization Data Allowlist is empty by design (M19) —
@@ -398,6 +411,8 @@ describeIfEnabled(
         childId,
         sender: 'leo',
         content: aiResponse.outputContent,
+        principalId: owner.id,
+        principalType: 'Parent',
       });
       expect(leoMessage.sender).toBe('leo');
 
@@ -409,18 +424,23 @@ describeIfEnabled(
       expect(transcript.map((message) => message.sender)).toEqual(['child', 'leo']);
     });
 
-    // No `Action` exists for "interact with Leo for a given child"
-    // (authorization.types.ts's bounded set, M15, already closed out),
-    // and LeoService never calls AuthorizationService anywhere in this
-    // codebase (M18 shipped it that way). This flow therefore
-    // authorizes only the parent-facing steps above (create_child) and
-    // leaves the Leo-chat step itself ungated at the authorization
-    // layer, matching M18's own scope exactly rather than quietly
-    // introducing a new Action into a closed M15 file. See
-    // docs/decisions/decision-log.md's 2026-08-22 entry for this
-    // recorded as a deliberate, known gap for a future milestone —
-    // this step proves the isolation chain that DOES exist today
-    // (family/child scoping), not authorization that doesn't.
+    // M23 — as of this milestone, an `Action` exists for "interact with
+    // Leo for a given child" (`interact_with_leo`,
+    // authorization.types.ts's bounded set) and LeoService.startConversation/
+    // appendMessage call AuthorizationService.authorize(...) for it
+    // before doing anything else (see step 5 above). Previously this
+    // step proved only the family/child scoping chain, since the
+    // Leo-chat step was ungated at the authorization layer — see
+    // docs/decisions/decision-log.md's 2026-08-22 entry (now closed by
+    // the M23 entry immediately following it). This step now uses
+    // `otherOwner.id` — the actual owner of `otherFamily` — for the
+    // cross-family appendMessage attempt specifically so the new
+    // authorization gate *passes* (otherOwner legitimately holds the
+    // `owner` role there) and the assertion continues to prove what it
+    // always proved: leo.service.ts's own conversationId/familyId/childId
+    // re-validation refuses a mismatched conversation even for an
+    // otherwise-authorized principal — defense in depth, not a
+    // replacement for it.
     it('step 6 — isolation: the full chain (family → child → conversation → memory) holds against a second, unrelated family', async () => {
       await familyRepository.create({
         id: otherFamily.id,
@@ -447,6 +467,8 @@ describeIfEnabled(
           childId,
           sender: 'child',
           content: 'should never be written under the control family',
+          principalId: otherOwner.id,
+          principalType: 'Parent',
         }),
       ).rejects.toThrow(LeoConversationNotFoundError);
 

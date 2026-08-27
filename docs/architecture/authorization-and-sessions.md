@@ -128,19 +128,20 @@ same invariant is Milestone 3's job, not redesigned here.
 Per ADR-0006 §6's explicit list plus the Constitution's ownership
 principle (§2) and safe-sharing requirements (§4):
 
-| Action                                                       |                             `owner`                              |            `co_parent`             | `child` (reserved) |
-| ------------------------------------------------------------ | :--------------------------------------------------------------: | :--------------------------------: | :----------------: |
-| View child profile / growth reports                          |                               Yes                                |   Only if in `permission_scope`    |         No         |
-| Update child profile (name, avatar, DOB)                     |                               Yes                                |   Only if in `permission_scope`    |         No         |
-| Create a Child record within the Family                      |                               Yes                                |   Only if in `permission_scope`    |         No         |
-| Invite / revoke a Co-Parent [^1]                             |                               Yes                                |   Only if in `permission_scope`    |         No         |
-| Billing / subscription changes                               |                               Yes                                | **No — owner-only, unconditional** |         No         |
-| Family/account deletion                                      |                               Yes                                | **No — owner-only, unconditional** |         No         |
-| Data export (Constitution §10)                               |                               Yes                                | **No — owner-only, unconditional** |         No         |
-| Create/revoke a share link (Constitution §4)                 |                               Yes                                | **No — owner-only, unconditional** |         No         |
-| Consent-of-record changes (ADR-0006 §5, Milestone 5's scope) |                               Yes                                | **No — owner-only, unconditional** |         No         |
-| View own device list / end own sessions (Constitution §9)    |                        Yes (own devices)                         |         Yes (own devices)          |         No         |
-| View/remove _another_ principal's devices or sessions        | No — no principal ever manages another's device inventory (§6.4) |                 No                 |         No         |
+| Action                                                                   |                             `owner`                              |            `co_parent`             | `child` (reserved) |
+| ------------------------------------------------------------------------ | :--------------------------------------------------------------: | :--------------------------------: | :----------------: |
+| View child profile / growth reports                                      |                               Yes                                |   Only if in `permission_scope`    |         No         |
+| Update child profile (name, avatar, DOB)                                 |                               Yes                                |   Only if in `permission_scope`    |         No         |
+| Create a Child record within the Family                                  |                               Yes                                |   Only if in `permission_scope`    |         No         |
+| Invite / revoke a Co-Parent [^1]                                         |                               Yes                                |   Only if in `permission_scope`    |         No         |
+| Billing / subscription changes                                           |                               Yes                                | **No — owner-only, unconditional** |         No         |
+| Family/account deletion                                                  |                               Yes                                | **No — owner-only, unconditional** |         No         |
+| Data export (Constitution §10)                                           |                               Yes                                | **No — owner-only, unconditional** |         No         |
+| Create/revoke a share link (Constitution §4)                             |                               Yes                                | **No — owner-only, unconditional** |         No         |
+| Consent-of-record changes (ADR-0006 §5, Milestone 5's scope)             |                               Yes                                | **No — owner-only, unconditional** |         No         |
+| View own device list / end own sessions (Constitution §9)                |                        Yes (own devices)                         |         Yes (own devices)          |         No         |
+| View/remove _another_ principal's devices or sessions                    | No — no principal ever manages another's device inventory (§6.4) |                 No                 |         No         |
+| Interact with Leo for a given child (start/continue a conversation) [^2] |                               Yes                                |   Only if in `permission_scope`    |         No         |
 
 [^1]:
     **Correction, founder-confirmed 2026-08-18 (Sprint 03, M15):**
@@ -157,6 +158,21 @@ principle (§2) and safe-sharing requirements (§4):
     preserved in this footnote for traceability, not deleted from
     history. See `apps/backend/src/authorization/authorization.types.ts`
     for the implementation this now matches.
+
+[^2]:
+    **Added, Sprint 04 M23 (2026-08-27):** this row did not exist when
+    this table was authored at M15 — the Leo/conversation module (M18)
+    postdates it. M20's 2026-08-22 decision-log entry recorded the gap
+    (`leo.service.ts` never called `AuthorizationService.authorize(...)`
+    at all); M23 closes it by adding the `interact_with_leo` Action to
+    `authorization.types.ts`'s bounded set and wiring the check into
+    `LeoService.startConversation`/`appendMessage`. Not one of ADR-0006
+    §6's five owner-only-unconditional actions, so it follows the same
+    `Only if in permission_scope` rule as the other co-parent-eligible
+    rows above — no default-allow for a co-parent. This is unrelated to
+    ADR-0009 Decision item 7's reserved `child` role: the `child` column
+    remains **No** here for the same reason it is **No** throughout this
+    table — no product feature issues a Child session.
 
 The five rows marked **owner-only, unconditional** are exactly
 ADR-0006 §6's named list ("billing, account deletion, data export,
