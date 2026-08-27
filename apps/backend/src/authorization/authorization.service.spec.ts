@@ -230,6 +230,88 @@ describe('AuthorizationService', () => {
     expect(result).toEqual({ allowed: false, reason: 'action_not_permitted' });
   });
 
+  // M23 — Leo-Chat Authorization Gap (docs/sprints/sprint-04.md, §4).
+  // interact_with_leo is not one of the five owner-only-unconditional
+  // actions, so it follows the same owner-always/co-parent-only-if-
+  // granted shape already proven above for view_child_profile — these
+  // three cases exist specifically so a future change to ACTIONS or
+  // OWNER_ONLY_ACTIONS that accidentally moved interact_with_leo into
+  // the owner-only set (or dropped it from CO_PARENT_ELIGIBLE_ACTIONS)
+  // fails a test, not just a code review.
+  it('M23 — allows the owner to interact_with_leo within their own family', async () => {
+    const service = buildService({
+      ownedFamilies: [{ id: FAMILY_A, owningParentId: OWNER_PARENT }],
+    });
+
+    const result = await service.authorize({
+      principalId: OWNER_PARENT,
+      principalType: 'Parent',
+      requestedFamilyId: FAMILY_A,
+      requestedAction: 'interact_with_leo',
+    });
+
+    expect(result).toEqual({ allowed: true, role: 'owner' });
+  });
+
+  it('M23 — allows a co-parent interact_with_leo only when explicitly granted via permissionScope', async () => {
+    const service = buildService({
+      ownedFamilies: [{ id: FAMILY_A, owningParentId: OWNER_PARENT }],
+      activeAssignments: [
+        {
+          familyId: FAMILY_A,
+          parentId: CO_PARENT,
+          permissionScope: serializePermissionScope(['interact_with_leo']),
+        },
+      ],
+    });
+
+    const result = await service.authorize({
+      principalId: CO_PARENT,
+      principalType: 'Parent',
+      requestedFamilyId: FAMILY_A,
+      requestedAction: 'interact_with_leo',
+    });
+
+    expect(result).toEqual({ allowed: true, role: 'co_parent' });
+  });
+
+  it('M23 — denies a co-parent interact_with_leo when it is absent from their permissionScope, even with other actions granted', async () => {
+    const service = buildService({
+      ownedFamilies: [{ id: FAMILY_A, owningParentId: OWNER_PARENT }],
+      activeAssignments: [
+        {
+          familyId: FAMILY_A,
+          parentId: CO_PARENT,
+          permissionScope: serializePermissionScope(['view_child_profile', 'manage_child_profile']),
+        },
+      ],
+    });
+
+    const result = await service.authorize({
+      principalId: CO_PARENT,
+      principalType: 'Parent',
+      requestedFamilyId: FAMILY_A,
+      requestedAction: 'interact_with_leo',
+    });
+
+    expect(result).toEqual({ allowed: false, reason: 'action_not_permitted' });
+  });
+
+  it('M23 — denies a reserved Child principal interact_with_leo (ADR-0009 Decision item 7 untouched)', async () => {
+    const service = buildService({
+      ownedFamilies: [{ id: FAMILY_A, owningParentId: OWNER_PARENT }],
+    });
+
+    const result = await service.authorize({
+      principalId: 'child-session-principal',
+      principalType: 'Child',
+      requestedFamilyId: FAMILY_A,
+      requestedAction: 'interact_with_leo',
+    });
+
+    expect(result).toEqual({ allowed: false, reason: 'family_not_authorized' });
+  });
+
   it('denies a stranger with no owned family and no assignment anywhere', async () => {
     const service = buildService({
       ownedFamilies: [{ id: FAMILY_A, owningParentId: OWNER_PARENT }],

@@ -3,7 +3,7 @@
 **Version:** 1.0.0
 **Status:** Living — append-only, updated as new minor decisions are recorded
 **Owner:** Engineering
-**Last Updated:** 2026-08-22
+**Last Updated:** 2026-08-27
 
 Append-only. Each entry: date, one-line decision, one-line rationale,
 author. Small implementation decisions that don't warrant a full ADR
@@ -92,3 +92,34 @@ original entry; the entry itself is never deleted or rewritten.
   target moves toward a dev-only Cloud SQL instance per the same ADR.
   Author: Amiya (product owner/founder, decided directly), recorded by
   AI agent.
+- **2026-08-27** — Decision: close the Leo-chat authorization gap
+  recorded in this log's 2026-08-22 entry, as Sprint 04 Milestone 23
+  ("Leo-Chat Authorization Gap"). A new `Action`, `interact_with_leo`,
+  was added to `authorization.types.ts`'s bounded set (M15), and
+  `leo/leo.service.ts`'s `startConversation`/`appendMessage` — the
+  chat-start/message-send entry points the 2026-08-22 entry named
+  directly — now each call `AuthorizationService.authorize(...)` for
+  that Action before doing anything else, denying (via a new
+  `LeoChatNotAuthorizedError`) any principal who fails either the M15
+  tenant/family-scope gate or the action-permission gate. Not one of
+  ADR-0006 §6's five owner-only-unconditional actions, so a co-parent
+  is granted it only when explicitly present in their own
+  `permission_scope`, same as every other non-owner-only action — no
+  new default-allow introduced. Proven with both a unit-level
+  (`authorization/authorization.service.spec.ts`) and a real-Postgres
+  integration test (`leo/leo-chat-authorization.integration.spec.ts`,
+  covering owner-allow, granted-co-parent-allow, ungranted-co-parent-
+  deny, no-role-at-all-deny, and live revocation), plus an update to
+  `apps/backend/test/vertical-slice.e2e-spec.ts` (M20) proving the
+  existing end-to-end flow still passes with the gate in place.
+  Rationale: the 2026-08-22 entry explicitly flagged this "for a future
+  milestone to design and close, not left to be rediscovered" — Sprint
+  04's own Founder Decision F.6 (`docs/sprints/sprint-04.md`, §3)
+  scheduled that milestone as M23, sequenced after M22. Explicitly does
+  **not** touch ADR-0009 Decision item 7 (child-login/child-session):
+  this gates which _parent-authenticated_ principal may act, not
+  whether a Child principal may. Author: Amiya (product owner/founder —
+  gave the explicit go-ahead to implement M23 directly, satisfying this
+  project's standing one-milestone-at-a-time authorization discipline
+  the same way the 2026-08-26 M22 go-ahead did, per
+  `docs/sprints/sprint-04.md` §4's M23 section), recorded by AI agent.

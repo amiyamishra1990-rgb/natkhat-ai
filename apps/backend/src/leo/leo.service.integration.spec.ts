@@ -5,7 +5,10 @@ import { ConversationRepository } from './repositories/conversation.repository';
 import { MessageRepository } from './repositories/message.repository';
 import { LeoMemoryRepository } from './repositories/leo-memory.repository';
 import { LeoEncryptionService } from './leo-encryption.service';
-import { LeoService, LeoVaultOwnerOnlyError } from './leo.service';
+import { LeoConversationNotFoundError, LeoService, LeoVaultOwnerOnlyError } from './leo.service';
+import { FamilyRepository } from '../identity-family/repositories/family.repository';
+import { CoParentAssignmentRepository } from '../identity-family/repositories/co-parent-assignment.repository';
+import { AuthorizationService } from '../authorization/authorization.service';
 
 // M18 — Integration (docs/sprints/sprint-03.md, §4; ADR-0012;
 // ai-memory-isolation.md §5.1, §6.3). Same live-Postgres pattern as
@@ -27,6 +30,7 @@ describe('LeoService — M18', () => {
     new ConversationRepository(admin),
     new MessageRepository(admin),
     new LeoMemoryRepository(admin),
+    new AuthorizationService(new FamilyRepository(admin), new CoParentAssignmentRepository(admin)),
   );
 
   const owner = { id: randomUUID() };
@@ -98,6 +102,8 @@ describe('LeoService — M18', () => {
     const conversation = await leoService.startConversation({
       familyId: family.id,
       childId: child.id,
+      principalId: owner.id,
+      principalType: 'Parent',
     });
 
     const sent = await leoService.appendMessage({
@@ -106,6 +112,8 @@ describe('LeoService — M18', () => {
       childId: child.id,
       sender: 'child',
       content: 'Fictional: I saw a dinosaur at the museum today!',
+      principalId: owner.id,
+      principalType: 'Parent',
     });
     expect(sent.content).toBe('Fictional: I saw a dinosaur at the museum today!');
 
@@ -130,8 +138,14 @@ describe('LeoService — M18', () => {
     const conversation = await leoService.startConversation({
       familyId: family.id,
       childId: child.id,
+      principalId: owner.id,
+      principalType: 'Parent',
     });
 
+    // owner.id owns both `family` and `otherFamily` in this fixture set
+    // (see beforeAll), so the M23 authorization gate passes for either
+    // — this assertion is specifically about the conversation-scoping
+    // check that runs after it, not about authorization denial.
     await expect(
       leoService.appendMessage({
         conversationId: conversation.id,
@@ -139,8 +153,10 @@ describe('LeoService — M18', () => {
         childId: otherChild.id,
         sender: 'child',
         content: 'should never be written',
+        principalId: owner.id,
+        principalType: 'Parent',
       }),
-    ).rejects.toThrow();
+    ).rejects.toThrow(LeoConversationNotFoundError);
   });
 
   it("addMemory creates a Class 1 (active_relationship) row; correctMemory supersedes it without mutating the prior row's content (§5.1)", async () => {

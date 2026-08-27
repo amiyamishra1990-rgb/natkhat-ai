@@ -31,6 +31,20 @@ export const ACTIONS = [
   'consent_of_record_changes',
   'view_own_devices',
   'manage_own_sessions',
+  // M23 — Leo-Chat Authorization Gap (docs/sprints/sprint-04.md, §4;
+  // docs/decisions/decision-log.md, 2026-08-22 entry). The Action this
+  // milestone exists to add: "interact with Leo for a given child" —
+  // named directly from that phrase, the same illustrative-naming
+  // convention this file's header comment describes. Not one of
+  // ADR-0006 §6's five owner-only-unconditional actions, so it is
+  // co-parent-eligible by construction (falls out of
+  // `CO_PARENT_ELIGIBLE_ACTIONS`'s filter below, unconditionally
+  // requiring an explicit `permission_scope` grant for a co-parent —
+  // no default-allow). This is strictly narrower than ADR-0009
+  // Decision item 7's reserved `child` role/child-session question,
+  // which remains untouched: gating which *parent-authenticated*
+  // principal may act, not introducing a child principal.
+  'interact_with_leo',
 ] as const;
 
 export type Action = (typeof ACTIONS)[number];

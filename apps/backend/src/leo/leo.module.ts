@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { AuthorizationModule } from '../authorization/authorization.module';
 import { leoPrismaClientProvider } from './prisma-client.provider';
 import { leoConfigProvider } from './leo.config.provider';
 import { ConversationRepository } from './repositories/conversation.repository';
@@ -17,7 +18,13 @@ import { LeoLifecycleService } from './leo-lifecycle.service';
 // LeoService so LifecycleModule (M16) can depend on the cascade/sweep
 // surface without gaining access to conversation/memory read-write
 // methods it has no business calling.
+//
+// M23 — imports AuthorizationModule (M15) so LeoService can call
+// AuthorizationService.authorize(...) for the new `interact_with_leo`
+// Action; AuthorizationModule itself only imports IdentityFamilyModule
+// and AuditModule, so this introduces no circular dependency.
 @Module({
+  imports: [AuthorizationModule],
   providers: [
     leoPrismaClientProvider,
     leoConfigProvider,

@@ -13,18 +13,28 @@ founder on 2026-08-26 and is implemented** — see §4, M22 for the full
 scope (including a founder-clarified boundary question resolved before
 implementation) and the PR opened off
 `feat/sprint04-m22-admin-website-scaffolding`; not yet merged, awaiting
-founder review. **M23 (Leo-Chat Authorization Gap) remains not yet
-authorized** — requires its own separate, explicit founder go-ahead
-before implementation begins, per this project's standing
-one-milestone-at-a-time discipline (mirrored from
-`docs/sprints/sprint-03.md`, Decision J.7).
+founder review. **M23 (Leo-Chat Authorization Gap) was separately
+authorized by the founder on 2026-08-27 and is implemented** — see §4,
+M23 for the full scope and the PR opened off
+`feat/sprint04-m23-leo-chat-authorization`; not yet merged, awaiting
+founder review. Per this project's standing one-milestone-at-a-time
+discipline (mirrored from `docs/sprints/sprint-03.md`, Decision J.7),
+M23's authorization is its own separate, explicit founder go-ahead,
+distinct from Founder Decision F.6 below (F.6 only decided that M23
+would exist as its own milestone, sequenced after M22 — it did not
+itself authorize implementation to begin, the same distinction M21's
+own go-ahead already draws against M22/M23).
 **Owner:** Product Owner
-**Last Updated:** 2026-08-26
+**Last Updated:** 2026-08-27
 **Phase:** Sprint 04 execution. M21 complete and merged; M22
-implemented, pending founder review/merge; M23 not yet authorized.
-Sprint 01, Sprint 02, and Sprint 03 are all complete and merged into
-`main` — see `docs/sprints/sprint-01.md`, `docs/sprints/sprint-02.md`,
-and `docs/sprints/sprint-03.md`.
+implemented, pending founder review/merge; M23 authorized 2026-08-27
+and implemented, pending founder review/merge. Sprint 01, Sprint 02,
+and Sprint 03 are all complete and merged into `main` — see
+`docs/sprints/sprint-01.md`, `docs/sprints/sprint-02.md`, and
+`docs/sprints/sprint-03.md`. This is the last drafted Sprint 04
+milestone (§4) — once M23 is reviewed and merged, Sprint 04 as
+currently scoped (M21-M23) is complete; further Sprint 04/05 scope is a
+new planning conversation, not an automatic continuation.
 
 ## Context
 
@@ -347,36 +357,68 @@ Change Request per ADR-0009 itself. See §4, M23.
   `feat/sprint04-m22-admin-website-scaffolding` for the full diff. Not
   yet merged; awaiting founder review, same as every prior milestone.
 
-### M23 — Leo-Chat Authorization Gap _(confirmed — F.6)_
+### M23 — Leo-Chat Authorization Gap _(authorized by the founder 2026-08-27; implemented — see below)_
 
 - **Objective:** Close the authorization gap M20 deliberately left
   open (per the 2026-08-22 `docs/decisions/decision-log.md` entry): add
   the missing `Action` to the bounded authorization set established at
   M15 for "interact with Leo for a given child," and wire the
   corresponding enforcement check into the Leo-chat entry point.
-- **Source:** `docs/decisions/decision-log.md`, 2026-08-22 entry;
-  Founder Decision F.6 (§3).
-- **Implementation scope:** Add one new `Action` to
-  `apps/backend/src/authorization/authorization.types.ts`'s existing
-  bounded set; wire an `AuthorizationService.authorize(...)` check for
-  that `Action` into the Leo-chat entry point in
-  `apps/backend/src/leo/leo.service.ts` (the call M20's own vertical-
-  slice test — `apps/backend/test/vertical-slice.e2e-spec.ts` —
-  currently exercises without any authorization check, per the
-  decision-log entry).
-- **Explicit exclusions:** Does **not** touch child-login/child-session
-  (ADR-0009 Decision item 7) — that remains explicitly out of scope,
-  requiring its own separate, founder-approved Change Request per
-  ADR-0009 itself. No other change to `authorization.types.ts`'s bounded
-  set beyond the one new `Action`; no change to the five owner-only-
-  unconditional actions or to `permission_scope`'s existing semantics.
+- **Source:** `docs/decisions/decision-log.md`, 2026-08-22 and
+  2026-08-27 entries; Founder Decision F.6 (§3); founder authorization
+  message, 2026-08-27 ("NATKHAT AI — M23 Authorization: Leo-Chat
+  Authorization Gap").
+- **Implementation scope (as built):** Added `interact_with_leo` to
+  `apps/backend/src/authorization/authorization.types.ts`'s bounded
+  `ACTIONS` set — not one of the five owner-only-unconditional actions,
+  so it is co-parent-eligible by construction (requires an explicit
+  `permission_scope` grant, no default-allow). Wired an
+  `AuthorizationService.authorize(...)` check for that `Action` into
+  `apps/backend/src/leo/leo.service.ts`'s `startConversation` and
+  `appendMessage` — the chat-start/message-send entry points the
+  2026-08-22 decision-log entry named directly — via a new private
+  `assertLeoChatAuthorized` helper that runs first, before any
+  Conversation/Message row is read or written; denial throws a new
+  `LeoChatNotAuthorizedError`. `LeoModule` now imports
+  `AuthorizationModule` to obtain `AuthorizationService` (no circular
+  dependency — `AuthorizationModule` only imports `IdentityFamilyModule`
+  and `AuditModule`). `docs/architecture/authorization-and-sessions.md`
+  §5's table gained a footnoted row for this Action. Test coverage: a
+  unit-level permission-matrix addition to
+  `authorization/authorization.service.spec.ts` (owner-allow,
+  granted-co-parent-allow, ungranted-co-parent-deny, reserved-Child-
+  deny); a new real-Postgres integration spec,
+  `leo/leo-chat-authorization.integration.spec.ts` (owner-allow,
+  granted-co-parent-allow, ungranted-co-parent-deny with no Conversation
+  row created, no-role-at-all-deny, `appendMessage` independently gated
+  with no Message row written, and live revocation taking effect
+  immediately); the three existing Leo test files that call
+  `startConversation`/`appendMessage` directly
+  (`leo/leo.service.integration.spec.ts`,
+  `leo/leo-cross-child-isolation.integration.spec.ts`, and M20's
+  `apps/backend/test/vertical-slice.e2e-spec.ts`) updated to supply the
+  now-required `principalId`/`principalType` and to construct
+  `LeoService` with an `AuthorizationService` — verified passing, not
+  assumed, including the vertical-slice e2e run with
+  `VERTICAL_SLICE_ENABLED=true`.
+- **Explicit exclusions (unchanged, honored as built):** Does **not**
+  touch child-login/child-session (ADR-0009 Decision item 7) — that
+  remains explicitly out of scope, requiring its own separate,
+  founder-approved Change Request per ADR-0009 itself; this milestone
+  gates which _parent-authenticated_ principal (owner or a co-parent
+  explicitly granted the action) may act, never a Child principal. No
+  other change to `authorization.types.ts`'s bounded set beyond the one
+  new `Action`; no change to the five owner-only-unconditional actions
+  or to `permission_scope`'s existing parsing/serialization semantics.
+  No change to Leo AI/mock-adapter behavior, memory/encryption (M18),
+  or the AI provider boundary (M19).
 - **Dependencies:** None beyond M15's existing bounded authorization
-  set (already merged). Independent of M22 — may run before, after, or
-  in parallel with M22 once both are separately authorized.
-- **Founder/legal gates:** None.
-- **Implementation authorization status:** **Not yet authorized** —
-  awaiting separate, explicit founder go-ahead, same one-milestone-at-
-  a-time discipline as every other milestone in this document.
+  set (already merged). Independent of M22.
+- **Founder/legal gates:** None remaining.
+- **Implementation authorization status:** **Authorized 2026-08-27 and
+  implemented** — see the PR opened off
+  `feat/sprint04-m23-leo-chat-authorization` for the full diff. Not yet
+  merged; awaiting founder review, same as every prior milestone.
 
 ---
 
@@ -417,10 +459,16 @@ surfacing every open question for the founder is done. Per this
 project's standing governance discipline (mirrored from Sprint 03's
 Decision J.7): **M21 is complete and merged (PR #23). M22 was
 separately authorized (2026-08-26) and is implemented, pending founder
-review/merge. M23 remains not yet authorized** — it requires its own
-separate, explicit founder go-ahead, the same way Sprint 03's M13
-required its own gate beyond J.1's threshold authorization. Each
+review/merge. M23 was separately authorized (2026-08-27) and is
+implemented, pending founder review/merge** — its own explicit
+founder go-ahead, distinct from F.6 itself, the same way Sprint 03's
+M13 required its own gate beyond J.1's threshold authorization. Each
 milestone proceeded one-milestone-at-a-time, stop-and-report, exactly
 as every prior milestone in this project has — including stopping to
 flag and resolve a genuine F.3-boundary-adjacent scope ambiguity with
 the founder directly before M22's implementation began (see §4, M22).
+**M23 is the last drafted Sprint 04 milestone.** Once M22 and M23 are
+both reviewed and merged, Sprint 04 (as currently scoped: M21-M23) is
+complete; any further Sprint 04/05 scope is a new planning
+conversation with the founder, not an automatic continuation of this
+document.
