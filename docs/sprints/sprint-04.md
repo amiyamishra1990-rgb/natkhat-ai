@@ -1,24 +1,30 @@
 # Sprint 04 — Implementation Plan & Contract (Foundation Track: Governance Sync, Admin/Website, Leo-Chat Authorization)
 
-**Version:** 1.0.0
+**Version:** 1.1.0
 **Status:** Founder Decisions F.1–F.6 (§3) are **decided** — recorded
 below with their actual outcomes, not just the open questions. This
 document plays the same role `docs/sprints/sprint-03.md`'s Milestone 12
 played before Decisions J.1–J.7: it inspected the governing documents,
 surfaced every open question, and is now updated to record what the
-founder actually decided for each. **Only M21 (Sprint 03 Close-Out &
-Governance Sync) is authorized to begin.** M22 (Admin & Website
-Application Scaffolding) and M23 (Leo-Chat Authorization Gap) remain
-**not yet authorized** — each requires its own separate, explicit
-founder go-ahead before implementation begins, per this project's
-standing one-milestone-at-a-time discipline (mirrored from
+founder actually decided for each. **M21 (Sprint 03 Close-Out &
+Governance Sync) is complete and merged (PR #23).** **M22 (Admin &
+Website Application Scaffolding) was separately authorized by the
+founder on 2026-08-26 and is implemented** — see §4, M22 for the full
+scope (including a founder-clarified boundary question resolved before
+implementation) and the PR opened off
+`feat/sprint04-m22-admin-website-scaffolding`; not yet merged, awaiting
+founder review. **M23 (Leo-Chat Authorization Gap) remains not yet
+authorized** — requires its own separate, explicit founder go-ahead
+before implementation begins, per this project's standing
+one-milestone-at-a-time discipline (mirrored from
 `docs/sprints/sprint-03.md`, Decision J.7).
 **Owner:** Product Owner
 **Last Updated:** 2026-08-26
-**Phase:** Post-Sprint-03 planning and M21 execution. Sprint 01, Sprint
-02, and Sprint 03 are all complete and merged into `main` — see
-`docs/sprints/sprint-01.md`, `docs/sprints/sprint-02.md`, and
-`docs/sprints/sprint-03.md`.
+**Phase:** Sprint 04 execution. M21 complete and merged; M22
+implemented, pending founder review/merge; M23 not yet authorized.
+Sprint 01, Sprint 02, and Sprint 03 are all complete and merged into
+`main` — see `docs/sprints/sprint-01.md`, `docs/sprints/sprint-02.md`,
+and `docs/sprints/sprint-03.md`.
 
 ## Context
 
@@ -278,38 +284,68 @@ Change Request per ADR-0009 itself. See §4, M23.
   one-milestone-at-a-time discipline, M22 and M23 remain separately
   gated (see below) and are not authorized by this M21 go-ahead.
 
-### M22 — Admin & Website Application Scaffolding _(confirmed candidate — §2.1; boundaries locked in — F.3/F.4)_
+### M22 — Admin & Website Application Scaffolding _(authorized by the founder 2026-08-26; implemented — see below)_
 
 - **Objective:** Create `apps/admin` and `apps/website` as real Next.js
   applications, wired into the pnpm/Turborepo workspace and CI, per
   ADR-0014's already-locked decision.
-- **Source:** ADR-0014, Decision J.2.
-- **Implementation scope:** `apps/admin` and `apps/website` scaffolds
-  (default framework output plus shared `config-typescript`/
-  `config-eslint`/`config-prettier` wiring — the same integration
-  pattern ADR-0003 established for `apps/backend`); Turborepo/CI
-  coverage (`lint`, `typecheck`, `test`, `build`) for both.
-- **Explicit exclusions:** No admin authentication, no CMS, no
-  marketing content beyond placeholder scaffolding, no production
-  deployment. No data access of any kind beyond the F.3 ceiling below —
-  this milestone itself is scaffold-only and reads nothing; F.3 bounds
-  what any _later_ admin data-access milestone may ever build toward.
-  **Hard boundary (F.3):** any future `apps/admin` data-access milestone
-  may read audit-log data only — never parent, child, or family content,
-  never aggregate/anonymized stats, never any other data category.
-  **Hard boundary (F.4):** `apps/website` in Sprint 04 is a
-  static/marketing shell only — no signup form, no contact form, no
-  data collection of any kind.
+- **Source:** ADR-0014, Decision J.2; founder authorization message,
+  2026-08-26 ("M22 — Admin & Website Application Scaffolding").
+- **Scope note — resolved discrepancy:** this section originally read
+  "this milestone itself is scaffold-only and reads nothing; F.3 bounds
+  what any _later_ admin data-access milestone may ever build toward."
+  The founder's own authorization message described F.3 as an in-scope
+  capability for M22 itself ("`apps/admin` data access — HARD BOUNDARY
+  (F.3): may read security/audit-log data only... If building a working
+  audit-log view requires any data access beyond this, stop and report
+  rather than expanding scope"), which only makes sense if a working
+  audit-log view is expected M22 work, not a future milestone's. Flagged
+  to the founder directly (an F.3-boundary-adjacent ambiguity, per the
+  "stop and report" instruction) rather than guessed at; the founder
+  confirmed: **build the working audit-log view now, within M22.** This
+  is recorded as a founder-clarified scope expansion within F.3's
+  existing boundary — audit-log data only — not a silent contradiction
+  of the resolved F.3 decision (§3) or a widening of what `apps/admin`
+  may ever read.
+- **Implementation scope (as built):** `apps/admin` and `apps/website`
+  scaffolded via Next.js (TypeScript, App Router), rewired to this
+  repository's ADR-0003 integration pattern (`tsconfig.json` extends
+  `@natkhat-ai/config-typescript/base.json`; `eslint.config.mjs`
+  composes `@natkhat-ai/config-eslint/base` with Next's own flat-config
+  rule sets; `"prettier": "@natkhat-ai/config-prettier"`); Turborepo/CI
+  coverage (`lint`, `typecheck`, `build` for both — `test` intentionally
+  has no script, Turborepo skips packages without one, verified
+  empirically). One new backend endpoint,
+  `GET /audit-events` (`apps/backend/src/audit/audit.controller.ts`),
+  the module's first HTTP surface, delegating to a new
+  `AuditService.findAll()` (thin wrapper over the existing
+  `AuditEventRepository.findMany()`, now sorted newest-first) — scoped
+  strictly to `AuditModule`'s own Prisma-backed data, no cross-module
+  joins. `apps/admin`'s `/audit` page is a Server Component doing a
+  plain server-to-server `fetch` against that endpoint (no CORS
+  middleware needed). `apps/website` ships two static pages (home,
+  about) with zero forms, data collection, or tracking of any kind.
+- **Explicit exclusions (unchanged, honored as built):** No admin
+  authentication (the new endpoint has no auth guard — a known,
+  deliberate, temporary gap, commented in `audit.controller.ts` and
+  flagged here — must be closed before any real deployment). No CMS, no
+  production deployment. **Hard boundary (F.3), respected:** the new
+  endpoint and page expose audit-log data only — `familyId`/`childId`
+  fields are opaque UUID references (audit-log data), never resolved to
+  actual family/child records; `metadata` is content-free by design
+  (`docs/architecture/audit-logging.md` §3, §10); no parent, child, or
+  family content and no aggregate/derived statistics are read anywhere.
+  **Hard boundary (F.4), respected:** `apps/website` remains a
+  static/marketing shell only.
 - **Dependencies:** None beyond the scope decision itself (F.1); does
   not depend on M21.
-- **Founder/legal gates:** F.3 and F.4 are now resolved (§3) — this
-  milestone's Definition of Done can be written precisely against the
-  two hard boundaries above. No further founder/legal gate blocks the
-  scaffold itself.
-- **Implementation authorization status:** **Not yet authorized** —
-  awaiting separate, explicit founder go-ahead, per this project's
-  standing one-milestone-at-a-time discipline. M21's authorization does
-  not extend to M22.
+- **Founder/legal gates:** None remaining — F.3/F.4 resolved (§3), and
+  the scaffold-vs-audit-view scope question above was resolved directly
+  with the founder before implementation.
+- **Implementation authorization status:** **Authorized 2026-08-26 and
+  implemented** — see the PR opened off
+  `feat/sprint04-m22-admin-website-scaffolding` for the full diff. Not
+  yet merged; awaiting founder review, same as every prior milestone.
 
 ### M23 — Leo-Chat Authorization Gap _(confirmed — F.6)_
 
@@ -379,9 +415,12 @@ anywhere. No production environment is active.
 **Founder Decisions F.1–F.6 (§3) are recorded.** This document's job of
 surfacing every open question for the founder is done. Per this
 project's standing governance discipline (mirrored from Sprint 03's
-Decision J.7), only **M21** is authorized to begin now. **M22 and M23
-remain not yet authorized** — each requires its own separate, explicit
-founder go-ahead, the same way Sprint 03's M13 required its own gate
-beyond J.1's threshold authorization. M21 execution proceeds
-one-milestone-at-a-time, stop-and-report, exactly as every prior
-milestone in this project has.
+Decision J.7): **M21 is complete and merged (PR #23). M22 was
+separately authorized (2026-08-26) and is implemented, pending founder
+review/merge. M23 remains not yet authorized** — it requires its own
+separate, explicit founder go-ahead, the same way Sprint 03's M13
+required its own gate beyond J.1's threshold authorization. Each
+milestone proceeded one-milestone-at-a-time, stop-and-report, exactly
+as every prior milestone in this project has — including stopping to
+flag and resolve a genuine F.3-boundary-adjacent scope ambiguity with
+the founder directly before M22's implementation began (see §4, M22).
