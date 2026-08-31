@@ -1,6 +1,6 @@
 # ADR-0016: Migrate Off Supabase — Firebase Authentication and Google Cloud (Founder-Directed)
 
-**Version:** 1.0.0
+**Version:** 1.1.0
 **Status:** Accepted — Founder-Authorized, Effective Immediately (founder
 direct instruction recorded 2026-08-23, this session's resume
 authorization on branch `chore/sprint03-supabase-to-gcp-migration-decision`;
@@ -9,9 +9,13 @@ change, not an engineering-initiated one" — the stated exception to
 this repository's normal "don't change locked architecture" rule, per
 that same instruction's closing reminder. This ADR alone authorizes
 only the scope in Decision items 1-3 below; it does not reopen any
-other locked decision.)
+other locked decision. **2026-08-31 amendment (see "Amendment —
+Storage" below): Decision item 4's "explicitly out of scope" status is
+superseded — Storage is now decided as Google Cloud Storage, recorded as
+a documentation decision only. No Storage implementation code is
+authorized by the amendment.**)
 **Owner:** Engineering
-**Last Updated:** 2026-08-23
+**Last Updated:** 2026-08-31
 
 ## Context
 
@@ -165,3 +169,48 @@ originally locked the stack and is the one directing this change.
 Engineering Constitution — Security by design (ADC over a downloaded
 service-account key; the org's `iam.managed.disableServiceAccountApiKeyCreation`
 policy is preserved, not weakened, by this decision).
+
+## Amendment — Storage (2026-08-31)
+
+Per this project's append-only ADR-amendment discipline (the original
+Decision item 4 and Consequences text above are retained unedited as the
+historical record of what was decided on 2026-08-23; this section
+records what changed, and when, rather than rewriting them), Founder
+Decision G.4 (`docs/sprints/sprint-05.md`, §3, Sprint 05 Milestone 24)
+resolves the open item Decision item 4 above deliberately left open:
+
+**Storage moves to Google Cloud Storage, superseding ADR-0005's Supabase
+Storage decision.** Rationale, per the founder directly: consistency with
+the rest of the ADR-0016 migration — Authentication and Database hosting
+already moved off Supabase to Firebase/Google Cloud (Decision items 1 and
+3 above); leaving Storage on Supabase after everything else moved was an
+inconsistency, not a deliberate architectural choice.
+
+**This is a documentation decision only. No Storage implementation code,
+SDK integration, bucket, or credential is authorized by this amendment.**
+No Storage code exists anywhere in this repository as of 2026-08-31
+(ADR-0005's Storage clause has remained implementation-deferred through
+Sprints 01–04) — this amendment simply records which provider a future,
+separately-authorized Storage-implementation milestone should target when
+one is eventually scoped. `PROJECT.md`'s and the Product Constitution's
+Approved Tech Stack tables' `Storage` rows are updated to read "Google
+Cloud Storage," citing this amendment.
+
+Consequences of this amendment, layered on top of the original
+Consequences section above (which is otherwise unchanged and still
+accurate for what it describes — Auth/Database/Cloud-provider):
+
+- ADR-0005's Storage decision (Supabase Storage) is now superseded, not
+  merely "unaffected" as the original Decision item 4/Consequences text
+  said — that text is retained above as historical record, not deleted.
+- The original Consequences bullet "Storage provider selection remains an
+  explicit open item" is likewise superseded by this amendment — Storage
+  is no longer open; it is decided as Google Cloud Storage.
+- Does not authorize writing any Storage code, bucket provisioning, or
+  IAM configuration. That remains a future, separately-authorized
+  milestone, exactly as Auth/Database implementation each required their
+  own milestone after ADR-0016's original decision.
+- Does not reopen any other item in this ADR or in ADR-0005 (which
+  otherwise still governs authentication's original "Accepted —
+  Implementation Deferred" framing, now superseded for its auth clause
+  specifically by this ADR's original 2026-08-23 text).
