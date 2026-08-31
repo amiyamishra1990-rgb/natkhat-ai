@@ -1,9 +1,9 @@
 # Natkhat AI — Product Constitution
 
-**Version:** 1.3.0
+**Version:** 1.4.0
 **Status:** Ratified — governs all product-level decisions for Natkhat AI
 **Owner:** Product Owner
-**Last Updated:** 2026-08-26
+**Last Updated:** 2026-08-31
 **Position in Governance Hierarchy:** below the ASPOVO Constitution
 (currently a placeholder — see
 `docs/constitution/company/aspovo-constitution.md`), above the
@@ -64,6 +64,31 @@ of this amendment and remains Supabase Storage as originally locked,
 pending a separate, explicit founder decision — see ADR-0016, Decision
 item 4.
 
+## Constitutional Amendment — Storage and CI/CD (2026-08-31)
+
+Founder-directed governance-sync correction, made as part of
+`docs/sprints/sprint-05.md`'s Milestone 24 (Sprint 04 Close-Out &
+Governance Sync), recording two Founder Decisions (G.3, G.4):
+
+- **Storage.** Founder Decision G.4 resolves the open item the Google
+  Cloud Migration amendment above (2026-08-23) deliberately left open:
+  Storage moves to Google Cloud Storage, superseding the Supabase
+  Storage decision originally locked by ADR-0005, recorded as a dated
+  amendment to [ADR-0016](../../decisions/ADR-0016-firebase-auth-and-google-cloud-migration.md)
+  ("Amendment — Storage (2026-08-31)"). This is a documentation decision
+  only — no Storage implementation code exists anywhere in this
+  repository, and none is authorized by this amendment.
+- **CI/CD.** Founder Decision G.3 closes the "Not yet recorded" citation
+  gap the Locked Technology Stack table below has carried since Sprint
+  01: [ADR-0017](../../decisions/ADR-0017-github-actions-cicd.md) formally
+  records GitHub Actions — already the de facto, and only, CI system
+  since Sprint 01 Milestone 10 — as the locked choice. This ADR
+  documents an existing, unchanged fact; it does not alter CI behavior.
+
+Both amendments update the Locked Technology Stack table below (Storage,
+CI/CD rows) and are documentation-only — neither authorizes any
+implementation code.
+
 ## Constitutional Amendment — Target Audience Reconciliation (2026-08-26)
 
 Founder-directed governance-sync correction, made as part of
@@ -118,33 +143,37 @@ The following technology choices are locked for Natkhat AI. Each is
 recorded formally in its corresponding ADR; implementation status
 varies per ADR.
 
-| Layer                          | Technology                   | Recorded in                                                                                                   |
-| ------------------------------ | ---------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| Monorepo tooling               | Turborepo + pnpm workspaces  | ADR-0001                                                                                                      |
-| Mobile application             | Flutter                      | ADR-0002                                                                                                      |
-| Backend application            | NestJS                       | ADR-0003                                                                                                      |
-| Admin application (Sprint 02+) | Next.js                      | ADR-0014                                                                                                      |
-| Marketing website (Sprint 02+) | Next.js                      | ADR-0014                                                                                                      |
-| Database                       | PostgreSQL, via Google Cloud | ADR-0004 (implementation deferred; hosting amended by ADR-0016)                                               |
-| ORM                            | Prisma                       | ADR-0004 (decision recorded, implementation deferred)                                                         |
-| Authentication                 | Firebase Authentication      | ADR-0016 (supersedes ADR-0005's authentication clause)                                                        |
-| Storage                        | Supabase Storage             | ADR-0005 (decision recorded, implementation deferred; unaffected by ADR-0016 — see ADR-0016, Decision item 4) |
-| Cloud provider                 | Google Cloud (GCP)           | ADR-0016                                                                                                      |
-| CI/CD                          | GitHub Actions               | Not yet recorded                                                                                              |
+| Layer                          | Technology                   | Recorded in                                                                                                                                                            |
+| ------------------------------ | ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Monorepo tooling               | Turborepo + pnpm workspaces  | ADR-0001                                                                                                                                                               |
+| Mobile application             | Flutter                      | ADR-0002                                                                                                                                                               |
+| Backend application            | NestJS                       | ADR-0003                                                                                                                                                               |
+| Admin application (Sprint 02+) | Next.js                      | ADR-0014                                                                                                                                                               |
+| Marketing website (Sprint 02+) | Next.js                      | ADR-0014                                                                                                                                                               |
+| Database                       | PostgreSQL, via Google Cloud | ADR-0004 (implementation deferred; hosting amended by ADR-0016)                                                                                                        |
+| ORM                            | Prisma                       | ADR-0004 (decision recorded, implementation deferred)                                                                                                                  |
+| Authentication                 | Firebase Authentication      | ADR-0016 (supersedes ADR-0005's authentication clause)                                                                                                                 |
+| Storage                        | Google Cloud Storage         | ADR-0016 amendment, "Amendment — Storage (2026-08-31)" (decision recorded, no implementation exists or is authorized; supersedes ADR-0005's Supabase Storage decision) |
+| Cloud provider                 | Google Cloud (GCP)           | ADR-0016                                                                                                                                                               |
+| CI/CD                          | GitHub Actions               | ADR-0017 (records the already-implemented choice, in effect since Sprint 01 Milestone 10)                                                                              |
 
 No rationale beyond "locked" has been recorded for stack choices that
 predate the ADR process; ADR-0001 through ADR-0005 supply rationale
 going forward for the layers they cover. ADR-0016 (2026-08-23) amends
 the Database and Authentication rows and formally records the Cloud
-provider row, per the Constitutional Amendment above. ADR-0014
-(2026-08-10) formally records the Admin application and Marketing
-website rows, both corrected from "Not yet recorded" to ADR-0014 on
-2026-08-26 as part of `docs/sprints/sprint-04.md`'s Milestone 21
-(Sprint 03 Close-Out & Governance Sync) — this citation fix was
-originally due at Sprint 02 Milestone 11 (ADR-0014's own Consequences
-clause names it) but was missed until now; ADR-0014 itself records the
-decision only and does not authorize scaffolding `apps/admin` or
-`apps/website`.
+provider row, per the Constitutional Amendment above; its 2026-08-31
+amendment further updates the Storage row (see the Storage and CI/CD
+Constitutional Amendment above). ADR-0014 (2026-08-10) formally records
+the Admin application and Marketing website rows, both corrected from
+"Not yet recorded" to ADR-0014 on 2026-08-26 as part of
+`docs/sprints/sprint-04.md`'s Milestone 21 (Sprint 03 Close-Out &
+Governance Sync) — this citation fix was originally due at Sprint 02
+Milestone 11 (ADR-0014's own Consequences clause names it) but was
+missed until now; ADR-0014 itself records the decision only and does not
+authorize scaffolding `apps/admin` or `apps/website` (both scaffolded
+separately at Sprint 04 Milestone 22, per `docs/sprints/sprint-04.md`,
+§4). ADR-0017 (2026-08-31) formally records the CI/CD row, per the
+Storage and CI/CD Constitutional Amendment above.
 
 ## Amendment
 
