@@ -3,7 +3,7 @@
 **Version:** 1.0.0
 **Status:** Living — append-only, updated as new minor decisions are recorded
 **Owner:** Engineering
-**Last Updated:** 2026-08-27
+**Last Updated:** 2026-09-01
 
 Append-only. Each entry: date, one-line decision, one-line rationale,
 author. Small implementation decisions that don't warrant a full ADR
@@ -123,3 +123,48 @@ original entry; the entry itself is never deleted or rewritten.
   project's standing one-milestone-at-a-time authorization discipline
   the same way the 2026-08-26 M22 go-ahead did, per
   `docs/sprints/sprint-04.md` §4's M23 section), recorded by AI agent.
+- **2026-09-01** — Decision: close the audit-log endpoint no-auth-guard
+  gap self-flagged at Sprint 04 Milestone 22, as Sprint 05 Milestone 25
+  ("Admin Authentication for Audit-Log Endpoint"). `GET /audit-events`
+  (`apps/backend/src/audit/audit.controller.ts`) now requires
+  `AdminAuthGuard` (`apps/backend/src/admin-auth/admin-auth.guard.ts`):
+  a valid `Authorization: Bearer <Firebase ID token>` that resolves,
+  via a new `AdminUser` Prisma model
+  (`prisma/migrations/20260901090000_m25_admin_authentication`), to a
+  distinct admin-principal type — never a Parent or Child. A real
+  Parent's own valid Firebase token is rejected (401), same as a
+  missing token, because `AdminUser` and `Parent` are looked up from
+  entirely separate tables (`admin-auth/admin-auth.service.ts`,
+  mirroring `auth/firebase-auth.service.ts`'s own Parent lookup).
+  `apps/admin` gained a corresponding `/sign-in` page
+  (Firebase email/password, against the same real, non-production dev
+  Firebase project, `natkhat-ai-dev`, ADR-0016) and an httpOnly
+  session-cookie bridge (`app/api/session/route.ts`) so
+  `app/audit/page.tsx`'s server-to-server fetch can carry the token;
+  `proxy.ts` (Next.js's current file-convention name for what was
+  `proxy.ts`) redirects a session-less request to `/sign-in`
+  before it is attempted, though the real enforcement is, and remains,
+  the backend guard. Proven with unit tests
+  (`admin-auth/admin-auth.service.spec.ts`,
+  `admin-auth/admin-auth.guard.spec.ts`), a real-Firebase integration
+  test (`admin-auth/admin-auth.integration.spec.ts`, including the
+  Parent-token-rejected case), and a real-HTTP e2e test
+  (`apps/backend/test/audit-events-auth.e2e-spec.ts`) proving
+  `GET /audit-events` itself rejects an unauthenticated request,
+  rejects a real Parent credential, and accepts a real AdminUser
+  credential. What the endpoint returns is unchanged — Founder
+  Decision F.3's audit-log-data-only hard boundary is unaffected; only
+  who may call it changed. No admin RBAC/role system, no admin-invite/
+  management flow, and no change to child-login/child-session
+  (ADR-0009 item 7) — none of those were touched, per M25's explicit
+  exclusions. Rationale: the Sprint 04 M22 entry (and
+  `apps/backend/src/audit/audit.controller.ts`'s and
+  `apps/admin/README.md`'s own comments at the time) flagged this
+  explicitly as "must be closed before any real deployment," not
+  urgent given no production deployment target existed — Founder
+  Decision G.2 (`docs/sprints/sprint-05.md`, §3) authorized closing it
+  as its own separately-authorized Milestone 25, sequenced after M24.
+  Author: Amiya (product owner/founder — gave the explicit go-ahead to
+  implement M25 directly, following M24's merge, per this project's
+  standing one-milestone-at-a-time authorization discipline), recorded
+  by AI agent.

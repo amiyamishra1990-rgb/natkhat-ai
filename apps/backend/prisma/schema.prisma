@@ -567,3 +567,31 @@ model LeoMemory {
   @@index([childId])
   @@map("leo_memory")
 }
+
+// M25 (docs/sprints/sprint-05.md, §4; Founder Decision G.2) — the
+// distinct admin-principal type the milestone's scope requires: kept
+// separate from Parent/Child (ADR-0009's family principal types), not
+// an extension of either. Mirrors Parent's own M15 auth_identity_ref
+// link (auth/firebase-auth.service.ts) so admin-auth/admin-auth.service.ts
+// can resolve a verified Firebase ID token to exactly one AdminUser the
+// same way FirebaseAuthService already resolves one to a Parent — the
+// two lookups never share a table, so a Parent's token cannot resolve
+// an AdminUser and vice versa.
+//
+// No family_id, no Row-Level Security: apps/admin is not a
+// tenant-scoped surface (Founder Decision F.3 bounds it to audit-log
+// data only), and admin-auth/prisma-client.provider.ts's client — like
+// audit/prisma-client.provider.ts's — is the same non-RLS admin/
+// migration connection (DATABASE_URL), never the RLS-subject
+// natkhat_app_role. No role/permission column: this milestone is
+// authentication only, not an admin RBAC system (M25 explicit
+// exclusion).
+model AdminUser {
+  id              String   @id @default(uuid()) @db.Uuid
+  authIdentityRef String   @unique @map("auth_identity_ref")
+  displayName     String   @map("display_name")
+  contactEmail    String   @map("contact_email")
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  @@map("admin_user")
+}

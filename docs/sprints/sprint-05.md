@@ -1,19 +1,18 @@
 # Sprint 05 — Planning Pass (Governance Sync + Founder-Gated Recommendations)
 
-**Version:** 1.1.0
+**Version:** 1.2.0
 **Status:** Founder Decisions G.1–G.5 (§3) are **decided** — recorded
 below with their actual outcomes, not just the open questions. **M24
-(Sprint 04 Close-Out & Governance Sync) is authorized (2026-08-31) and
-implemented** — see §4, M24 for the full scope, including the G.3 CI/CD
-ADR and G.4 Storage decision folded in; PR opened off
-`docs/sprint05-m24-governance-sync`, not yet merged, awaiting founder
-review. **M25 (Admin Authentication for Audit-Log Endpoint) is
-decided-in-principle (G.2) but remains its own separate, not-yet-opened
-authorization**, per this project's standing one-milestone-at-a-time
-discipline — it will get its own explicit founder go-ahead once M24 is
-merged and verified on `main`.
+(Sprint 04 Close-Out & Governance Sync) is merged into `main`** (PR
+#26) — see §4, M24 for the full scope, including the G.3 CI/CD ADR and
+G.4 Storage decision folded in. **M25 (Admin Authentication for
+Audit-Log Endpoint) is authorized (2026-09-01) and implemented** — see
+§4, M25 for the full implementation scope; PR opened off
+`feat/sprint05-m25-admin-auth`, not yet merged, awaiting founder
+review. **Once M25 merges, Sprint 05 (M24+M25) is complete** — see
+Next Step.
 **Owner:** Product Owner
-**Last Updated:** 2026-08-31
+**Last Updated:** 2026-09-01
 
 ## 0. Context
 
@@ -77,18 +76,20 @@ than silently fixed:
 
 ## 1. Governance Checkpoint (recap, not restated authority)
 
-| Item                                                | Status                                                                                                                                             |
-| --------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Sprint 01                                           | Complete, permanently merged (`main`)                                                                                                              |
-| Sprint 02 (M1–M11)                                  | Complete, permanently merged (`main`)                                                                                                              |
-| Sprint 03 (M12–M20)                                 | Complete, permanently merged (`main`)                                                                                                              |
-| Sprint 04 (M21–M23)                                 | Complete, permanently merged (`main`) — M21 PR #23, M22 PR #24, M23 PR #25, all 2026-08-27                                                         |
-| ADR-0016 (Google Cloud/Firebase migration)          | Accepted, implemented, merged                                                                                                                      |
-| ADR-0014 (Next.js for admin/website)                | Accepted, implemented (M22)                                                                                                                        |
-| M23 (`interact_with_leo` authorization Action)      | Merged — Leo-chat start/continue now gated; child-login/child-session (ADR-0009 item 7) still untouched, its own separate, not-yet-opened decision |
-| ADR-0011 (Consent), ADR-0013 (AI-Provider Boundary) | Still **Proposed**, not Accepted — same open legal/business gates as Sprint 03 §6                                                                  |
-| `PROJECT.md`                                        | Corrected by M24 (this milestone) to reflect M21–M23 as merged; see §0 for the gap as originally found                                             |
-| This document                                       | Founder Decisions G.1–G.5 recorded (§3); M24 authorized and implemented; M25 decided-in-principle, not yet authorized                              |
+| Item                                                | Status                                                                                                                                                                                                                                                     |
+| --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Sprint 01                                           | Complete, permanently merged (`main`)                                                                                                                                                                                                                      |
+| Sprint 02 (M1–M11)                                  | Complete, permanently merged (`main`)                                                                                                                                                                                                                      |
+| Sprint 03 (M12–M20)                                 | Complete, permanently merged (`main`)                                                                                                                                                                                                                      |
+| Sprint 04 (M21–M23)                                 | Complete, permanently merged (`main`) — M21 PR #23, M22 PR #24, M23 PR #25, all 2026-08-27                                                                                                                                                                 |
+| Sprint 05 M24 (Governance Sync)                     | Complete, permanently merged (`main`) — PR #26, 2026-08-31                                                                                                                                                                                                 |
+| ADR-0016 (Google Cloud/Firebase migration)          | Accepted, implemented, merged                                                                                                                                                                                                                              |
+| ADR-0014 (Next.js for admin/website)                | Accepted, implemented (M22)                                                                                                                                                                                                                                |
+| M23 (`interact_with_leo` authorization Action)      | Merged — Leo-chat start/continue now gated; child-login/child-session (ADR-0009 item 7) still untouched, its own separate, not-yet-opened decision                                                                                                         |
+| M25 (Admin Authentication for Audit-Log Endpoint)   | Authorized (2026-09-01) and implemented; PR open off `feat/sprint05-m25-admin-auth`, not yet merged, awaiting founder review — see §4, M25                                                                                                                 |
+| ADR-0011 (Consent), ADR-0013 (AI-Provider Boundary) | Still **Proposed**, not Accepted — same open legal/business gates as Sprint 03 §6                                                                                                                                                                          |
+| `PROJECT.md`                                        | Corrected by M24 to reflect M21–M23 as merged; see §0 for the gap as originally found. Not further updated by M25 — PROJECT.md sync happens at the next close-out milestone, per this project's own precedent (M22/M23 were likewise not synced until M24) |
+| This document                                       | Founder Decisions G.1–G.5 recorded (§3); M24 merged; M25 authorized and implemented, PR open — Sprint 05 (M24+M25) complete once M25 merges                                                                                                                |
 
 This table is a pointer, not a new authority — if it disagrees with
 `PROJECT.md` or an ADR, those win, per `docs/sprints/sprint-01.md`, §1.
@@ -196,6 +197,11 @@ authorization message once M24 is merged and verified, per this
 project's one-milestone-at-a-time discipline; it is not started by this
 document.
 
+**Update (2026-09-01):** M24 merged into `main` (PR #26). The founder
+subsequently gave M25 its own separate, explicit go-ahead, satisfying
+the condition above — see §4, M25 for the implementation this
+authorized.
+
 **G.3 — CI/CD ADR.** **DECIDED: yes, folded into M24** as recommended —
 [ADR-0017](../decisions/ADR-0017-github-actions-cicd.md), a
 documentation-only ADR recording GitHub Actions as the already-implemented
@@ -259,12 +265,10 @@ numbering discipline (F.5 in Sprint 04 set this same precedent).
   (M25's scope, not yet authorized).
 - **Dependencies:** None.
 - **Founder/legal gates:** None.
-- **Implementation authorization status:** **Authorized 2026-08-31 and
-  implemented** — see the PR opened off
-  `docs/sprint05-m24-governance-sync` for the full diff. Not yet merged;
-  awaiting founder review, same as every prior milestone.
+- **Implementation authorization status:** **Authorized 2026-08-31,
+  implemented, and merged** — PR #26, merged into `main` 2026-08-31.
 
-### M25 — Admin Authentication for Audit-Log Endpoint _(decided-in-principle, G.2 — not yet authorized)_
+### M25 — Admin Authentication for Audit-Log Endpoint _(authorized 2026-09-01 and implemented)_
 
 - **Objective:** Close the M22-documented gap: add an auth guard to
   `GET /audit-events` and wire corresponding sign-in to `apps/admin`, so
@@ -272,25 +276,52 @@ numbering discipline (F.5 in Sprint 04 set this same precedent).
 - **Source:** `apps/backend/src/audit/audit.controller.ts` and
   `apps/admin/README.md`, both flagging this as a known, deliberate,
   temporary gap that "must be closed before any real deployment."
-- **Proposed implementation scope:** To be defined at authorization time,
-  consistent with this project's own discipline of not designing
-  implementation detail before a milestone is authorized — at minimum, an
-  auth mechanism for `apps/admin` (candidate: Firebase Authentication,
-  consistent with ADR-0016, scoped to a distinct admin-principal type
-  from parent/child principals) and a guard on the backend endpoint.
-- **Explicit exclusions:** No change to what data the endpoint may return
-  (F.3's audit-log-only hard boundary is unaffected). No admin
-  authorization/RBAC beyond simple authentication unless the founder
-  separately asks for it. No production deployment.
-- **Dependencies:** None beyond M22 (already merged). Independent of M24.
-- **Founder/legal gates:** None identified.
-- **Implementation authorization status:** **Decided-in-principle (G.2,
-  2026-08-31) but not yet authorized for implementation** — the founder's
-  M24 authorization message explicitly scoped implementation to M24
-  only ("This document authorizes M24 only... M25 will get its own
-  authorization message once M24 is merged and verified"). Requires its
-  own separate, explicit founder go-ahead, per this project's standing
-  one-milestone-at-a-time discipline.
+- **Implementation scope (as built):** A new, distinct admin-principal
+  type — `AdminUser`
+  (`apps/backend/prisma/schema.prisma`; migration
+  `20260901090000_m25_admin_authentication`) — kept separate from
+  Parent/Child, never an extension of either. A new `admin-auth` backend
+  module (`apps/backend/src/admin-auth/`): `AdminAuthService` mirrors
+  `auth/firebase-auth.service.ts`'s Parent-resolution shape but resolves
+  against `AdminUser`; `AdminAuthGuard` (a NestJS `CanActivate`)
+  requires `Authorization: Bearer <Firebase ID token>` and is applied
+  directly to `AuditController` (`@UseGuards(AdminAuthGuard)`) — the
+  only `apps/admin`-facing route that had no guard. `apps/admin` gained
+  `/sign-in` (Firebase email/password client SDK,
+  `lib/firebase-client.ts`), an httpOnly session-cookie bridge
+  (`app/api/session/route.ts`, deliberately storing the raw ID token
+  rather than exchanging it for a Firebase session cookie — see that
+  file's own comment on why), a UX-only redirect gate (`proxy.ts`,
+  Next.js's current file-convention name), and `app/audit/page.tsx`
+  updated to send the cookie's token as a Bearer header and redirect to
+  `/sign-in` on a 401. `apps/admin/README.md` and
+  `audit.controller.ts`'s own comment updated to remove the "known gap"
+  language.
+- **Explicit exclusions (honored as built):** No change to what data
+  the endpoint returns (F.3's audit-log-only hard boundary is
+  unaffected). No admin authorization/RBAC system, no multiple admin
+  roles, no admin-invite/admin-management flow — `AdminUser` rows are
+  provisioned out-of-band, test/synthetic accounts only. No production
+  deployment. No change to consent, AI-provider, or child-login/
+  child-session (ADR-0009 item 7) — none touched.
+- **Dependencies:** None beyond M22 (already merged). Independent of
+  M24.
+- **Founder/legal gates:** None identified; none encountered.
+- **Tests:** Unit (`admin-auth/admin-auth.service.spec.ts`,
+  `admin-auth/admin-auth.guard.spec.ts`); real-Firebase integration
+  (`admin-auth/admin-auth.integration.spec.ts`, proving both a real
+  AdminUser token resolves and a real Parent token is rejected — same
+  skip-if-not-configured convention as
+  `auth/firebase-auth.integration.spec.ts`); real-HTTP e2e
+  (`apps/backend/test/audit-events-auth.e2e-spec.ts`) proving
+  `GET /audit-events` itself rejects an unauthenticated request,
+  rejects a real Parent credential, and accepts a real AdminUser
+  credential.
+- **Implementation authorization status:** **Decided-in-principle at
+  G.2 (2026-08-31); given its own separate, explicit founder go-ahead
+  on 2026-09-01, following M24's merge (PR #26)** — implemented per the
+  scope above. PR open off `feat/sprint05-m25-admin-auth`, not yet
+  merged, awaiting founder review, same as every prior milestone.
 
 ---
 
@@ -328,10 +359,15 @@ selection has been made or assumed.
 **Founder Decisions G.1–G.5 (§3) are recorded.** This document's job of
 surfacing every open question for the founder is done, the same role
 `sprint-04.md` played before its own F.1–F.6. Per this project's
-standing governance discipline (mirrored from Sprint 04's own Next Step):
-**M24 is authorized (2026-08-31) and implemented, pending founder
-review/merge. M25 is decided-in-principle (G.2) but remains its own
-separate, not-yet-opened authorization** — it will proceed
-one-milestone-at-a-time, stop-and-report, exactly as every prior
-milestone in this project has, once the founder gives it its own
-explicit go-ahead following M24's review/merge.
+standing governance discipline: **M24 is merged into `main`** (PR #26,
+2026-08-31). **M25 was subsequently given its own separate, explicit
+founder go-ahead (2026-09-01, following M24's merge) and is now
+implemented** — see §4, M25; PR open off `feat/sprint05-m25-admin-auth`,
+awaiting founder review/merge, same as every prior milestone.
+
+**Once M25 merges, Sprint 05 (M24+M25) is complete**, per Founder
+Decision G.5's milestone-numbering discipline and this project's own
+"any further scope is a new planning conversation, not an automatic
+continuation" precedent (carried forward from Sprint 04's own closing
+line, §2.1 above). No further Sprint 05/06 scope is proposed or implied
+by this document.
