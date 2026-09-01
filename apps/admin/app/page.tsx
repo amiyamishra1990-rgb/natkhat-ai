@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 // M22 (docs/sprints/sprint-04.md, §4) — scaffold home page. M25
 // (docs/sprints/sprint-05.md, §4) closed the "no authentication yet"
-// gap this comment used to flag: /audit is now guarded (middleware.ts,
+// gap this comment used to flag: /audit is now guarded (proxy.ts,
 // AdminAuthGuard) — this page itself stays a bare landing page, not a
 // real dashboard, and links to /sign-in explicitly rather than
 // assuming a visitor is already authenticated.

@@ -142,7 +142,7 @@ original entry; the entry itself is never deleted or rewritten.
   session-cookie bridge (`app/api/session/route.ts`) so
   `app/audit/page.tsx`'s server-to-server fetch can carry the token;
   `proxy.ts` (Next.js's current file-convention name for what was
-  `middleware.ts`) redirects a session-less request to `/sign-in`
+  `proxy.ts`) redirects a session-less request to `/sign-in`
   before it is attempted, though the real enforcement is, and remains,
   the backend guard. Proven with unit tests
   (`admin-auth/admin-auth.service.spec.ts`,

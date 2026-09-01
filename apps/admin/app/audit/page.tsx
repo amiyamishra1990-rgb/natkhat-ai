@@ -18,7 +18,7 @@ import { SignOutButton } from '../sign-out-button';
 // M25 (docs/sprints/sprint-05.md, §4; Founder Decision G.2) — the
 // fetch now carries the admin session cookie as a Bearer token, and
 // apps/backend's AdminAuthGuard is what actually enforces it (see
-// middleware.ts's own comment on why this page, not the middleware, is
+// proxy.ts's own comment on why this page, not Proxy, is
 // the real 401 handler).
 
 interface AuditEvent {
@@ -61,7 +61,7 @@ export default async function AuditLogPage() {
   const cookieStore = await cookies();
   const idToken = cookieStore.get(SESSION_COOKIE_NAME)?.value;
 
-  // middleware.ts already redirects a session-less request before it
+  // proxy.ts already redirects a session-less request before it
   // reaches here (belt-and-suspenders — this page must never render
   // without a token regardless of how it was reached).
   if (!idToken) {

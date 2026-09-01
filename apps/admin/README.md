@@ -27,7 +27,7 @@ Flow: `/sign-in` obtains a Firebase ID token client-side, POSTs it to
 `/api/session` which stores it in an httpOnly cookie, then
 `app/audit/page.tsx` (a Server Component) sends it as
 `Authorization: Bearer <token>` on its server-to-server fetch to the
-backend. `middleware.ts` redirects a session-less request to `/sign-in`
+backend. `proxy.ts` redirects a session-less request to `/sign-in`
 before it is even attempted, but the real enforcement is the backend
 guard — the middleware cannot cryptographically verify the token (see
 its own comment) and `app/audit/page.tsx` redirects to `/sign-in` on a
