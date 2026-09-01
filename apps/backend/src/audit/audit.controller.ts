@@ -1,6 +1,7 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, UseGuards } from '@nestjs/common';
 import { AuditEvent } from '@prisma/client';
 import { AuditService } from './audit.service';
+import { AdminAuthGuard } from '../admin-auth/admin-auth.guard';
 
 /**
  * M22 (docs/sprints/sprint-04.md, §4) — the first HTTP controller in
@@ -10,13 +11,16 @@ import { AuditService } from './audit.service';
  * `apps/admin`'s audit-log view (Founder Decision F.3: audit-log data
  * only) something to call.
  *
- * No auth guard yet — M22 explicitly excludes admin authentication
- * (`docs/sprints/sprint-04.md`, §4, M22). This endpoint MUST be gated
- * before any real deployment; it is safe only because this repository
- * remains non-production, synthetic-data-only throughout Sprint 04
- * (see PROJECT.md's synthetic-data-only discipline).
+ * M25 (docs/sprints/sprint-05.md, §4; Founder Decision G.2) closed the
+ * gap this comment used to flag ("no auth guard yet... must be closed
+ * before any real deployment"): `AdminAuthGuard` now gates this
+ * endpoint, requiring a verified Firebase ID token that resolves to an
+ * `AdminUser` — a distinct admin-principal type, not a Parent/Child
+ * credential (see admin-auth/admin-auth.service.ts). What this
+ * endpoint returns is unchanged; only who may call it changed.
  */
 @Controller('audit-events')
+@UseGuards(AdminAuthGuard)
 export class AuditController {
   constructor(private readonly auditService: AuditService) {}
 

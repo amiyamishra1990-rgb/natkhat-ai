@@ -1,3 +1,8 @@
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { SESSION_COOKIE_NAME } from '@/lib/session';
+import { SignOutButton } from '../sign-out-button';
+
 // M22 (docs/sprints/sprint-04.md, §4) — audit-log view. A Server
 // Component doing a plain server-to-server fetch against the backend's
 // audit-events endpoint (apps/backend/src/audit/audit.controller.ts).
@@ -9,6 +14,12 @@
 // never call, join against, or render parent/child/family content or
 // aggregate/derived statistics. Do not add any other backend endpoint
 // call to this page or app without re-checking F.3 first.
+//
+// M25 (docs/sprints/sprint-05.md, §4; Founder Decision G.2) — the
+// fetch now carries the admin session cookie as a Bearer token, and
+// apps/backend's AdminAuthGuard is what actually enforces it (see
+// middleware.ts's own comment on why this page, not the middleware, is
+// the real 401 handler).
 
 interface AuditEvent {
   id: string;
@@ -25,9 +36,17 @@ interface AuditEvent {
 
 const BACKEND_API_URL = process.env.BACKEND_API_URL ?? 'http://localhost:3000';
 
-async function getAuditEvents(): Promise<{ events: AuditEvent[] } | { error: string }> {
+type AuditEventsResult = { events: AuditEvent[] } | { error: string } | { unauthenticated: true };
+
+async function getAuditEvents(idToken: string): Promise<AuditEventsResult> {
   try {
-    const res = await fetch(`${BACKEND_API_URL}/audit-events`, { cache: 'no-store' });
+    const res = await fetch(`${BACKEND_API_URL}/audit-events`, {
+      cache: 'no-store',
+      headers: { Authorization: `Bearer ${idToken}` },
+    });
+    if (res.status === 401) {
+      return { unauthenticated: true };
+    }
     if (!res.ok) {
       return { error: `Backend responded with ${res.status} ${res.statusText}` };
     }
@@ -39,11 +58,28 @@ async function getAuditEvents(): Promise<{ events: AuditEvent[] } | { error: str
 }
 
 export default async function AuditLogPage() {
-  const result = await getAuditEvents();
+  const cookieStore = await cookies();
+  const idToken = cookieStore.get(SESSION_COOKIE_NAME)?.value;
+
+  // middleware.ts already redirects a session-less request before it
+  // reaches here (belt-and-suspenders — this page must never render
+  // without a token regardless of how it was reached).
+  if (!idToken) {
+    redirect('/sign-in?next=/audit');
+  }
+
+  const result = await getAuditEvents(idToken);
+
+  if ('unauthenticated' in result) {
+    redirect('/sign-in?next=/audit');
+  }
 
   return (
     <main style={{ padding: '2rem', fontFamily: 'system-ui, sans-serif' }}>
-      <h1>Audit Log</h1>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h1>Audit Log</h1>
+        <SignOutButton />
+      </div>
       <p>Security/audit-log data only (Founder Decision F.3). Synthetic data only.</p>
 
       {'error' in result && (

@@ -9,6 +9,7 @@ import { AuditModule } from './audit/audit.module';
 import { ConsentModule } from './consent/consent.module';
 import { LeoModule } from './leo/leo.module';
 import { AiProviderModule } from './ai-provider/ai-provider.module';
+import { AdminAuthModule } from './admin-auth/admin-auth.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { AiProviderModule } from './ai-provider/ai-provider.module';
     ConsentModule,
     LeoModule,
     AiProviderModule,
+    AdminAuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
