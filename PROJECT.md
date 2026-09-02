@@ -4,28 +4,26 @@
 
 # Natkhat AI — Project Dashboard
 
-**Version:** 1.17.0
+**Version:** 1.18.0
 **Status:** Living — updated in the same PR as any sprint/milestone/decision change
 **Owner:** Repository maintainers
-**Last Updated:** 2026-08-31 (Sprint 05, Milestone 24 — Sprint 04
-Close-Out & Governance Sync: this file corrected to reflect Sprint 04
-Milestones 21–23 as merged into `main` — M21 (PR #23), M22
-(`apps/admin`/`apps/website` scaffolding, PR #24), and M23 (Leo-chat
-authorization gap closed, PR #25), all merged 2026-08-27. This file's
-own prior M21 update (2026-08-26) had itself only reached the state
-"M21 in progress, M22/M23 not yet authorized" — it was never updated
-again after M22/M23 were subsequently authorized, implemented, and
-merged, so it spent five days (2026-08-27 through 2026-08-31)
-inaccurately describing both as "not yet authorized." Corrected in this
-pass, per `docs/sprints/sprint-05.md`, §4, M24. Also records two new
-Founder Decisions (G.3, G.4, `docs/sprints/sprint-05.md` §3): a new
-[ADR-0017](docs/decisions/ADR-0017-github-actions-cicd.md) formally
-recording GitHub Actions as CI/CD (closing a "Not yet recorded" gap open
-since Sprint 01), and a dated amendment to
-[ADR-0016](docs/decisions/ADR-0016-firebase-auth-and-google-cloud-migration.md)
-recording Storage as Google Cloud Storage (documentation decision only —
-no Storage implementation code exists or is authorized). See Current
-Status and Change Log for full detail.)
+**Last Updated:** 2026-09-02 (Sprint 06, Milestone 26 — Sprint 05
+Close-Out & Governance Sync: this file corrected to reflect Sprint 05
+Milestone 25 (Admin Authentication for Audit-Log Endpoint) as merged
+into `main` via PR #27 — `apps/backend/src/admin-auth/` and
+`apps/admin`'s Firebase-session sign-in flow now gate `GET
+/audit-events` and the `/audit` page, closing Known Risk #17. This
+file's own prior M24 update (2026-08-31) had itself only reached the
+state "M25 decided-in-principle, not yet authorized" — it was never
+updated again after M25 was subsequently authorized (2026-09-01),
+implemented, and merged (PR #27), so it inaccurately described M25 as
+"not yet authorized" in the interim. Corrected in this pass, per
+`docs/sprints/sprint-06.md`, §7, M26. Also records the Sprint 06
+kickoff planning pass ("Leo's Real Experience"): `docs/sprints/sprint-06.md`
+was drafted, and Founder Decisions H.1–H.8 were recorded — none of
+Sprint 06's substantive milestones (M27–M30) are authorized yet; only
+this governance-sync milestone (M26) is. See Current Status and Change
+Log for full detail.)
 
 ## Governance Compliance
 
@@ -86,20 +84,29 @@ static-shell-only hard boundaries, PR #24), and M23 (the M15
 authorization gate now guards Leo-chat start/continue via a new
 `interact_with_leo` Action, PR #25) — all merged into `main` 2026-08-27.
 **Sprint 05 — Planning Pass (Governance Sync + Founder-Gated
-Recommendations) is approved and executing**: see
+Recommendations) is complete**: see
 [docs/sprints/sprint-05.md](docs/sprints/sprint-05.md), Founder
 Decisions G.1–G.5. Milestone 24 (Sprint 04 Close-Out & Governance
-Sync) — this PROJECT.md correction pass — is in progress; Milestone 25
-(Admin Authentication for Audit-Log Endpoint) is decided-in-principle
-(G.2) but **not yet authorized**, pending its own separate, explicit
-founder go-ahead once M24 is merged and verified, per this project's
-standing one-milestone-at-a-time discipline.
+Sync, PR #26) and Milestone 25 (Admin Authentication for Audit-Log
+Endpoint, authorized 2026-09-01, PR #27) are both merged into `main`.
+**Sprint 06 — "Leo's Real Experience" (Kickoff Planning Pass) is
+underway**: see [docs/sprints/sprint-06.md](docs/sprints/sprint-06.md).
+Founder Decisions H.1–H.8 are recorded. Milestone 26 (Sprint 05
+Close-Out & Governance Sync) — this PROJECT.md correction pass — is in
+progress; Milestones 27–30 (the substantive Leo-experience work:
+backend Leo-chat API + mock-reply wiring, mobile parent authentication,
+a child-facing screen, and Sprint 06 close-out) are each **not yet
+authorized**, pending their own separate, explicit founder go-ahead in
+sequence, per this project's standing one-milestone-at-a-time
+discipline.
 
 ## Current Sprint
 
+Sprint 06 — "Leo's Real Experience" (Kickoff Planning Pass). Sprint
+Document: [docs/sprints/sprint-06.md](docs/sprints/sprint-06.md).
 Sprint 05 — Planning Pass (Governance Sync + Founder-Gated
-Recommendations). Sprint Document:
-[docs/sprints/sprint-05.md](docs/sprints/sprint-05.md). Sprint 04 —
+Recommendations), Sprint Document
+[docs/sprints/sprint-05.md](docs/sprints/sprint-05.md), Sprint 04 —
 Governance Sync, Admin/Website Scaffolding, Leo-Chat Authorization,
 Sprint Document [docs/sprints/sprint-04.md](docs/sprints/sprint-04.md),
 Sprint 03 — Implementation Plan & Contract (Foundation Track), Sprint
@@ -112,39 +119,42 @@ complete and permanently merged.
 
 ## Sprint Goal
 
-Per `docs/sprints/sprint-05.md`, §4, M24: bring `PROJECT.md` and the
+Per `docs/sprints/sprint-06.md`, §7, M26: bring `PROJECT.md` back in
+sync with Sprint 05's actual, fully merged state (M24 via PR #26, M25
+via PR #27) before any Sprint 06 substantive scope (M27–M30) is added
+on top of a stale baseline — documentation/governance-sync only,
+mirroring the role Sprint 02 Milestone 11, Sprint 04 Milestone 21, and
+Sprint 05 Milestone 24 each played for the sprint transition before
+them. Sprint 05's own goal, now complete, is recorded for reference:
+per `docs/sprints/sprint-05.md`, §4, M24, bring `PROJECT.md` and the
 Product Constitution's stale cross-references back in sync with
-Sprint 04's actual, merged state (M21–M23, all merged 2026-08-27) before
-any further Sprint 05 scope is added on top of a stale baseline — plus
-two small founder-decided documentation items folded in (G.3: an ADR
-formally recording GitHub Actions as CI/CD; G.4: an ADR-0016 amendment
-recording Storage as Google Cloud Storage) — documentation/governance-sync
-only, mirroring the role Sprint 02 Milestone 11 played for Sprint 01→02
-and Sprint 04 Milestone 21 played for Sprint 03→04. Sprint 04's own
-goal, now complete, is recorded for reference: per
-`docs/sprints/sprint-04.md`, §0, bring `apps/admin` and `apps/website`
-into existence as real, CI-integrated Next.js applications and close the
-Leo-chat authorization gap M20 deliberately left open, while keeping the
-same non-production, synthetic-data-only discipline Sprint 03
-established.
+Sprint 04's actual, merged state, plus G.3 (CI/CD ADR) and G.4 (Storage
+amendment); M25 then closed the `GET /audit-events` no-auth-guard gap
+Known Risk #17 tracked. Sprint 06's own eventual goal (once M27–M30 are
+authorized): build a first, deliberately minimal slice of the actual
+child-facing Leo experience — currently `apps/mobile` is unmodified
+Flutter boilerplate and no HTTP API exists for the Leo module — against
+the mock AI adapter only and the existing parent-authenticated
+principal model, per `docs/sprints/sprint-06.md`'s Explicit Exclusions.
 
 ## Current Milestone
 
-**Sprint 04 (Milestones 21–23 of 23) is complete and permanently merged
-into `main`.** Sprint 05 Milestone 24 (Sprint 04 Close-Out & Governance
-Sync) is the current, in-progress milestone — this PROJECT.md update is
-that milestone's work, per `docs/sprints/sprint-05.md`, §4, M24 ("bring
-`PROJECT.md` back in sync with Sprint 04's actual, merged state"),
-folding in the G.3 CI/CD ADR and G.4 Storage amendment. See the Sprint
-04 Milestone Status table in Current Status for the per-milestone
-breakdown, and Pending Tasks/Known Risks for the legal and founder gates
-that remain genuinely open (M24 does not close them — it only reports
-them accurately). Sprint 05 Milestone 25 (Admin Authentication for
-Audit-Log Endpoint) is decided-in-principle
-(`docs/sprints/sprint-05.md`, §3, Founder Decision G.2) but **not yet
-authorized** — it requires its own separate, explicit founder go-ahead
-once M24 is merged and verified. Sprint 01 (Milestones 0–12), Sprint 02
-(Milestones 1–11), and Sprint 03 (Milestones 12–20) remain separately
+**Sprint 05 (Milestones 24–25) is complete and permanently merged into
+`main`** — M24 (PR #26) and M25 (PR #27). Sprint 06 Milestone 26
+(Sprint 05 Close-Out & Governance Sync) is the current, in-progress
+milestone — this PROJECT.md update is that milestone's work, per
+`docs/sprints/sprint-06.md`, §7, M26 ("bring `PROJECT.md` back in sync
+with Sprint 05's actual, merged state"). See the new Sprint 05
+Milestone Status table in Current Status for the per-milestone
+breakdown, and Pending Tasks/Known Risks for the legal and founder
+gates that remain genuinely open (M26 does not close them — it only
+reports them accurately). Sprint 06 Milestones 27–30 (Leo-chat API
+surface, mobile parent authentication, a child-facing screen, and
+Sprint 06 close-out — `docs/sprints/sprint-06.md`, §7) are each
+**not yet authorized** — every one requires its own separate, explicit
+founder go-ahead once the milestone before it is merged and verified.
+Sprint 01 (Milestones 0–12), Sprint 02 (Milestones 1–11), Sprint 03
+(Milestones 12–20), and Sprint 04 (Milestones 21–23) remain separately
 complete and permanently merged — see the historical completion
 checklists further down in Current Status.
 
@@ -236,27 +246,40 @@ blocked on, and Known Risk #16 (new, this update) for the M20 Leo-chat
 authorization gap now assigned to Sprint 04 M23
 (`docs/sprints/sprint-04.md`, §4) — closed by M23, see below.
 
-**Sprint 04 Milestone Status (current — see Change Log for the
-2026-08-31 M24 entry; the Sprint 03, Sprint 02, and Sprint 01
-narratives below are historical and unchanged):**
+**Sprint 04 Milestone Status (historical — complete as of 2026-08-27,
+unchanged since; the current sprint's table is the Sprint 05 Milestone
+Status table immediately below):**
 
-| M   | Milestone                               | Status                                                                       | ADR / doc                                                                                                                                                                                                                                                                                               |
-| --- | --------------------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 21  | Sprint 03 Close-Out & Governance Sync   | Complete, merged (PR #23)                                                    | `docs/sprints/sprint-04.md`, §4, M21 — `PROJECT.md`/Constitution corrections, no new architecture or code                                                                                                                                                                                               |
-| 22  | Admin & Website Application Scaffolding | Complete, merged (PR #24) — **no admin authentication yet, see Known Risks** | `apps/admin/`, `apps/website/` — implements [ADR-0014](docs/decisions/ADR-0014-adopt-nextjs-for-admin-and-website-applications.md); `apps/backend/src/audit/audit.controller.ts` (new `GET /audit-events`); Founder Decisions F.3 (audit-log data only)/F.4 (static shell only) both respected as built |
-| 23  | Leo-Chat Authorization Gap              | Complete, merged (PR #25)                                                    | New `interact_with_leo` Action in `apps/backend/src/authorization/authorization.types.ts`; enforced in `apps/backend/src/leo/leo.service.ts`'s `startConversation`/`appendMessage` — implements Founder Decision F.6; does not touch ADR-0009 item 7 (child-login/child-session)                        |
+| M   | Milestone                               | Status                                                                                             | ADR / doc                                                                                                                                                                                                                                                                                               |
+| --- | --------------------------------------- | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 21  | Sprint 03 Close-Out & Governance Sync   | Complete, merged (PR #23)                                                                          | `docs/sprints/sprint-04.md`, §4, M21 — `PROJECT.md`/Constitution corrections, no new architecture or code                                                                                                                                                                                               |
+| 22  | Admin & Website Application Scaffolding | Complete, merged (PR #24) — **no admin authentication at the time; closed by Sprint 05 M25 below** | `apps/admin/`, `apps/website/` — implements [ADR-0014](docs/decisions/ADR-0014-adopt-nextjs-for-admin-and-website-applications.md); `apps/backend/src/audit/audit.controller.ts` (new `GET /audit-events`); Founder Decisions F.3 (audit-log data only)/F.4 (static shell only) both respected as built |
+| 23  | Leo-Chat Authorization Gap              | Complete, merged (PR #25)                                                                          | New `interact_with_leo` Action in `apps/backend/src/authorization/authorization.types.ts`; enforced in `apps/backend/src/leo/leo.service.ts`'s `startConversation`/`appendMessage` — implements Founder Decision F.6; does not touch ADR-0009 item 7 (child-login/child-session)                        |
 
 Confirmed directly against the real filesystem and `git log` (not
 assumed from a prior Change Log entry): `apps/admin/` and `apps/website/`
 exist and build; `apps/backend/src/authorization/authorization.types.ts`
 contains `interact_with_leo`; both M22's PR #24 and M23's PR #25 show as
-merge commits in `main`'s history (2026-08-27). No production
-deployment, real parent/child/family data, or admin authentication
-exists as a result of M21–M23 — `apps/admin`'s `GET /audit-events`
-endpoint remains unauthenticated by deliberate, documented M22 exclusion
-(see Known Risks below and Sprint 05 Milestone 25,
-`docs/sprints/sprint-05.md`, decided-in-principle but not yet
-authorized).
+merge commits in `main`'s history (2026-08-27).
+
+**Sprint 05 Milestone Status (current — see Change Log for the
+2026-09-02 M26 entry):**
+
+| M   | Milestone                                   | Status                    | ADR / doc                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| --- | ------------------------------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 24  | Sprint 04 Close-Out & Governance Sync       | Complete, merged (PR #26) | `docs/sprints/sprint-05.md`, §4, M24 — `PROJECT.md`/Constitution corrections reflecting M21–M23 as merged; new [ADR-0017](docs/decisions/ADR-0017-github-actions-cicd.md) (CI/CD, G.3); dated [ADR-0016](docs/decisions/ADR-0016-firebase-auth-and-google-cloud-migration.md) amendment (Storage → Google Cloud Storage, G.4); no implementation code                                                                                      |
+| 25  | Admin Authentication for Audit-Log Endpoint | Complete, merged (PR #27) | New `apps/backend/src/admin-auth/` module (`admin-auth.guard.ts`, `admin-auth.service.ts`, `admin-user.repository.ts`) gating `GET /audit-events`; `apps/admin` gains a Firebase-session sign-in flow (`app/sign-in/page.tsx`, `app/api/session/route.ts`, `lib/firebase-client.ts`, `lib/session.ts`, `proxy.ts`); new Prisma migration `20260901090000_m25_admin_authentication`; implements Founder Decision G.2; closes Known Risk #17 |
+
+Confirmed directly against the real filesystem and `git log` (not
+assumed from a prior Change Log entry): `apps/backend/src/admin-auth/`
+exists with its guard, service, module, and repository files;
+`apps/admin/proxy.ts` and `apps/admin/app/sign-in/page.tsx` exist; PR
+#27 (`feat/sprint05-m25-admin-auth` → `main`) shows as a merge commit
+in `main`'s history. No production deployment or real parent/child/
+family data exists as a result of M21–M25 — `apps/admin`'s
+`GET /audit-events` endpoint is now authenticated (Known Risk #17
+resolved); ADR-0009 item 7 (child-login/child-session) remains
+untouched, its own separate, not-yet-opened decision.
 
 **Sprint 02 Milestone Status (historical — complete as of 2026-08-12,
 unchanged since):**
@@ -753,15 +776,21 @@ natkhat-ai/
 │   │   │   ├── authorization/         # M15 — ADR-0009 (two-gate authorize(), authorization.types.ts)
 │   │   │   ├── auth/                  # M15 — Firebase Admin SDK (rebuilt per ADR-0016)
 │   │   │   ├── lifecycle/             # M16 — ADR-0015 (retention/deletion/export/backup-purge)
-│   │   │   ├── audit/                 # M16 — audit-logging.md (append-only audit trail); M22 adds audit.controller.ts (GET /audit-events, no auth guard yet — see Known Risks)
+│   │   │   ├── audit/                 # M16 — audit-logging.md (append-only audit trail); M22 adds audit.controller.ts (GET /audit-events); M25 gates it with AdminAuthGuard
 │   │   │   ├── consent/               # M17 — ADR-0011 scaffold (Track A only, Track B inactive)
 │   │   │   ├── leo/                   # M18 — ADR-0012 (Conversation/Message/LeoMemory); M23 — leo.service.ts's startConversation/appendMessage now call AuthorizationService.authorize() for the new interact_with_leo Action
-│   │   │   └── ai-provider/           # M19 — ADR-0013 (Track A mock adapter only, Track B inactive)
+│   │   │   ├── ai-provider/           # M19 — ADR-0013 (Track A mock adapter only, Track B inactive)
+│   │   │   └── admin-auth/            # M25 — admin-auth.guard.ts, admin-auth.service.ts, admin-user.repository.ts; gates GET /audit-events via Firebase session verification
 │   │   └── test/
 │   │       └── vertical-slice.e2e-spec.ts   # M20 — first end-to-end vertical slice (PR #21); updated at M23 for the new authorization gate
-│   ├── admin/                  # M22 — Next.js (ADR-0014); pnpm workspace member; audit-log view only (Founder Decision F.3), no auth guard yet
+│   ├── admin/                  # M22 — Next.js (ADR-0014); pnpm workspace member; audit-log view only (Founder Decision F.3); M25 adds Firebase-session sign-in
 │   │   ├── package.json
-│   │   ├── app/audit/page.tsx      # Server Component fetching GET /audit-events
+│   │   ├── proxy.ts                # M25 — request-time session check (renamed from middleware.ts)
+│   │   ├── app/sign-in/page.tsx    # M25 — parent/admin sign-in
+│   │   ├── app/api/session/route.ts # M25 — session cookie exchange
+│   │   ├── app/audit/page.tsx      # Server Component fetching GET /audit-events (now behind AdminAuthGuard)
+│   │   ├── lib/firebase-client.ts  # M25
+│   │   ├── lib/session.ts          # M25
 │   │   └── README.md
 │   ├── website/                 # M22 — Next.js (ADR-0014); pnpm workspace member; static/marketing shell only (Founder Decision F.4), zero forms/data collection
 │   │   ├── package.json
@@ -863,7 +892,8 @@ natkhat-ai/
 │       ├── sprint-02.md   # Complete, permanently merged
 │       ├── sprint-03.md   # Complete, permanently merged — M12–M20
 │       ├── sprint-04.md   # Complete, permanently merged — M21–M23 (PRs #23, #24, #25)
-│       └── sprint-05.md   # G.1–G.5 decided; M24 in progress, M25 not yet authorized
+│       ├── sprint-05.md   # Complete, permanently merged — M24–M25 (PRs #26, #27)
+│       └── sprint-06.md   # "Leo's Real Experience" kickoff — H.1–H.8 decided; M26 in progress, M27–M30 not yet authorized
 ├── .ai/
 │   ├── prompts/                  # Milestone 11 — populated
 │   │   ├── README.md
@@ -902,9 +932,10 @@ against synthetic/fictional data in a non-production environment, per
 `docs/sprints/sprint-03.md`, §2.2/§10. `apps/admin` and `apps/website`
 now exist (Sprint 04 M22, PR #24) as real, CI-integrated Next.js
 applications — `apps/admin` is scoped strictly to Founder Decision F.3
-(audit-log data only, no auth guard yet — see Known Risks) and
-`apps/website` is a static/marketing shell only (Founder Decision F.4,
-zero forms or data collection).
+(audit-log data only) and, as of Sprint 05 M25 (PR #27), sits behind a
+Firebase-session sign-in flow and `AdminAuthGuard` (Known Risk #17
+resolved); `apps/website` is a static/marketing shell only (Founder
+Decision F.4, zero forms or data collection).
 `node_modules/`, `dist/`, `.turbo/`, `.dart_tool/`, `build/`, `.idea/`,
 and other generated/local files under `apps/` are gitignored (nested
 `.gitignore` files for `apps/mobile`, root `.gitignore` for
@@ -929,7 +960,7 @@ yet authored); Sprint 03's implementation scope is
 | Monorepo tooling        | Turborepo + pnpm workspaces  | ADR-0001                                                                                                                                                                         |
 | Mobile                  | Flutter                      | ADR-0002                                                                                                                                                                         |
 | Backend                 | NestJS                       | ADR-0003                                                                                                                                                                         |
-| Admin (Sprint 04 M22)   | Next.js                      | ADR-0014 (implemented, Sprint 04 M22, audit-log data only — Founder Decision F.3; no auth guard yet)                                                                             |
+| Admin (Sprint 04 M22)   | Next.js                      | ADR-0014 (implemented, Sprint 04 M22, audit-log data only — Founder Decision F.3; Firebase-session auth guard added Sprint 05 M25, PR #27)                                       |
 | Website (Sprint 04 M22) | Next.js                      | ADR-0014 (implemented, Sprint 04 M22, static/marketing shell only — Founder Decision F.4)                                                                                        |
 | Database                | PostgreSQL, via Google Cloud | ADR-0004 (implemented, Sprint 03 M13/M14, synthetic data only; hosting amended by ADR-0016)                                                                                      |
 | ORM                     | Prisma                       | ADR-0004 (implemented, Sprint 03 M13/M14)                                                                                                                                        |
@@ -1533,21 +1564,24 @@ Top risks (full register: [docs/sprints/sprint-01.md](docs/sprints/sprint-01.md)
     Decision item 7's child-login/child-session question, which remains
     untouched and out of scope — that still requires its own separate,
     founder-approved Change Request per ADR-0009 itself.
-17. **Security — OPEN (Sprint 04 M22, flagged as a deliberate, documented
-    exclusion)** — the new `GET /audit-events` endpoint
+17. **Security — RESOLVED (Sprint 05 M25, 2026-09-01/PR #27)** — the new
+    `GET /audit-events` endpoint
     (`apps/backend/src/audit/audit.controller.ts`) and `apps/admin`'s
-    `/audit` page (PR #24, merged 2026-08-27) ship with **no
+    `/audit` page (PR #24, merged 2026-08-27) had shipped with **no
     authentication guard at all** — a known, deliberate, temporary gap
-    for a non-production, synthetic-data-only environment, documented in
-    both the controller's own comment and `apps/admin/README.md`: "must
-    be closed before any real deployment." Does not affect the F.3
-    audit-log-data-only hard boundary (what the endpoint may return is
-    unaffected — only who may call it is ungated). **Recommended, not
-    yet authorized, as Sprint 05 Milestone 25**
-    (`docs/sprints/sprint-05.md`, §3, Founder Decision G.2 —
-    decided-in-principle; requires its own separate founder go-ahead
-    once M24 is merged and verified). Not urgent given no production
-    deployment is planned.
+    for a non-production, synthetic-data-only environment, documented at
+    the time in both the controller's own comment and
+    `apps/admin/README.md`. **Closed at Sprint 05 Milestone 25**
+    (`docs/sprints/sprint-05.md`, §3, Founder Decision G.2; PR #27,
+    merged): a new `apps/backend/src/admin-auth/` module
+    (`admin-auth.guard.ts`, backed by `admin-auth.service.ts` and
+    `admin-user.repository.ts`) now gates `GET /audit-events`, and
+    `apps/admin` gained a Firebase-session sign-in flow (`app/sign-in/page.tsx`,
+    `app/api/session/route.ts`, `lib/firebase-client.ts`,
+    `lib/session.ts`, `proxy.ts`) enforcing the same session
+    server-side. Does not affect the F.3 audit-log-data-only hard
+    boundary (what the endpoint may return is unchanged — only who may
+    call it is now gated).
 
 ## Repository Health
 
@@ -1611,14 +1645,26 @@ gap: a new `interact_with_leo` Action now gates `leo.service.ts`'s
 `startConversation`/`appendMessage`. All three PRs merged 2026-08-27.
 
 **Sprint 05 (Planning Pass — Governance Sync + Founder-Gated
-Recommendations) — Founder Decisions G.1–G.5 recorded; Milestone 24
-(this update) in progress.** No new application code, schema, or
-infrastructure has been added by Sprint 05 to date — M24 is
-documentation/governance-sync only, per `docs/sprints/sprint-05.md`, §4,
-folding in a new ADR-0017 (CI/CD, G.3) and a dated ADR-0016 amendment
+Recommendations) — both Milestones (M24–M25) complete and merged into
+`main`.** M24 was documentation/governance-sync only (PR #26), folding
+in a new ADR-0017 (CI/CD, G.3) and a dated ADR-0016 amendment
 (Storage → Google Cloud Storage, G.4, documentation only, no
-implementation code). M25 (Admin Authentication for Audit-Log Endpoint)
-is decided-in-principle (G.2) but remains **not yet authorized**.
+implementation code). M25 (PR #27) added the first real application
+code since Sprint 04: an `apps/backend/src/admin-auth/` module and an
+`apps/admin` Firebase-session sign-in flow, closing the Known-Risk-#17
+audit-log no-auth-guard gap.
+
+**Sprint 06 ("Leo's Real Experience" — Kickoff Planning Pass) —
+`docs/sprints/sprint-06.md` drafted; Founder Decisions H.1–H.8
+recorded; Milestone 26 (this update) in progress.** No new application
+code, schema, or infrastructure has been added by Sprint 06 to date —
+M26 is documentation/governance-sync only, per
+`docs/sprints/sprint-06.md`, §7, bringing `PROJECT.md` back in sync
+with Sprint 05's actual merged state. Milestones 27–30 (backend
+Leo-chat API + mock-reply wiring, mobile parent authentication, a
+child-facing screen, and Sprint 06 close-out) remain **not yet
+authorized** — each requires its own separate, explicit founder
+go-ahead once the milestone before it is merged and verified.
 
 ## Major Decisions
 
@@ -1642,6 +1688,60 @@ is decided-in-principle (G.2) but remains **not yet authorized**.
 
 ## Change Log
 
+- **2026-09-02** — Sprint 06, Milestone 26 (Sprint 05 Close-Out &
+  Governance Sync): per `docs/sprints/sprint-06.md`, §7, M26's explicit
+  scope (`PROJECT.md` corrections reflecting M24–M25 as merged;
+  documentation/governance-sync only, no new architecture or
+  implementation code). Read `PROJECT.md`, `docs/sprints/sprint-05.md`
+  and `docs/sprints/sprint-06.md` in full, and the real filesystem/
+  `git log` before making any change, per the AI Engineering Rule.
+  Verified directly (not assumed from a prior Change Log entry) that PR
+  #27 (`feat/sprint05-m25-admin-auth` → `main`, M25) shows as a merge
+  commit in `main`'s history, and that `apps/backend/src/admin-auth/`
+  and `apps/admin`'s Firebase-session sign-in files
+  (`app/sign-in/page.tsx`, `app/api/session/route.ts`,
+  `lib/firebase-client.ts`, `lib/session.ts`, `proxy.ts`) exist on
+  disk. This file's own prior M24 update (2026-08-31) had only reached
+  "M25 decided-in-principle, not yet authorized" and was never revisited
+  after M25 was subsequently authorized (2026-09-01), implemented, and
+  merged — it had described M25 as "not yet authorized" for two days
+  (2026-09-01 through 2026-09-02) after it was in fact merged into
+  `main`. Updated: header block Version/Last Updated, Current
+  Development Phase, Current Sprint, Sprint Goal, Current Milestone (all
+  corrected from Sprint 05-M24-in-progress framing to
+  Sprint 05-complete/Sprint 06-M26-in-progress framing), Current Status
+  (Sprint 04 Milestone Status table marked historical; new Sprint 05
+  Milestone Status table added, mirroring the existing tables' format),
+  Repository Structure (tree now shows `apps/backend/src/admin-auth/`,
+  `apps/admin`'s new sign-in/session/proxy files, and `sprint-06.md`;
+  the stale "no auth guard yet" narrative corrected throughout),
+  Approved Tech Stack (Admin row corrected to record the M25 auth
+  guard), Known Risks (#17 marked RESOLVED, recording M25's actual
+  closure), Repository Health (Sprint 05 paragraph rewritten from
+  "M24 in progress" to "M24–M25 both complete and merged"; new Sprint 06
+  paragraph added), and Major Decisions (unchanged — M26 introduces no
+  new or amended ADR). Also drafted
+  [docs/sprints/sprint-06.md](docs/sprints/sprint-06.md) in a prior pass
+  of this same planning effort (Sprint 06 kickoff: read every existing
+  Leo-experience-relevant document, found none of the seven
+  research documents the kickoff brief named actually exist in this
+  repository, surveyed `apps/mobile` — unmodified Flutter boilerplate —
+  and the backend Leo/AI-provider modules, and proposed a founder-gated
+  milestone breakdown M26–M30); recorded Founder Decisions H.1–H.8 in it
+  per the founder's own decision message (H.2: M27, the backend
+  Leo-chat API + mock-reply wiring, confirmed as the first slice; H.6/H.7
+  authorize M27/M28's existence; H.1/H.3/H.4/H.5 leave personality,
+  visual style, voice/sound, and age-band handling explicitly deferred
+  or placeholder-only; H.8 authorizes this M26). Did not touch
+  `apps/backend/src/leo/`, `apps/mobile/`, or any Leo-chat/mobile-auth
+  code (M27/M28's scope, not yet authorized); did not modify
+  `docs/sprints/sprint-01.md` through `docs/sprints/sprint-05.md`, or
+  any already-accepted ADR. Validated: `pnpm exec prettier --check`
+  against the touched files; `pnpm exec turbo run lint typecheck test
+build` re-run to confirm no regression from documentation-only
+  changes. — AI agent (Claude Code), executing founder-authorized M26
+  per the founder's Sprint 06 H.1–H.8 decisions message; M27–M30
+  correctly not started.
 - **2026-08-31** — Sprint 05, Milestone 24 (Sprint 04 Close-Out &
   Governance Sync): per `docs/sprints/sprint-05.md`, §4, M24's explicit
   scope (`PROJECT.md` corrections reflecting M21–M23 as merged; a new

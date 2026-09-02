@@ -86,7 +86,7 @@ than silently fixed:
 | ADR-0016 (Google Cloud/Firebase migration)          | Accepted, implemented, merged                                                                                                                                                                                                                              |
 | ADR-0014 (Next.js for admin/website)                | Accepted, implemented (M22)                                                                                                                                                                                                                                |
 | M23 (`interact_with_leo` authorization Action)      | Merged — Leo-chat start/continue now gated; child-login/child-session (ADR-0009 item 7) still untouched, its own separate, not-yet-opened decision                                                                                                         |
-| M25 (Admin Authentication for Audit-Log Endpoint)   | Authorized (2026-09-01) and implemented; PR open off `feat/sprint05-m25-admin-auth`, not yet merged, awaiting founder review — see §4, M25                                                                                                                 |
+| M25 (Admin Authentication for Audit-Log Endpoint)   | Complete, merged (PR #27) — see §4, M25                                                                                                                                                                                                                    |
 | ADR-0011 (Consent), ADR-0013 (AI-Provider Boundary) | Still **Proposed**, not Accepted — same open legal/business gates as Sprint 03 §6                                                                                                                                                                          |
 | `PROJECT.md`                                        | Corrected by M24 to reflect M21–M23 as merged; see §0 for the gap as originally found. Not further updated by M25 — PROJECT.md sync happens at the next close-out milestone, per this project's own precedent (M22/M23 were likewise not synced until M24) |
 | This document                                       | Founder Decisions G.1–G.5 recorded (§3); M24 merged; M25 authorized and implemented, PR open — Sprint 05 (M24+M25) complete once M25 merges                                                                                                                |
@@ -320,8 +320,7 @@ numbering discipline (F.5 in Sprint 04 set this same precedent).
 - **Implementation authorization status:** **Decided-in-principle at
   G.2 (2026-08-31); given its own separate, explicit founder go-ahead
   on 2026-09-01, following M24's merge (PR #26)** — implemented per the
-  scope above. PR open off `feat/sprint05-m25-admin-auth`, not yet
-  merged, awaiting founder review, same as every prior milestone.
+  scope above. **Merged into `main` via PR #27.**
 
 ---
 
@@ -361,9 +360,10 @@ surfacing every open question for the founder is done, the same role
 `sprint-04.md` played before its own F.1–F.6. Per this project's
 standing governance discipline: **M24 is merged into `main`** (PR #26,
 2026-08-31). **M25 was subsequently given its own separate, explicit
-founder go-ahead (2026-09-01, following M24's merge) and is now
-implemented** — see §4, M25; PR open off `feat/sprint05-m25-admin-auth`,
-awaiting founder review/merge, same as every prior milestone.
+founder go-ahead (2026-09-01, following M24's merge), implemented, and
+merged** (PR #27) — see §4, M25. **Sprint 05 (M24–M25) is complete.**
+Sprint 06 ("Leo's Real Experience") is the next planning pass — see
+`docs/sprints/sprint-06.md`.
 
 **Once M25 merges, Sprint 05 (M24+M25) is complete**, per Founder
 Decision G.5's milestone-numbering discipline and this project's own
