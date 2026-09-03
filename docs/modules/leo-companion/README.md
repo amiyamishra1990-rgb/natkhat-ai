@@ -124,9 +124,31 @@ since no code exists yet.
 
 ## 4. APIs
 
-None. No API surface exists yet, and none is speculated here, per
-`TEMPLATE.md`'s own instruction to include request/response shapes "only
-once they are real."
+**M27 (docs/sprints/sprint-06.md, §7; founder decisions H.2/H.6) adds
+the first real HTTP API surface**, per `TEMPLATE.md`'s own instruction
+to document request/response shapes "only once they are real."
+`apps/backend/src/leo-chat/leo-chat.controller.ts` — deliberately a
+separate module from `src/leo/` (the AI-provider-boundary import rule,
+`ai-provider-boundary.md` §3/§6, forbids `src/leo/` from importing
+anything from `src/ai-provider/`; `leo-chat` is the boundary-crossing
+orchestration layer, not a core-domain module) — exposes three routes,
+every one behind `ParentAuthGuard` (a real Firebase ID token resolving
+to a `Parent`, mirroring `AdminAuthGuard`) and the existing M23
+`interact_with_leo` two-gate authorization check (reused as-is, not
+redesigned):
+
+| Route                                              | Purpose                                                                                                                                                                                                                                                                                         |
+| -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `POST /leo/conversations`                          | Starts a `Conversation` — calls `LeoService.startConversation` unmodified.                                                                                                                                                                                                                      |
+| `POST /leo/conversations/:conversationId/messages` | Persists the parent-relayed child message, then calls `AdapterRegistry.execute()` against the **mock adapter only** and persists the canned reply as a Leo-sender `Message` — proving the request/reply loop end to end with fake data. No real AI provider is called, ever, in this milestone. |
+| `GET /leo/conversations/:conversationId/messages`  | Returns the decrypted transcript — calls `LeoService.listMessages` unmodified.                                                                                                                                                                                                                  |
+
+Every request is parent-authenticated; no child-login/child-session
+exists (ADR-0009 Decision item 7 remains untouched). The mock adapter's
+response content is the same placeholder canned text
+(`mock.adapter.ts`, unchanged) — this milestone does not style, tone,
+or personality-shape it, per H.1's still-open Leo Character &
+Conversation Brief status.
 
 ## 5. Database
 

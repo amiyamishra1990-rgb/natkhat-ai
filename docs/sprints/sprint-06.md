@@ -307,15 +307,39 @@ project's standing one-milestone-at-a-time discipline.
 Bring `PROJECT.md` back in sync with M25's actual merged state (PR
 #27), mirroring M21/M24's own role. Documentation only, no code.
 
-### M27 — Leo-Chat API Surface & Mock-Reply Wiring _(authorized by H.2/H.6; not yet started — begins once M26 merges)_
+### M27 — Leo-Chat API Surface & Mock-Reply Wiring _(authorized by H.2/H.6; implemented on branch `feat/sprint06-m27-leo-chat-api`, PR pending founder review — not yet merged)_
 
-New `apps/backend/src/leo/leo.controller.ts` exposing
-`startConversation`/`appendMessage`/`listMessages` behind the existing
-M23 `interact_with_leo` authorization gate (reused, not redesigned).
-`appendMessage` (or a new orchestration method) calls
-`AdapterRegistry.execute()` against the mock adapter and persists the
-returned canned response as a Leo-sender `Message`, proving the loop
-end to end.
+Implemented as `apps/backend/src/leo-chat/leo-chat.controller.ts` — a
+new module deliberately separate from `apps/backend/src/leo/`, not
+`leo/leo.controller.ts` as originally sketched above: this milestone's
+own build surfaced that `ai-provider-boundary-contract.spec.ts` (M19)
+forbids any file under `src/leo/` from importing anything from
+`src/ai-provider/` at all, and wiring `AdapterRegistry.execute()` into
+the message-send flow requires exactly that import. `src/leo-chat/`
+(`leo-chat.controller.ts`, `leo-chat.service.ts`, `leo-chat.module.ts`)
+is the boundary-crossing orchestration layer `ai-provider-boundary.md`
+§3's own diagram always assumed would exist outside core domain — it
+imports both `LeoModule` and `AiProviderModule`; `LeoService` itself
+(`src/leo/leo.service.ts`) is completely unmodified. Behind the
+existing M23 `interact_with_leo` authorization gate throughout (reused
+as-is, not redesigned) plus a new `ParentAuthGuard`
+(`src/auth/parent-auth.guard.ts`, mirroring `AdminAuthGuard`) — the
+Firebase-ID-token-to-`Parent` HTTP identity check no prior milestone
+needed since no parent-facing controller existed before this one.
+`LeoChatService.sendMessage` persists the child message, calls
+`AdapterRegistry.execute()` against the mock adapter only, and
+persists the canned reply as a Leo-sender `Message`, exactly as scoped
+— no real AI provider call, no personality/tone content added to the
+mock's own placeholder response text. One gap found and closed during
+implementation, not present in the original sketch above:
+`LeoService.listMessages` carries no internal `interact_with_leo`
+check of its own (only `startConversation`/`appendMessage` do) — a
+`GET` route built directly on it would have been ungated, so
+`LeoChatService.listMessages` applies the identical M23 check at the
+boundary layer instead, and the controller calls that wrapper, never
+`LeoService.listMessages` directly (regression-guarded by a unit
+test). See `docs/modules/leo-companion/README.md` §4 for the full
+route table.
 
 ### M28 — Mobile Parent Authentication _(authorized by H.7; not yet started — begins once M27 merges)_
 
