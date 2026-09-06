@@ -10,6 +10,7 @@ import { ConsentModule } from './consent/consent.module';
 import { LeoModule } from './leo/leo.module';
 import { AiProviderModule } from './ai-provider/ai-provider.module';
 import { AdminAuthModule } from './admin-auth/admin-auth.module';
+import { LeoChatModule } from './leo-chat/leo-chat.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { AdminAuthModule } from './admin-auth/admin-auth.module';
     LeoModule,
     AiProviderModule,
     AdminAuthModule,
+    LeoChatModule,
   ],
   controllers: [AppController],
   providers: [AppService],
