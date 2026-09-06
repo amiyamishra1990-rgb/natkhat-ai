@@ -1,5 +1,5 @@
 name: mobile
-description: "Natkhat AI mobile application (Flutter). Sprint 01, Milestone 8 scaffold — no business logic yet."
+description: "Natkhat AI mobile application (Flutter). M28 (Sprint 06) adds Firebase parent authentication; no child-facing UI yet."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -34,6 +34,19 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
+
+  # M28 (docs/sprints/sprint-06.md, §7; ADR-0016) — Firebase
+  # Authentication, same provider apps/admin and apps/backend already
+  # use. firebase_auth is accessed only through lib/services/auth_gateway.dart's
+  # interface, never directly from screens, so tests can substitute a
+  # fake without touching platform channels.
+  firebase_core: ^3.15.2
+  firebase_auth: ^5.7.0
+
+  # M28 — HTTP client for lib/services/backend_api_client.dart's calls
+  # to apps/backend (starting with a plain GET / smoke check; no new
+  # backend endpoint added).
+  http: ^1.5.0
 
 dev_dependencies:
   flutter_test:

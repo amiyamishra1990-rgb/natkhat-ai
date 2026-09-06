@@ -43,3 +43,9 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# M28 (docs/sprints/sprint-06.md, §7) — real Firebase dart-define
+# values (see env.example.json, README.md). Never committed, same
+# convention as apps/admin/.env and apps/backend/.env.
+env.json
+
