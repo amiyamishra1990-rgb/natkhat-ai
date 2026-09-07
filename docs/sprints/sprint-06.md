@@ -341,12 +341,60 @@ boundary layer instead, and the controller calls that wrapper, never
 test). See `docs/modules/leo-companion/README.md` §4 for the full
 route table.
 
-### M28 — Mobile Parent Authentication _(authorized by H.7; not yet started — begins once M27 merges)_
+### M28 — Mobile Parent Authentication _(authorized by H.7; implemented on branch `feat/sprint06-m28-mobile-parent-auth`, PR pending founder review — not yet merged)_
 
-Firebase sign-in flow in `apps/mobile`, mirroring `apps/admin`'s
-existing `lib/firebase-client.ts`/session pattern where applicable to
-Flutter. Prerequisite for any screen that calls an authenticated
-backend endpoint.
+Adds `firebase_core`/`firebase_auth`/`http` to `apps/mobile` (previously
+the stock `flutter create` output — see sprint-06.md §3 as originally
+written) and a small, testable app: `SignInScreen` (email/password),
+`HomeScreen` (placeholder, proves the session persists, includes a
+"check backend connection" smoke check against `apps/backend`'s
+unauthenticated `GET /`), and `NatkhatApp` deciding between them off a
+single `AuthGateway.authStateChanges()` stream. Screens depend on the
+`AuthGateway` interface (`lib/services/auth_gateway.dart`), never on
+`package:firebase_auth` directly, mirroring the "guard the SDK behind a
+narrow seam" shape `auth/firebase-auth.service.ts` (M15) already uses
+on the backend — this is what lets `test/fakes/fake_auth_gateway.dart`
+exercise the real screens in `flutter test`'s VM target without
+firebase_auth's platform channels. Firebase is initialized
+programmatically from `--dart-define` values (`lib/config/env.dart`,
+`env.example.json`) rather than a generated `firebase_options.dart` —
+no `flutterfire configure` was run against a real project this
+milestone; the app fails clearly with a visible error screen if the
+required values are missing, same convention as
+`apps/admin/lib/firebase-client.ts`.
+
+One gap found and deliberately not closed here, flagged rather than
+worked around: **M14/M15 never built any HTTP endpoint to create a
+`Parent`/`Family`/`Child`** (`identity-family.module.ts`: "no
+controller, no HTTP surface"; `firebase-auth.service.ts`: "Does not
+create Parent records — that remains an identity-family concern
+outside this milestone's scope") — confirmed by reading both files and
+grepping every caller of `ParentRepository`, all of which are tests.
+Building that endpoint is out of this milestone's explicit scope ("do
+not build new backend endpoints here"). So `apps/mobile` ships
+**sign-in only, no sign-up screen** — the same fork `apps/admin`
+already resolved identically for `AdminUser` ("provisioned out-of-band,
+test/synthetic accounts only ... not an admin-invite/management flow",
+`apps/admin/README.md`). Parent accounts for this app are provisioned
+the same out-of-band way, documented in `apps/mobile/README.md`'s
+"Parent accounts" section. This is a scope decision, not an oversight —
+flagged here and in the PR for founder visibility, since the M28
+kickoff's own wording ("sign-up ... if not already covered by an
+existing backend flow") anticipated exactly this fork without deciding
+it in advance.
+
+Also decided, and documented in `apps/mobile/README.md`'s "Testing"
+section: no device-based Flutter integration test against the real
+`natkhat-ai-dev` Firebase project was added. The security-sensitive
+half of this flow (verifying a Firebase ID token) is already covered
+by a real-Firebase integration test on the backend
+(`firebase-auth.integration.spec.ts`); this app only obtains and
+forwards a token, never verifies one. And unlike that backend test
+(skipped-but-executed inside the normal `pnpm test` run when
+unconfigured), a Flutter device-Firebase test needs the
+`integration_test` package plus a connected device/emulator — CI's
+`mobile` job runs only `flutter analyze`/`flutter test`, so such a test
+could never execute there and would be inert scaffolding today.
 
 ### M29 — Child-Facing Screen(s) _(scope gated on H.1's brief being approved and H.3/H.5's placeholder-art/single-experience decisions; not yet authorized to start — depends on M27–M28)_
 
