@@ -4,6 +4,7 @@ import 'app.dart';
 import 'config/env.dart';
 import 'services/backend_api_client.dart';
 import 'services/firebase_auth_gateway.dart';
+import 'services/leo_chat_api_client.dart';
 
 // M28 (docs/sprints/sprint-06.md, §7; ADR-0016). Replaces the stock
 // `flutter create` counter-app demo. Firebase is initialized
@@ -36,6 +37,9 @@ Future<void> main() async {
     NatkhatApp(
       authGateway: FirebaseAuthGateway(),
       backendApiClient: BackendApiClient(baseUrl: Env.backendApiUrl),
+      leoChatApiClient: Env.isLeoChatConfigured ? LeoChatApiClient(baseUrl: Env.backendApiUrl) : null,
+      familyId: Env.isLeoChatConfigured ? Env.familyId : null,
+      childId: Env.isLeoChatConfigured ? Env.childId : null,
     ),
   );
 }

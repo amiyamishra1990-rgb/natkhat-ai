@@ -2,9 +2,13 @@
 
 Natkhat AI's Flutter mobile application. As of M28 (Sprint 06,
 `docs/sprints/sprint-06.md`, §7), this app can authenticate a parent
-via Firebase Authentication and shows a placeholder authenticated home
-screen — there is still no child-facing UI (that's M29, not yet
-authorized).
+via Firebase Authentication. M29 adds the first child-facing
+screens on top of that session: a home/companion screen showing Leo
+(placeholder icon only, per H.3 — no real character art yet) and a
+chat screen wired to the real M27 backend (`apps/backend/src/leo-chat/`).
+There is still no child-login/child-session (ADR-0009 item 7) — these
+screens are shown on the parent's authenticated device, per M29's own
+scope.
 
 ## Firebase configuration
 
@@ -28,12 +32,36 @@ flutter run --dart-define-from-file=env.json
 | `FIREBASE_MESSAGING_SENDER_ID`   | yes      | Shared across platforms within one Firebase project.                   |
 | `FIREBASE_PROJECT_ID`            | no       | Defaults to `natkhat-ai-dev`.                                          |
 | `BACKEND_API_URL`                | no       | Defaults to `http://localhost:3000`. Android emulator: use `http://10.0.2.2:3000` instead of `localhost` (documented Android-emulator networking quirk, not a Natkhat-specific choice). |
+| `FAMILY_ID`                       | no       | A synthetic `Family.id` (UUID) provisioned out-of-band — see "Leo chat (child-facing screens)" below. |
+| `CHILD_ID`                        | no       | A synthetic `Child.id` (UUID) belonging to that family, provisioned the same way. |
 
 If the three required Firebase values are missing, the app fails
 clearly with a visible configuration-error screen instead of silently
 running with no authentication (same convention as
 `apps/admin/lib/firebase-client.ts` and
 `apps/backend/src/auth/firebase-admin.provider.ts`).
+
+## Leo chat (child-facing screens)
+
+M29 (`docs/sprints/sprint-06.md`, §7) adds `HomeScreen`'s Leo companion
+section and `ChatScreen`, wired to `apps/backend/src/leo-chat/`'s M27
+endpoints. Both require a `familyId`/`childId` on every request, and
+this app has no way to create or look one up (see "Parent accounts"
+above — no such HTTP endpoint exists at all). So, same out-of-band
+fork as parent accounts: set `FAMILY_ID`/`CHILD_ID` in `env.json` to a
+synthetic `Family`/`Child` pair created directly via the backend's
+repositories (the same pattern `test/vertical-slice.e2e-spec.ts`
+already uses), belonging to the same `Parent` you signed in as. If
+either value is left blank, `HomeScreen` shows a warm "Leo's still
+getting ready" message instead of a "Talk to Leo" button, rather than
+crashing or silently pointing at the wrong family.
+
+Message content in `ChatScreen` is always whatever `apps/backend`'s
+mock AI adapter (or the M27 authorization/persistence layer) actually
+returns — never hand-written here. Static UI copy (titles, empty
+states, the "not ready yet" message) follows
+`docs/product/leo-character-brief.md`'s voice (warm, short, no
+assistant-speak) but is otherwise unscripted.
 
 ## Parent accounts
 
