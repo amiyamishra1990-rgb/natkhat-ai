@@ -35,9 +35,25 @@ class Env {
     defaultValue: 'http://localhost:3000',
   );
 
+  // M29 (docs/sprints/sprint-06.md, §7). leo-chat.controller.ts (M27)
+  // requires a familyId/childId on every request, and apps/backend has
+  // no endpoint to look one up for the signed-in parent (README.md's
+  // "Parent accounts" section — no Parent/Family/Child creation HTTP
+  // surface exists at all). Same out-of-band-provisioning fork M28
+  // already took for parent accounts: these identify a synthetic
+  // Family/Child row created directly via the repositories (e.g.
+  // test/vertical-slice.e2e-spec.ts's pattern), never through a mobile
+  // flow. Left blank by default so the Leo companion screen fails
+  // clearly (a kid-friendly "Leo's still getting ready" message, not a
+  // silent crash) rather than guessing at an identifier.
+  static const String familyId = String.fromEnvironment('FAMILY_ID');
+  static const String childId = String.fromEnvironment('CHILD_ID');
+
   static bool get isFirebaseConfigured =>
       firebaseApiKey.isNotEmpty &&
       firebaseAppId.isNotEmpty &&
       firebaseMessagingSenderId.isNotEmpty &&
       firebaseProjectId.isNotEmpty;
+
+  static bool get isLeoChatConfigured => familyId.isNotEmpty && childId.isNotEmpty;
 }

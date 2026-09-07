@@ -262,13 +262,12 @@ Numbered starting at H.1, continuing the F.1–F.6 (Sprint 04) / G.1–G.5
 outcomes below.
 
 - **H.1 — Research gap. Decided: let engineering draft a proposal
-  first.** A first-pass Leo Character & Conversation Brief has been
-  written and sent to the founder separately for review/edit (outside
-  this repository, referenced as `leo-character-brief-draft.md`). It is
-  **not yet approved** and is explicitly **not filed into this repo by
-  M26** — once approved in whatever final form, filing it at
-  `docs/product/leo-character-brief.md` is candidate scope for M29, not
-  before.
+  first.** A first-pass Leo Character & Conversation Brief was written
+  and sent to the founder separately for review/edit (outside this
+  repository, referenced as `leo-character-brief-draft.md`) —
+  deliberately **not filed into this repo by M26**. **Approved** by the
+  founder in its final form and filed verbatim at
+  `docs/product/leo-character-brief.md` as part of M29 (below).
 - **H.2 — First slice. Decided: M27** (the backend Leo-chat API +
   mock-reply wiring) — confirmed as the starting point, since it is the
   one candidate buildable regardless of how H.1/H.3/H.5 eventually
@@ -396,14 +395,60 @@ unconfigured), a Flutter device-Firebase test needs the
 `mobile` job runs only `flutter analyze`/`flutter test`, so such a test
 could never execute there and would be inert scaffolding today.
 
-### M29 — Child-Facing Screen(s) _(scope gated on H.1's brief being approved and H.3/H.5's placeholder-art/single-experience decisions; not yet authorized to start — depends on M27–M28)_
+### M29 — Child-Facing Screen(s) _(authorized once H.1's brief was approved; implemented on branch `feat/sprint06-m29-child-facing-screen`, PR pending founder review — not yet merged)_
 
-A single, straightforward child-facing screen (or minimal set), built
-with placeholder UI/art per H.3, for the single age-band-agnostic
-experience per H.5. Filing the approved Leo Character & Conversation
-Brief into `docs/product/leo-character-brief.md` is candidate scope
-here, not before (§6, H.1) — this milestone does not start until the
-founder has approved that brief and separately authorized M29 itself.
+Files the approved Leo Character & Conversation Brief verbatim at
+`docs/product/leo-character-brief.md` (§6, H.1) — `docs/product/`'s
+first real document, previously just a placeholder `README.md`. The
+draft (`leo-character-brief-draft.md`) was never committed to this
+repository (sent to the founder separately, per §6); its approved final
+text was supplied directly for filing, stripped of only its own
+review-status framing, and filed unedited — no content in it was
+written or altered by this milestone.
+
+Adds two screens to `apps/mobile`, both reached only through the
+existing parent-authenticated session (M28) — there is still no
+child-login/child-session (ADR-0009 item 7, unchanged):
+
+- `HomeScreen` (`lib/screens/home_screen.dart`) gains the "home/
+  companion screen showing Leo" itself, in place: a placeholder icon
+  (`CircleAvatar`/`Icons.auto_awesome`, per H.3 — no real character art)
+  plus a "Talk to Leo" button opening `ChatScreen`. M28's "check backend
+  connection" smoke check is left in place, unchanged, below it.
+- `ChatScreen` (`lib/screens/chat_screen.dart`, new) — a minimal chat UI
+  wired to the real M27 backend via a new `LeoChatApiClient`
+  (`lib/services/leo_chat_api_client.dart`): starts a conversation, lets
+  the child send a message, and displays Leo's reply exactly as the M27
+  mock adapter returns it. No AI-generated reply content is hand-written
+  or hardcoded anywhere in `apps/mobile` — only static UI copy (screen
+  title, empty state "Say hi to Leo!", the not-ready/error messages)
+  is written in-house, in the character brief's voice (§3: warm, short,
+  no assistant-speak).
+
+One gap found and resolved the same way M28 resolved its analogous
+gap, not by building new backend scope: `leo-chat.controller.ts`
+requires a `familyId`/`childId` on every request, and — same root cause
+M28 already flagged for `Parent` rows — `apps/backend` has no HTTP
+endpoint to create or look up a `Family`/`Child` for the signed-in
+parent. `apps/mobile` now takes two new optional compile-time config
+values, `FAMILY_ID`/`CHILD_ID` (`lib/config/env.dart`,
+`env.example.json`), naming an out-of-band-provisioned synthetic
+`Family`/`Child` pair — the exact same "out-of-band, test/synthetic
+only" fork M28 used for parent accounts, documented in
+`apps/mobile/README.md`'s new "Leo chat (child-facing screens)"
+section. Left unset, `HomeScreen` shows a warm "Leo's still getting
+ready here" message instead of "Talk to Leo" — fails clearly, not
+silently, same convention as the Firebase config check — rather than
+guessing at an identifier or building the missing endpoint (out of this
+milestone's explicit scope).
+
+Widget tests added for both screens (`test/screens/home_screen_test.dart`
+extended, `test/screens/chat_screen_test.dart` new), consistent with
+M28's pattern: fakes for `AuthGateway` and the HTTP layer, no real
+backend or Firebase involved, run via `flutter test` in CI's `mobile`
+job. No real AI provider, no real art, no age-band splitting, and no
+consent-mechanism activation were introduced — all remain excluded,
+unchanged from §5.4.
 
 ### M30 — Sprint 06 Close-Out & Governance Sync
 
